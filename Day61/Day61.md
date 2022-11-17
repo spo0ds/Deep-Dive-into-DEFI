@@ -37,3 +37,19 @@ The difference between total assets and total liabilities is defined as equity. 
 I had $1 million of equity, and now I've got $1.2 million of equity. So the change in equity is $200,000, which is the same thing as net income. A "balance sheet" is just a snapshot of what you have and owe at a given point in time. The "Income Statement" tells us what happened over the course of the year. It tells how we got from one balance sheet to another. It tells you all of your inputs and outputs and where your money went.
 
 So if you have a positive net income, the balance sheet equity will increase by that amount, and if you have a negative net income, the balance sheet will decrease in a year. Net income is the change in equity. Your initial equity was $1 million. So how much money did you make? It grew by $200K. So 20% is 200K/1 million. It's the "return on equity," which is the same thing as the "change in equity" / "starting equity."
+
+**Fractional Reserve**
+
+Now let's understand what money is and how it's created.
+
+So I'm thinking that at the end of the season, all of the farmers will sell all of their apples and receive 1,000 gold pieces. They're storing these gold pieces in their house. But there are good projects and no money for those people to build those things. I could take 1,000 pieces of gold and use them for those projects, and then it would actually create wealth. So I opened the bank.
+
+I personally have 100 gold pieces, and I constructed the building, which is worth 100 gold. Then I tell farmers that if they deposit money in my bank, I'll give them interest. So they all deposited 1,000 gold pieces into my bank. Now I have 1,000 gold pieces in liabilities because I owe them to the farmers. Essentially, I set aside 100 ounces of gold in case a single farmer withdraws the gold from the bank. I lend out the remaining 900 gold pieces. I loaned it to someone who has an irrigation project and plans to pay a lot of people with those 900 gold pieces. They plan to build an irrigation canal so that more land can be used to grow apples.
+
+The 900 gold pieces will be distributed to irrigation project workers. After the project is done, you'll have a bunch of workers and 900 gold pieces in total. Just like farmers, they go back to my bank and deposit money my bank.So I'll set aside 10% of 900, which is 90 gold, and lend the remaining 810 to some guy who wants to build a factory. Once again, those 810 gold pieces go to the construction workers and are deposited in my bank. I could go on and on, but it's not an infinite process because with each step we get a little bit less. Let's stop it here. So I keep all 810 gold pieces as reserves. Assets are equal to liabilities plus equity.
+
+So how much money is there in the system?
+
+It all depends on how you define money. So I define one by saying M0, which is just how much gold is there? Counting all the reserves, we get 810 + 90 + 100 = 1000 gold. That makes sense because we started with 1,000 ounces of gold and didn't mine any.
+
+Let's use another definition, M1, which is how much money people think they have. Well, the farmers think they have 1000 gold pieces, the irrigation workers think they have 900 gold pieces, and the factory workers think they have 810 gold pieces. So there are 27,10 grams of gold in total. This is the "multiplier effect." This happens whenever you have a "fractional reserve." This is what people say when they talk about "creating money people think they have." Well, the farmers think they have 1000 gold pieces, the irrigation workers think they have 900 gold pieces, and the factory workers think they have 810 gold pieces. So there are 27,10 grams of gold in total. This is the "multiplier effect." This happens whenever you have a "fractional reserve." This is what people say when they talk about "creating money." We've got 1000 gold pieces, and due to the multiplier effect, people think they've got 2710 gold pieces.
