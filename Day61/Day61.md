@@ -182,10 +182,46 @@ Now comes the note problem. So a law will be passed stating that only banks will
 So the central bank dictates reserve ratios and prevents bank runs.
 
 
+**Treasury (government debt)**
+
+We'll discuss reserve banking again and extend this to the elastic money supply that can grow or contract as people need money.
+
+Assume I have some equity, the majority of which I have initialized with gold and some of which is a building.Then I take gold deposits from the farmers after the crop has been harvested, which are the deposits of two farmers. We've learned in fractional reserve banking that I can leverage the amount of capital I have. The ratio of gold reserves to demand depositors Let's say the reserve requirement is 50%, which means my ratio of gold to demand deposit account cannot be any less than 50%. Let's say I have a total of 100 gold pieces in reserve, and I have 50 from the farmer, so I can lend out 150 more. There's another bank with the same thing.
+
+What if, for whatever reason, your reserves fall below 50% for a short period of time?How do you get that extra gold?
+
+If you're below 50% and another bank is above 50%, it'd be a convenient way if you could borrow from that other bank, or even better, if there's a central depository where all the gold reserves are, you could borrow directly from that central depository if there were no other bank to borrow from.
+
+So we create a reserve bank where each bank puts its reserves, which are the assets and liabilities for this central bank and are the demand deposit accounts for the nationally chartered banks. Let's say both banks received $100 in outstanding notes for depositing $100 in gold. So the bank received a note from the Federal Reserve in exchange for depositing 100 ounces of gold, which served as their reserves.There is no longer any gold.
+
+Even though the reserve is officially a private bank, it's setup in such a way that all of the original banks might have originally capitalized with some equity, but they really don't get any of the profits of the reserve bank. Let's say the profits from the reserve bank just go back to the government. Let's say that the board of directors is appointed by the government, let's say that.The notes are issued by this bank, but we want people to have a lot of faith in the currency because it's the currency that we use in our world.
+
+So, in order for people to have unlimited faith in the currency, we're going to make it a government obligation that is issued by the bank. Well, that means, for whatever reason, even if the reserve bank somehow did not have the gold to back it up, it would go bankrupt. But even in that situation, the government would still be obligated to give you the gold equivalent of the notes. This gives confidence that the notes are as good as gold.
+
+Why does it matter that the government How can you trust the government?
+
+Well, the government can just tax people. Whether they can tax them in terms of dollars, gold, or goods and services We said it's an obligation to the government, which means if all else fails, the government is going to give you the value behind the notes.
+
+You can almost see that the government's asset is its ability to tax people. If I'm the government and I issue these government IOUs, we'll call them Treasury bonds. These are going to be considered risk-free. Why? because they are denominated in the same currency as the economy over which this government governs. If the government borrows money from you, it gives you an IOU. How do I know that if the government gives me an IOU and I give them $100, the IOU is risk-free? Unless they start issuing an unusual number of IOUs, just because they have so much interest that they can't sustain it, they can always tax more people to get you your $100.
 
 
+**Open market operations**
 
+Let's review what the money supply is. When we talked about M0, which is just the gold reserves, now we're going to expand that definition a little bit. The base money supply is federal money deposits and notes. In our previous scenario, all of the federal reserve deposits had essentially been turned into notes. But the bank could have some of it in a checking account with the Federal Reserve Bank. So a federal reserve note and a federal reserve deposit account are essentially the same thing. A note is a little bit more fungible, but with a checking account, you have to do a wire transfer. This is the base money supply.
 
+In our example, the base money supply is $200. Assume that $ equals one gold piece. M0 right now is 200. M1 is how much money people think they have in their demand deposit account. So all the deposits were in both banks. Let's say each bank has $200 due to a 50% reserve ratio. So the total amount of money people think they have in demand deposit accounts is $400. This relationship makes sense because our reserve requirement is 50%. So we can kind of assume that banks tend to get as close to their reserve requirement as they can because they don't get interest on reserves. They make interest on the loans that they make against demand accounts.
+
+How can the economy increase or decrease the money supply?Why would you want to increase or decrease the money supply?
+
+Let's say the economy expands and we have more goods and services to produce. Perhaps we have more laborers or innovative technology, or it is seasonal. Maybe it's the crop planting season, so a lot of farmers need their cash in order to hire people to plant the crops. So now is the time when you want more money. If you don't increase the money supply at those times when you have economic expansion because of seasonal fluctuations, money's going to be more expensive. Money getting more expensive means interest rates will go up. If money becomes too expensive for some good projects, you'd restrict economic expansion.
+
+So there are two ways. I can set the reserve requirements to 10%, and then the banks could create more checking accounts, which is a tool for the Federal Reserve Bank, but if you think about it, what happens if we make our reserve requirement 10%? All of a sudden, all the banks will start to lend a lot more money. Think about what will happen if we raise the reserve requirement back to 50%. How would the bank with a 10% reserve get back to 50%? All of these banks would either sell their assets or unwind loans. It'd be a messy situation. It'll make lots of banks undercapitalized because most banks operate right where they need to. So you don't want to play with the reserve requirement too much.
+
+So the only other way to increase the checking accounts is to increase the reserves in some way. How can you do that? Central bank reserves are directly backed by gold, but there's nothing to stop this bank from doing fractional reserve lending, and the central bank actually has no reserve requirement. That's because, to some degree, it can always provide liquidity because it notes the obligations of the government. So it can always tax more people to back up its loans.
+
+What the Federal Reserve could essentially do is act as a printing press for the so-called base money supply. There are two printing presses. There's a base money printing press and then the leverage printing press. It can print some notes and buy Treasury securities. So what happens if it takes $100 bills and buys Treasury bonds? Treasure doesn't have to be issued by the government. It's bought by bunches of people around the world. I had some government IOUs that I had purchased from the government. The federal reserve has $100; they just purchased the Treasury from me. Now those printed $100 bills are treasures. What am I going to do with that $100?
+
+Well, I'm going to deposit money in the bank. The banking system now has more dollar reserves than it can apply to its reserve ratio. It can also do $100 in lending. So now M0 goes from 200 to 300, and M1 is now $600. So just by printing money and issuing Treasury bills, the central bank is able to increase the M1 by $200.
 
 
 
