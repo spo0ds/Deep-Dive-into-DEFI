@@ -123,7 +123,7 @@ A reserve is something that you keep aside, thinking that you might need it one 
 So as long as more than 20% of checking accounts don't demand their money back, the bank's going to have "liquidity." The bank is going to be able to fulfill its promise because all of the people think that at any given moment they can go to the bank and get the gold.
 
 
-Reserve ratio requirement
+**Reserve ratio requirement**
 
 Let's say that in our world, the reserve ratio requirement is 10%, which means that for every dollar of checking account liabilities or note liabilities that I have outstanding, I have to keep at least 10% of that in actual reserve currency is.In our world, it's gold, but in the current world, it's dollar bills. We'll go toward dollar bills later.
 
@@ -146,3 +146,46 @@ Well, I can keep making loans until I have 3000 gold pieces in demand deposits. 
 A separate question is: Am I solvent? Solvent means: am I good for the money?
 
 It's just an issue of whether your assets are larger than your liabilities. So if I create a checking account for 3000 gold, I'll be solvent because my asset will be 3000 + my 300 gold pieces of equity, which is greater than my liabilities. So if someone asks for 400 gold pieces, I will be solvent but have a liquidity problem if I already have 3000 gold in my checking account.
+
+**Leverage**
+
+Let's say I start off my bank again and I have 300 gold pieces of equity, used 100 for my building and 200 gold pieces in my vault to start off.I take a 100 gold pieces deposits and have an off setting checking account.I lend out some 300 gold pieces of loans to person A and gave him a checking account.I gave another 300 gold pieces of loan to person B too.
+
+Leverage is essentially how much asset that you control with certain amount of equity.In our example our equity is equal to 300 gold pieces.So how many assets that we're controlling with that 300 gold pieces? Our assets is 1000 gold pieces.Lot's of time when people talk about leverage,you might hear 2:1 leverage.That means the ratio of asset to the equity is 2:1.In our case  is 1000/300 which is 10:3.It's a fair leverage ratio.
+
+A very good reason that a bank wants to do this is because if it's making more money on its assets than its paying on its liablities, so bank want to take as much leverage as much they want.Every time it adds some assets and some liablities, it's going to make a difference.It's going to make the spread on that money so it wants to keep doing that.
+
+But there's a downside to leverage because what if some of the loans aren't so good?Leverage when things are good, when they go on the upside, it kind of multiplies how much money you're going to make but on the downside leverage also multiplies the loss you would take.
+
+So what happens if I had 50% loss on the loans that I have given?In a example where assets is equal to equity, if assets go down by 50%, equity will also go down by 50%.But now if I had some leverage what happens if the value of my assets go down by 50%.So my those two loans shrinks to 50 because our assets go down by 50%.Now the total asset is 500 before it was 1000 and I have 700 of liablities.Here I have negative equity because assets = liablities + equity.So my equity is -200 so essentially I'm broke.The bank is out of business.In this situation there's a very good reason for people to get their money back because even if you gave all the time in the world, this bank is not going to be able to pay back its money.This situation is called "insolvency".Reserve ratio dealt with the illliquidity that make sure enough gold is left aside when people came to want the gold back but if by chance people ask for more gold that you had, it doesn't mean that you're out of business.You just have to tell them to wait while you deal with you assets to get those loans to be paid back.You're still solvent.
+
+Insolvency is when you actually because of bad investments, you actually end up with less assets then you do have liablities and there's nothing left over on the equity column.That's what a leverage is a measure of because if you have really high leverage, we have 10:3 ration so 50% loss could wipe us out.If you have 10:1 leverage, then even 10% loss would wipe you out.
+
+So leverage is a measure of how much cusion you have to take losses in the future.Another one that people use for leverage is debt to equity.
+
+**Reserve Bank**
+
+We'll deal with a world with more than one bank. Let's say we have three banks with gold as a reserve currency. Each bank will have its own outstanding bank notes.
+
+What is the problem here? The first is that all of them might have different reserve ratios. Bank A has a reserve ratio of 8%, Bank B has a reserve ratio of 10%, and Bank C has a reserve ratio of 12%. So there's no consistent reserve ratio. Let's assume Bank C was initially built and people started depositing. Latent banking business flowed, and people also started depositing in Bank A. Maybe one day 9% of the checking accounts at Bank A will want their money back. Bank C knew 9% could happen, so that's why he kept 12%. So Bank A can't give the gold back, and that scares everyone. Everyone comes and starts withdrawing, but it's not the only bank. Everyone will have less trust in the banking system. So there are runs on all the banks.
+
+That's unfortunate for two reasons. Bank B and Bank C were safe to begin with. Also, Bank A just needs 1% of gold, which it could borrow from other banks. Other banks could lend the money to Bank A as long as it's solvent, then have a systemic run on all banks. As a result, one weak link in the chain can break the entire chain. One irresponsible bank will create a bank run on all of them. There's a situation that we're not familiar with today but that happened many times in history where bunches of different banks each issued their own bank notes as a form of currency. So Bank A's bill should be worth less than those of Banks B and C, which is going to be a big mess for the economy for someone in a cash register to keep track of. If one bank fails, their notes are worthless, and so on. So we have another problem with inconsistent paper currency.
+
+So what's the solution to all this?
+
+You could regulate reserve ratios, so that's easy to do. That's just government intervention. But how can we implement the mechanism where we can prevent bank runs, especially when there's money to lend from one bank to another? And if we can use the mechanism that prevents this and provides a consistent currency, then we're all set. We can provide consistent currency if we have one bank issuing currency. So let's call that bank a "reserve bank."
+
+The reserve bank is where all banks keep their gold reserves at the central bank, and instead of having gold reserves, each bank has checking accounts with the reserve bank. It solves the "bank run" problem because if 11% of people want their money all of a sudden, the bank will go to its reserve bank account and borrow from other players.
+
+Now comes the note problem. So a law will be passed stating that only banks will issue bank notes, and that's the central bank. So banks might get bank notes for their reserve deposits, and the reserves of these banks will no longer become gold. It is now used as currency.
+
+So the central bank dictates reserve ratios and prevents bank runs.
+
+
+
+
+
+
+
+
+
