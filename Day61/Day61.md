@@ -110,3 +110,39 @@ Another person comes and needs 100 gold pieces to build the factory, and I can c
 How far can this process continue? Can a bank just continue issuing loans and checking accounts indefinitely, essentially collecting the difference in interest between the interest it gets on the loan and the interest it gives on the checking account?
 
 No, then the bank will take on arbitrary amounts of risk, and there are regulations called reserve requirements that tell us how much lending a bank can do relative to its actual reserves, though banks would do it to some extent on their own. In this case, the reserve is gold. how much checking and bank notes it can issue relative to its reserves.
+
+**Reserve ratios**
+
+In the previous example, as opposed to giving gold out to make loans and be used for the projects, gold gets redeposited and then lent out again. Every time it made a loan, which created an asset, it had a corresponding liability, which was either a checking account that the entrapreneur could use or bank notes, which are essentially cash that the entrapreneur could use to pay their labor or whatever they needed to do.
+
+The obvious question is how much a bank could do it for. When does this stop? Can the bank just keep increasing the left and right sides of the balance sheet?
+
+A reserve is something that you keep aside, thinking that you might need it one day. The checking account holder could come to the bank and request their gold for whatever reason. So you have to leave aside a little bit of gold just in case someone wants their gold back. The "reserve ratio" is the amount of gold that must be set aside in relation to the total amount of gold demanded. So what keeps banks from issuing more assets and debts to expand their balance sheets is a reserve ratio requirement. Bank regulators might say that your reserve requirement must be 20%.
+
+
+So as long as more than 20% of checking accounts don't demand their money back, the bank's going to have "liquidity." The bank is going to be able to fulfill its promise because all of the people think that at any given moment they can go to the bank and get the gold.
+
+
+Reserve ratio requirement
+
+Let's say that in our world, the reserve ratio requirement is 10%, which means that for every dollar of checking account liabilities or note liabilities that I have outstanding, I have to keep at least 10% of that in actual reserve currency is.In our world, it's gold, but in the current world, it's dollar bills. We'll go toward dollar bills later.
+
+Let's start our example from scratch and see how big our balance sheet can get. So my building is worth 100 gold pieces, and then I capitalize it with another 200 gold pieces. So 300 gold pieces are my equity. Let's say I make 100 gold deposits and open the checking account. This is all the reserve I have; how much can I lend out?
+
+Well, the reserve ratio requirement says that my reserves over my total checking accounts that I have on my liabilities and the notes that I issue can be no more or have to be at least 10% of that. So right now I have 100 gold pieces in my on-demand checking account and 300 gold pieces on reserve. So there are more reserves than demand accounts because I pre-capitalized them with some of my initial equity. So how much lending can I do?
+
+The requirements say that I can only expand the on-demand accounts so that the reserve is at least 10% of them. So 10% equals reserves plus demand deposits.
+
+10% * demand_deposits = reserve_gold
+=> demand_deposits = 300 * 0.1
+=> demand_deposits = 3000
+
+So I can have up to 3,000 gold pieces as demand deposits.
+
+How much can I expand my balance sheet?
+
+Well, I can keep making loans until I have 3000 gold pieces in demand deposits. It keeps the bank liquid. Liquid means that when someone actually asks for their gold, I have the gold to give it to them.
+
+A separate question is: Am I solvent? Solvent means: am I good for the money?
+
+It's just an issue of whether your assets are larger than your liabilities. So if I create a checking account for 3000 gold, I'll be solvent because my asset will be 3000 + my 300 gold pieces of equity, which is greater than my liabilities. So if someone asks for 400 gold pieces, I will be solvent but have a liquidity problem if I already have 3000 gold in my checking account.
