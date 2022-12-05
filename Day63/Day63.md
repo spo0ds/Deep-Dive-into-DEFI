@@ -28,7 +28,7 @@ Volatility helps you realize whether a crypto fits your portfolio or not. It's u
 
 It's the availability of liquid assets to a company, market, or trader/investor. Consider it an infinite series of intermediate stages such as 10/90, 30/70, and so on. Assets can be fully liquid, like water, fully frozen, like ice, or anywhere in between.
 
-** Company liquidity**
+**Company liquidity**
 
 If you review a company's financial statements, liquidity means the ability to pay short-term obligations. An example is the CFO stating that his company has ample liquidity of $3 billion: $2 billion in cash and $1 billion in a revolving loan (also called a revolving credit facility: a loan where the funds are drawn and repaid as needed by the borrower.) If you want to review the liquidity of a company from its financial statements, the `current ratio` is a very useful financial ratio.
 
