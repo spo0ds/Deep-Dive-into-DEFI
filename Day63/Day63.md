@@ -41,3 +41,32 @@ When I look at the most active crypto in Coinbase, I see bitcoin and Ethereum.Th
 **Trader/Inverstor liquidity**
 
 Suppose Jim has invested directly in private companies, real estate, and vintage cars. Jane has invested in blue-chip stocks and bonds and holds cash. You could say that Jim's portfolio is largely frozen or illiquid, while Jane's portfolio is relatively liquid. We're not looking at their returns here. We're only judging how flexible the investment portfolios are in exchanging assets for other assets. If Jim and Jane both love art and go to an auction, who is in the best position to bid? Most likely, that would be Jane. She can pay in cash or quickly sell stocks or bonds on the day of the auction.
+
+**Collateral**
+
+It refers to an asset that a lender accepts as security for a loan. Essentially, collateral is an item of value used to secure a loan. It acts as a form of protection for the lender. If the borrower defaults on the loan, the lender has a legal right to seize the collateral and sell it to recoup its losses.
+
+**Floating and Fixed Interest Rates**
+
+Fixed exchange rates mean that two currencies will always be exchanged at the same price, while floating exchange rates mean that the prices between each currency can change depending on market factors; primarily supply and demand.
+
+The benefits of a floating exchange rate are:
+- It reduces the need for currency reserves.
+We know that large amounts of currency reserves are required by central banks or governments to maintain fixed exchange rates.With a floating exchange rate, there is no need to mess around with holding lots of currency reserves.
+- Freedom for domestic money policy
+    -          Some fixed exchange rate systems will require the manipulation of interest rates in order to keep an exchange rate fixed to a certain currency, whereas in a floating exchange rate system there's no need to worry about changes in interest rates to keep an exchange rate fixed. You can use monetary policy to deal with domestic issues in the economy, whether it's inflation, low or high employment, etc.
+
+- Partial automatic correction for a trade deficit
+   -     Consider a country with a large trade deficit, implying negative net exports. There's more supply of the currency in terms of buying imports than there is demand for that currency. So on a very simple currency diagram, supply is shifting to the right, which is lowering the value of the exchange rate as a result of imports being greater than exports, but in a floating exchange rate, increasing the supply of the currency will reduce the value of the currency, making imports more expensive and exports cheaper, which in theory can help partially correct the trade deficit.
+
+- Useful instrument for macroeconomic adjustment
+   -     Reduction in the value of the exchange rate can help prop up an economy. So if the exchange rate fell for some reason, that could help prop up export growth in the country, which can help increase general growth in the country. So, for countries that rely heavily on exports, the fall in exchange rates may increase export demand and exports. So it can be very useful to just help solve potential low growth issues in the economy.
+- Reduced risk of currency speculation
+    -     A floating-point exchange rate reduces the possibility of a currency being overvalued or undervalued. In a floating exchange rate system, the exchange rate should reach an equilibrium that reflects purchasing power parity; in this sense, the currency is perfectly valued, rather than over or undervalued.Therefore, the risk of speculative attacks, especially when the currency is overvalued, is less likely to occur. Hence, more stability is likely in that sense with the exchange rate at its correct level.
+
+However, there are some issues with floating exchange rates.
+- Volatility
+    -     There's no guarantee that floating exchanges will be stable. They're left open to the forces of demand and supply, and everyone knows the exchange rate can go up and down. It can be very volatile. The problem with that is that it can reduce the incentives for foreign investors or foreign companies to actually invest in the domestic country, where the exchange rate is very volatile. It puts off trades as well, so for exporters domestically, it becomes harder to trade because foreign countries don't really know what they're getting in terms of currency with the domestic currency constantly going up and down.
+- Self correction of trade deficits is unlikely
+  -     When we discussed sub-corrections in Point 3, it was primarily theoretical; in practice, it is unlikely to occur because imports and exports are only two of the factors that can affect the demand and supply of a currency. There are loads of other factors that are way more dominant, like speculation. In fact, speculative flows are way more likely to affect demand and supply and change the exchange rate's value than a current account deficit is. So in that sense, the demand for imports and exports is fair enough to have an impact on the exchange rate, but nowhere near as big as speculation, which can actually stop the number 3 point.
+  -     We can also bring the concern about inflation rates.Think about an economy that's suffering because of high levels of inflation  and as a result, it's struggling to export, which maybe means that net exports are negative, but we've already said that that's going to  put downward pressure on the exchange rate because the supply of the currency is going to be increasing more than demand for the currency, which lowers the exchange rate. While trying to correct the trade deficit problems, the lower exchange rate will actually push up inflation again. So if high inflation is causing a problem, reduce export competitiveness. A lower exchange rate could worsen the inflation problem through higher import prices and through high demand-driven inflation as well. As a result, there is a risk associated with a floating exchange rate that includes inflation.
