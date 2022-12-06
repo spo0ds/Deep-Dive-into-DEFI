@@ -117,6 +117,58 @@ They let the rope go.They sell their currency into the market.When you got too m
 So you can see the advantages of having a currency peg for a trade but of course there's big disadvantages.The biggest of which probably is you're pegged to the fortunes of the economy.Once you pegged your currency to it, if that econoy runs into trouble, you too will get affected by it.If it drags you all the way down, leave you and your crew very badly.
 
 
+**What are Stablecoins? **
+
+Most crypto currencies were meant to serve as a medium of exchange and not just a store of value.The problem is that due to relatively small market cap, even popular crypto currencies like Bitcoin tend to experience wide fluctuations in price.Usually the small market cap an asset has, the more volatile it's price will be.This creates a major issue since you can't enjoy the benefits of cryptocurrencies which includes the decentralization of money and free for all payment system without the value volatility that accompanies it.
+
+Imagine how hard it it to use Bitcoin or any other crypto currencies for day to day transactions and trading purposes when one day it's worth X and the next day it's worth half of that.That's exactly where stable coins come in.
+
+Stable coins are an attempt to create a cryptocurrency that isn't volatile.A stablecoin's value is pegged to a real world currency, also know as fiat currency.For example the stable coin known as Tether or USDT is worth 1 US dollar and is expected to maintain this peg no matter what.Stable coin allows for the convinence of cryptocurrency which means fast settlement and fewer regulatory hurdles along with the stability of fiat currencies.Like most coins the most obvious use case would be to use them as a medium of exchange for day to day purchases.
+
+The main usuage of stable coin today is actually on crypto exchanges.Using stable coins, traders can trade volatile crypto currencies for stable crypto currencies when they want to lower their risk.For example if I have invested on Bitcoin and I don't want to risk the price of Bitcoin falling against US dollar, I can just exchange my Bitcoins for USDT and retain my dollar value.Once I want to get back into the game and hold Bitcoins, I can just exchange my USDT back to BTC.This method is extremely popular with crypto only exchanges that don't supply users the option to exchange Bitcoin for fiat currencies due to regulation.
+
+Another great advantage of stable coin is that you can move funds between exchanges relatively quickly since crypto transactions are faster and cheaper than fiat transactions.The option for such a fast settlement between exchanges makes arbitraging more convinent and closes the price gaps that you usually see between Bitcoin exchanges.
+
+For now stable coins are more of a utility coin for traders than an actual medium of exchange.But how are they made possible?What keeps their price from the volatility that other cryptocurrencies experience?
+
+Well, there are several ways a company can try and maintain its stablecoin’s peg to a fiat currency.The first way to maintain a peg is by creating a `trust` that the coin is actually worth what it is pegged to.If the market doesn't believe that the one USDT is really worth $1, people will immediately dump all of their USDT and the price will crash.In order to maintain this trust, the company backs its coins with some sort of asset.This collateral is basically proof that the company is good for its word and that its coin should actually be worth the pegged amount.For example in Tether case, each USDT is said to be backed by an actual US dollar that Tether holds as a collateral.A different example is the DGX token that is said to be backed by gold.Another version of a collateralized stable coin is one that is backed by one or more cryptocurrencies.This form of collateral is much easier to audit since a company's balance can be viewed  on the blockchain.
+
+The second way to maintain a peg is by manipulating the coin supply on the market, also known as `algorithmic peg`.It means the company writes a set of rules also know as smart contract, that increases or decreases the amount of stablecoin in circulation depending on the coin's price.Imagine we have a stable coin that is pegged to US dollar through an algorithmic peg.Assuming alot of people were to start buying the coin, it's price would rise and the peg will be broken.To prevent this from happening, new coins are issued.This increase in supply alleviates the price pressure created by the demand and maintains the coin's value.If one the other hand many people start selling the coin, coins are reomved from the overall supply in order to hold the price peg to one US dollar.To be clear algorithmically pegged stablecoins don't hold any assets as collateral.The smart contract that manages the coin acts as a central bank.It tries to manipulate the price back to the peg by changing the money supply.
+
+There are pros and cons of each pegging method.Fiat collateralized peg transmit the highest degree of certainty  to stablecoin holders that the coin is indeed worth the asset it is backed by.However fiat collateralized pegs have some major cons.From the company standpoint, the asset is frozen and can't be used for anything else.Also there's always the risk of embezzlement or the closing of the company's bank account which can ruin the trust in the stablecoin.Another issue is that it's hard to actually prove that the company owns the enough of the asset to really back the amount of coins in circulation.Tether for example has suffered severe criticism and audit requests from skeptics claiming the company doesn't have enough collateral  to back the USDT in circulation.
+
+Crypto collateralized coin on the other hand may have the benefit of viewing collateral on the blockchain, but the collateral itself is extremly volatile.That's why a premium is needed.In many cases that company will hold 150% or even more of the collateral needed, to make up for possible drops in the crypto prices.
+
+Algorithmic pegging benefits from the fact that the company doesn't need to hold an asset on hand.However many will argue that algorithmic pegging theory doesn't really work in real life since manipulating the money supply isn't a gurantee the peg will hold.with all the complexities in maintaining a stablecoin's peg, what's the incentive to create a stablcoin in the first place?
+
+Well for each company there's a different incentive.Some company can charge a fee for trading their coin.Other comapnies use their stablecoin as a marketting channel to raise awareness to the company and other services it offers.Coinbase have created it's own stablecoin in order to attract more users to their trading platforms and allow easier transition of funds within and between exchanges.
+
+Are stablecoins really cryptocurrencies?
+
+Stablecoins are considered by many to be centralized.Due to the fact that there's a company behind them that maintain the peg, whether it be algorithmic or collateralized.Therefore stablecoins aren't really cryptocurrencies in the sense they aren't decentralized.
+
+Are stablecoins solving a real problem?
+
+Once a cryptocurrencies achieve a higher market cap, their volatility will reduce dramatically and there will be no real use for stablecoins.
+
+Stablecoins are trying to get the best of both worlds, the stability of an established currency with a large market and a flexibility of a decentralized, free for all cryptocurrency.The problem is that they also get the worst of both worlds.A centralized coin with a sort of central bank controlling it and a questionable ability to maintain the public's trust in it.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
