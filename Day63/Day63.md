@@ -94,3 +94,45 @@ But there are major issues with fixed exchange rates.
 What do we tend to see in the world?
 
 Well, most economies now agree that the merits of floating exchange rates outweigh the merits of a fixed exchange rate, but there are still major concerns about some of the issues with floating exchange rates. So, the majority of the time, you will see a floating exchange rate, but if there are issues with the exchange rate, the government allows itself room to intervene and solve potential issues. So that kind of gives them the best of both worlds, really. China is a good example of intervening if they're not happy with the floating exchange rate.
+
+**Currency pegs**
+
+Let's think about a yatch on a sailing race.Usually you want to win ofcourse but on this race, you've decided that you want to stay level with another yatch for the whole duration of the race.You may move a little bit forward or backward but essentially if you want to remain pretty much level.Your yatch slightly built different than the other yatch so you got to be careful with the weather because that yatch gonna be faster than yours or your faster than that other.So you have to compensate for that.How do you do that?
+
+Well you hold on the ropes of the yatch called the sheets.So if you're falling behind, you pull in hard on the ropes which tightens up the sails and you go forward a lot faster.If you're going too fast, you'll just do reverse, let go of the rope and then you slow down.
+
+What does this have to do with the currencies?
+
+It's essentially the same thing.One country decides that it wants to peg its country's currency to another to move as the same speed as that country.It does that because the currency that it's pegging itself to is the currency of the large trading nation or one of the biggest trading partners.Obviously with all sorts of variable in trade, one of them is currency fluctuations.So in order to get some stability in your trade with that country, you can peg your currenct.So the exchange rate is always going to be the same and it takes out lot of uncertainity in the dealings with that country.
+
+How does that actually work?
+
+Well it's kind of like pulling on the rope or letting go of the rope.If you're slowing down or your currency is being devalued, you basically pull your currency out of the market.You decrease the amount of supply of your currency that's in the open market and ofcourse we all know the supply and demand imbalance that means if there's less supply, the price is going to go up and you're going to drawback level with it.
+Well most smart countries have foreign reserves and they'll spend that in order to buy their own currency out of market to bring them up.
+
+What happens if their currency becomes too expensive in comparision to other currency?
+
+They let the rope go.They sell their currency into the market.When you got too much supply, it brings the price of the currency back down.
+
+So you can see the advantages of having a currency peg for a trade but of course there's big disadvantages.The biggest of which probably is you're pegged to the fortunes of the economy.Once you pegged your currency to it, if that econoy runs into trouble, you too will get affected by it.If it drags you all the way down, leave you and your crew very badly.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
