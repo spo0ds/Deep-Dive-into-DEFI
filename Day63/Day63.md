@@ -154,7 +154,87 @@ Once a cryptocurrencies achieve a higher market cap, their volatility will reduc
 Stablecoins are trying to get the best of both worlds, the stability of an established currency with a large market and a flexibility of a decentralized, free for all cryptocurrency.The problem is that they also get the worst of both worlds.A centralized coin with a sort of central bank controlling it and a questionable ability to maintain the public's trust in it.
 
 
+**Types of stablecoins and comparison**
 
+**USDT**
+
+This is the most widely used stablecoin. The owner is IFINEX, the same owner as BitFinex, which is an exchange. They're based in Hong Kong, but the parent companies are in the Virgin Islands. Virgin Islands companies don't want to be audited by a strong government. It is backed by the US dollar, but not in the usual way. 65% of the USDT is backed by commercial paper, which is a kind of debt. Then 24% by fiduciary deposits, 3.87% by real cash, 3.6% by reverse repo notes, and 2.94% by Treasury bills. Commercial paper is debt, and what if at some point the market crashes? You might want to sell crypto and buy dollars, but when that happens, if a lot of people are selling their USDT, they will not have enough dollars to pay you back. That's the main concern. They will have to sell the commercial paper, but when the company is selling the commercial paper but not paying their debt, USDT won't be paying your dollars.
+
+- Availability : 5
+This token is available almost everywhere. It is available at every chain and exchange.
+
+- Fully backed: 3
+We've discussed that the commercial paper is not actual dollars. If the commercial paper seller defaults on its loans, you will not receive fully backed USDT.
+
+- Transparency: 3
+They do attestations every month, which means they tell us what they are backing the USDT with, but it's not an audit.
+
+- USD peg: 5
+
+It keeps the USD pegged at one to one most of the time.
+
+- Risk: 3
+We've discussed all of our concerns with USDT.So three for it.
+
+**USDC**
+
+This is the second-most-used stable coin. Its market capitalization is significantly lower than that of the USDT. The owners are Circle, Inc., and Coinbase. It's backed 61% by cash or cash equivalents, which is more solid. It is also backed by 13% in Yankee certificates of deposit, 12% in US treasuries, 9% in commercial paper, 5% in corporate bonds, which are debt, and 0.2% in municipal bonds and US agencies. Municipal bonds can be risky depending on who or what CDs (Certificates of Deposit) are backing them.
+
+- Availability : 4
+It's not available everywhere compared to USDT.
+
+- Fully backed : 4
+We just discussed what it's backed with, and it's a lot stronger than USDT.
+
+- Transparency : 4
+It's audited every month. Between months, they can do anything, but at the end of the month, they get audited, which is better than attestation because there's a third party. So they're pretty transparent.
+
+- USD peg : 5
+They're really pegged to the US.
+
+- Risk : 4
+It's less risky because it's backed with better resources.
+
+**BUSD**
+
+Along with BUSD, we're going to be talking about Paxos Standard, which is another stable coin. The reason that we're discussing these together is because BUSD is administered by Paxos, and they have their own stablecoin, but it's basically the same thing behind both. They're backed 96% by cash and cash equivalents and 4% by US Treasury bills. T-bills are solid unless the US government falls on their debt. This is a really, really solid stablecoin.
+
+- Availability : 3
+BUSD is not available in many chains, nor is Paxos standard.
+
+- Fully Backed : 5
+It's fully backed by 96% of cash and cash equivalents.
+
+- Transparency : 5
+They're fully audited, and the audits are also by the government, which is looking into what they're doing.
+
+- USD peg  : 5
+It's strongly pegged to the dollar.
+
+- Risk : 5
+This is one of the less risky options for stablecoin.
+
+**DAI**
+
+DAI is a special stablecoin because it's not backed by crypto. The owner is Maker, but it's basically owned by Dao. This is basically a smart contract based token. If you want to get DAI, you would loan your BTC or ETH to Maker, and then you'd get DAI back. You have to overcollateralize by 150%. If you want 1 DAI, you have to give 1.5 dollars' worth in crypto. What happens if you have DAI when bitcoin crashes? If Maker wishes to keep the 150% collateral, those who purchased DAI will be liquidated and will lose their BTC or ETH. That's really a bad scenario for those who are lending their crypto to DAI. If you have DAI because you got it somewhere else, this is a good scenario. They don't depend on central banks. USDT, USDC, and BUSD all depend on the US dollar and what the Fed does, which is kind of tricky sometimes and might ban stable coins, at least those backed by US dollars. So with this being pegged via other crypto, the Fed really doesn't have any way to change this.
+
+- Availability : 4
+
+It is available in many chains and exchanges, but not everywhere.
+
+- Fully Backed : 5
+It's fully backed by other crypto, and it's overcollateralized.
+
+- Transparency : 5
+It's all on the blockchain.
+
+- USD peg : 4
+Most of the time, it'll be $1.
+
+- Risk : 4
+Because of the variation, it's not always pegged one to one.
+
+Use USDT when you need to make transfers. For saving or storing value over the long term, use USDC or BUSD. DAI can be used if you fear that the Fed will interfere with stablecoins, and it's decentralized.
 
 
 
