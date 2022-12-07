@@ -1,0 +1,17 @@
+**Tether(USDT)**
+
+The idea proposed by JR Willet was materialized into `mastercoin` which aimed to utilize a new `second layer` on the bitcoin blockchain. Mastercoin would eventually become the technological foundation of the Tether cryptocurrency. Then, in 2014, a few team members from the Mastercoin project established their own startup called `Realcoin` using the same second layer technology, now called `Omni Layer Protocol`. Later that year, realcoin was renamed `Tether`, refinancing its ties to fiat currency.
+
+Each tether is equivalent to one US dollar, essentially making it a digital dollar. Bitfinex, which is a sister company of Tether, claims "every tether is always 100% backed by our reserves, which include traditional currency and cash equivalents, and from time to time may include other assets and receivables from loans made by Tether to third parties, which may include affiliated entities." Every tether is also pegged one to one to the dollar.So 1 USDT is always valued by Tether at 1 USD.
+
+Besides being a stablecoin, it exists on several different blockchains. There's a tether token on the omni bitcoin platform, Ethereum, EOS, and Tron. The difference between the four coins has to do with the properties inherited by the blockchain hosting tether. For instance, for maximum safety and immutability, some investors may prefer the Bitcoin Omni version of tether. Other investors might prefer the ERC20 Tether token, as it can be used in DEFI to earn a passive income. Few investors appear to be interested in keeping their tethers connected to the TRON network.
+
+How does tether work?
+
+Tether's omni version consists of a 3-layer stack: the Bitcoin blockchain, the omni layer protocol, and Tether Limited. The Bitcoin blockchain is the bottom layer that serves as a transactional ledger and runs the consensus algorithm. The second layer, omni, is used to create and destroy digital Tether coins as well as track and report the tokens in circulation. This layer also enables users to send and store these tokens securely and anonymously. The third layer, Tether Limited, is the business entity that manages fiat deposits and withdrawals from the Tether reserve, along with the management of Tether's web wallet and compliance logistics.
+
+When a user deposits fiat currency into Tether Limited's reserve, by selling fiat to buy USDT, the business generates and issues the corresponding amount of digital dollar tokens to the user that can be sent, stored, or exchanged. If a user deposits $100 USD, they will receive 100 tether tokens. These tether coins are destroyed and removed from circulation when the user redeems the tokens for fiat currency. Bitcoin's secure blockchain and its network effect helped Tether gain popularity over other stablecoins operating on different blockchains.
+
+In 2019, the ERC-20 version surpassed the Omni version in number of transactions, and in October of the same year, it surpassed it in market cap. Today, the ERC-20 version is the indisputable leader in the market cap between the two. Critics claim the high volume of USDT transactions saturates the Ethereum network and increases transaction fees. In fact, when most exchanges made the switch from Omni to ERC20, the oversaturation of the trades was 17 times higher than it was during the Ethereum gridlock of November 2017.
+
+USDT has two more versions, built on top of two more blockchains that are smart-contract oriented: TRON, EOS, and the Algorand network.
