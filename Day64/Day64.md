@@ -36,3 +36,42 @@ Now they also have `multi-collateral DAI`.They've enabled other cryptocurrencies
 On Black Thursday, the entire crypto market fell and all the positions were liquidated. The value of DAI kind of went crazy for a while because of all these liquidations and it happened so quickly that the price of ETH just fell by 40%/50% in a matter of hours. But there were some governance changes that were made that got the value of DAI back to around $1.
 
 DAI is roughly pegged to dollar. It's done algorithmatically using incentive to drive certain behaviours to lock up my crypto and borrow DAI. It mint's DAI as I'm borrowing and have to pay it back with interest. It can always be monitoring the supply and demand. If the demand curve has moved a little bit, we need to move the supply curve by changing the interest rate and get more people to actually lock up their crypto and create more DAI or get people to pay the DAI back and we burn it and take their crypto out because the interest rate is such that they don't want to lock their crypto anymore.
+
+**Mechanism Design of Maker (DAI and MKR)**
+
+**Dual Token Mechanism**
+
+There are two token in the sytem which is DAI soft-pegged to US dollar and there's a secondary token MKR.This secondary token primary goal is for it to absorb volatility in the system itself.So think of it as DAI being your output which is stable(low volatility) but there's always be volatility within and outside of the system.The volatility needs to go somewhere which it goes to MKR.It is a utility token and it functions like governance token for voting, can be used to pay off interest accured in the system and during insolvency, crashes or liquidations, MKR can be minted to be sold for DAI in the ecosystem.So MKR is quite a crucial part in governing the entire system of DAI.DAI is really the facilitator to allow people to exchange for goods and services and MKR plays a governance role  in the ecosystem.Because MKR plays the governance role of this utility function, MakerDAO moved more of its funds towards DAO which you can imagine the prices of MKR soared because there's more of this utility function that the MKR token can accure.
+
+**Reserve Mechanism**
+
+It means that the stable coin which is backed by reserves and you can use the DAI to redeem for the uderlying collateral.It can be backed by whatever reserve but if you can't redeem  it for underlying reserve, it's not really reserve backed.Reserve backed means you're able to redeem it for the underlying.With DAI you can  redeem it for underlying.You basically redeem it for the crypto assets that you have deposited to get DAI.
+
+**Creating DAI and How it works**
+
+You can create DAI is three simple steps.First one is you have to own the asset.Second if you deposit the asset  into the vault and thirdly based on the amount of the value, you can mint some DAI out.The only thing that you have to be careful about is the minimum `collateralization ratio`.
+
+**Maintaining Stability**
+
+MKR is the one that allows them to fluctuate and that's not where they're controlled.With DAI it's fixed at $1.What kind of code we can embed into DAI so that when things fluctuate too much the code will execute and deal with it quickly? The alternative is what we have with fiat money where central banks try to manage that by interest rates via open market operations to maintain that stability and they also have long run plans trying to understand what's going on in a market and then trying to have different kind of monetary policies to deal with it.Well that is good but there's also some problems which is the monetry policy is quite laggy and market moves so much faster and sometimes the monetary policy isn't reflective of what the market conditions are.
+
+But with programmable money  like stable coins, you can program some level of monetary policy into the code and so you can execute them according the market conditions are.What are two scenarios where DAI is not stable?First is when it's more than $1 and the second is when it's less that $1.When it's more than $1, there are two ways to deal with it.
+- Short term
+    - More attaractive to pedlege additional collaterals to mint more DAI(always values at $1 within the system)
+        - The system always value it as $1 but the outside system when people are trading it's maybe $1.05.So if I can mint it at $1 and trade it outside at $1.05, I just earn $0.05 from nothing.It's called arbitrage.So people will take their collateral, open one of these vaults, deposit it in, borrow DAI and sell the DAI in the secondary market.This is effectively been done to increase the total supply of DAI.You have limit when secondary market is trading at $1.System can just mint DAI to increase the supply.
+    - Increase DAI supply.Price falls back to $1.
+- Long Term
+    - Decrease the DAI savings rate
+        - Small fees being generated if you deposit your DAI in the system just like a bank.Your fixed interest rate that you earn from the money that you deposit in the bank.You can earn some savings.Right now it's 0, but in the long run, you can decrease it which incentivise people from removing liquidity and then increasing the supply in the system.
+    - Decrease the stability fee(interest rate)
+        - When you go to the bank and you mortgage your house so bank could lend you some money and every month you'll repay some amount of money.Their amount of money is the principal and also some ineterst because the bank is giving you additional money upfront and you have to pay for the service being provided.In the same way there's the interest rate that's accured when you're depositing your ETH into the vault and borrowing DAI out.It's an interest rate but they call it `stability fee`.So when DAI is more than $1, we want to incentivise the increase of supply and so we want to decrease the stability fee so that more people  will be borrowing and increase the supply of DAI in the system.
+
+When DAI is less than $1, the exact opposite happens.
+- Short term
+    - But DAI to repay debt
+    - Decrease DAI supply.Price back to $1
+- Long term
+    - Increase DAI savings rate
+    - Increase stability fee to stimulate demand
+
+
