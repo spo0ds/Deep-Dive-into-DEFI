@@ -97,4 +97,32 @@ Why do we need to create stable coins on-chain when you can do it off-chain, as 
 Yeah, it's possible, but is that good enough? We can take it a step further by having all assets on-chain for transparency, verifying the data on-chain, and allowing people to do risk calculations, including understanding the total amount capitalized or collateralized in the system and comparing it to other asset classes.
 
 
+**[Interacting with a Maker Vault](https://youtu.be/8d6O1jrUOfs)**
 
+● Step 1: Create and Collateralize a Vault
+A user creates a Vault via the Oasis Borrow portal or a
+community-created interface, such as Instadapp, Zerion, or
+MyEtherWallet, by funding it with a specific type and amount of
+collateral that will be used to generate Dai. Once funded, a Vault is
+considered collateralized.
+
+● Step 2: Generate Dai from the Collateralized Vault
+The Vault owner initiates a transaction, and then confirms it in her
+unhosted cryptocurrency wallet in order to generate a specific amount
+of Dai in exchange for keeping her collateral locked in the Vault.
+
+● Step 3: Pay Down the Debt and the Stability Fee
+To retrieve a portion or all of the collateral, a Vault owner must pay
+down or completely pay back the Dai she generated, plus the Stability
+Fee that continuously accrues on the Dai outstanding. The Stability Fee
+can only be paid in Dai.
+
+● Step 4: Withdraw Collateral
+With the Dai returned and the Stability Fee paid, the Vault owner can
+withdraw all or some of her collateral back to her wallet. Once all Dai is
+completely returned and all collateral is retrieved, the Vault remains
+empty until the owner chooses to make another deposit.
+
+Importantly, each collateral asset deposited requires its own Vault. So, some
+users will own multiple Vaults with different types of collateral and levels of
+collateralization.
