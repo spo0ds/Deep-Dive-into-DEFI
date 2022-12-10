@@ -96,6 +96,14 @@ Why do we need to create stable coins on-chain when you can do it off-chain, as 
 
 Yeah, it's possible, but is that good enough? We can take it a step further by having all assets on-chain for transparency, verifying the data on-chain, and allowing people to do risk calculations, including understanding the total amount capitalized or collateralized in the system and comparing it to other asset classes.
 
+**Global Settlement**
+
+To keep the system as secure as possible and prevent what cannot be foreseen, the Maker team has added a process called global settlement. When global settlement is triggered, the entire system freezes and all holders of Dai and CDPs are returned the underlying collateral. So, if a global settlement is triggered and I hold 100 Dai, and one ether is worth $100, I can exchange my 100 Dai directly for one ether right through a smart contract. The collateral held in CDPs will be similarly released to its owners. A global settlement can be triggered by a select group of trusted individuals who hold the global settlement keys. If these signatories see something going horribly wrong, they will enter their keys initiate the process of gracefully winding down the system. 
+
+doesn’t that make this….CENTRALIZED?
+
+No, it doesn’t. The only thing a global settlement can do is give you back your collateral. It can’t steal your ether or Dai or interact with the system on your behalf. The worst case scenario in a global settlement is that you end up being exposed to the volatility of your collateral until the system is fixed or you can send it to an exchange.
+
 
 **[Interacting with a Maker Vault](https://youtu.be/8d6O1jrUOfs)**
 
