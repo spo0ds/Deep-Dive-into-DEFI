@@ -74,4 +74,27 @@ When DAI is less than $1, the exact opposite happens.
     - Increase DAI savings rate
     - Increase stability fee to stimulate demand
 
+**Crashes,  Liquidations**
+
+When we think about how stability is maintained, it's not just about how we get stability in the long run and short run of the stablecoin, but it's also important to think about what happens when the market crashes because these assets are collateralized by something else; they're backed by reserves. So when the value of the reserves fluctuates, the mechanisms to maintain that stability are quite volatile. How can we deal with that and manage that kind of volatility? There are two ways.
+- Emergency shutdown to stop DAI minting
+    - The whole system stops minting DAI, and you can basically start closing your vaults because you start repaying the system.
+- Auction vaults to repay debts by selling collaterals in the vault.
+    - You have a liquidation mechanism. People who cannot afford to pay their vault fees will have their vaults liquidated through an auction mechanism. So they will auction out the vaults, and the fees earned from the auction will be used to close and cover that vault and repay the entire system.
+
+So having a high collateralization ratio reduces the impact that the volatility of the collateral will have on the stablecoin itself.
+
+**How is this different from lending and borrowing?**
+
+In the end, you're basically lending your ETH to get DAI and then using DAI in another system. It's quite similar to lending and borrowing because you're kind of like lending the bank your house, then you borrow US dollars and use them to buy groceries and live your life. Well, the difference is that the value of the asset that you're borrowing is not managed by the secondary party but by the system itself, which allows for more customization, more mechanisms, and more incentives to be programmed into the entire system. So it allows for more control over how the ecosystem can grow.
+
+One of infrastructure's building blocks is lending and borrowing. So Maker is taking that building block and adding different kinds of building blocks, which is the creation of the currency to be added into the lending and borrowing mechanism. It functions similarly to lending and borrowing, but it is also quite different because in this system it also has a different kind of asset class, which is the currency created by the system, which means that every incentive and mechanism in place must align not only with the function of it as a lending and borrowing application, but also with the function of it as a stablecoin to maintain stability and reduce risk or volatility. That's why it's quite different.
+
+**Transparency**
+
+Why do we need to create stable coins on-chain when you can do it off-chain, as with Tether or USDC, which are collateralized with fiat money?
+
+Yeah, it's possible, but is that good enough? We can take it a step further by having all assets on-chain for transparency, verifying the data on-chain, and allowing people to do risk calculations, including understanding the total amount capitalized or collateralized in the system and comparing it to other asset classes.
+
+
 
