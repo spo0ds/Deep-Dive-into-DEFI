@@ -75,7 +75,7 @@ Struct storing  data for a specific Vault.
 mapping (bytes32 => Ilk)                       public ilks;
 ```
 
-Mapping that stores an Ilk struct for each collateral type.
+Mapping that stores an Ilk struct for each collateral type.Bytes32 is the id of the ilk.
 
 ```solidity
 mapping (bytes32 => mapping (address => Urn )) public urns;
@@ -93,7 +93,7 @@ Collateral type mapped to the address wih the token kept as colleteral.This addr
 mapping (address => uint256)                   public dai;  // [rad]
 ```
 
-Mapping that keeps track of how much DAI an address has borrowed.It's a fixed point integer, with 45 decimal places.
+Mapping that keeps track of how much DAI a vault has generated.It's a fixed point integer, with 45 decimal places.
 
 ```solidity
 mapping (address => uint256)                   public sin;  // [rad]
@@ -358,5 +358,4 @@ ilks[i]    = ilk;
 Stores the modified vault of that address u in the mapping.
 
 Sets the collateral type with the collateral type that's being modified here.
-
 
