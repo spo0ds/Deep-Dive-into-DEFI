@@ -33,14 +33,14 @@ This modifier implies that the address should be authenticated.
 mapping(address => mapping (address => uint)) public can;
 ```
 
-This mapping allows to store which address are authorized to use the vault maybe for auction.
+This can is an approved allowance thing.
 
 ```solidity
 function hope(address usr) external { can[msg.sender][usr] = 1; }
 function nope(address usr) external { can[msg.sender][usr] = 0; }
 ```
 
-Hope allows the caller to auction the particular address vault and nope denies it.
+Hope sets user to 1 means that user is authorized and nope means user is not authorized.
 
 ```solidity
 function wish(address bit, address usr) internal view returns (bool) {
@@ -81,7 +81,7 @@ Mapping that stores an Ilk struct for each collateral type.Bytes32 is the id of 
 mapping (bytes32 => mapping (address => Urn )) public urns;
 ```
 
-Collateral type mapped to the address wih the vault's data.
+Collateral type mapped to the address wih the vault's data.Maybe you could have multpile urns to an ilk.Bytes32 is the id of the ilk then we've multiple addresses that point to multiple urns.
 
 ```solidity
 mapping (bytes32 => mapping (address => uint)) public gem;  // [wad]
@@ -99,7 +99,7 @@ Mapping that keeps track of how much DAI a vault has generated.It's a fixed poin
 mapping (address => uint256)                   public sin;  // [rad]
 ```
 
-unbacked stablecoin (system debt, not belonging to any urn(specific vault).
+Unbacked stablecoin (system debt, not belonging to any urn(specific vault).
 
 ```solidity
 uint256 public debt;  // Total Dai Issued    [rad]
@@ -110,8 +110,8 @@ uint256 public live;  // Active Flag
 
 debt: the sum of all dai (the total quantity of dai issued).
 vice: the sum of all sin (the total quantity of system debt).
-ilk.Art: the sum of all art in the urns for that ilk.
-debt: is vice plus the sum of ilk.Art * ilk.rate across all ilk's.
+Line: the total debt ceiling for all collateral types.
+live: cage flag
 
 ```solidity
 constructor() public {
@@ -128,6 +128,7 @@ function init(bytes32 ilk) external auth {
         ilks[ilk].rate = 10 ** 27;
     }
 ```
+Administrative function is setting up each ilk.
 
 This function start stability fee collection for a particular collateral type and only authenticated user can call this.
 
@@ -139,7 +140,7 @@ function file(bytes32 what, uint data) external auth {
     }
 ```
 
-Line is the total debt ceiling for all the collateral types.So this function sets the debt ceiling for collateral.
+Line is the total debt ceiling for all the collateral types.So this function sets the debt ceiling for collateral.If in bytes32, you pass in "Line", you can set the uint to Line else it'll revert.
 
 ```solidity
 function file(bytes32 ilk, bytes32 what, uint data) external auth {
@@ -157,6 +158,8 @@ If bytes32 is line, it sets the debt ceiling for a specific collateral type.
 
 If bytes32 is dust,it sets the minimum possible debt of a Vault.
 
+It is using bytes32 for string data because The EVM has a word-size of 32 bytes, so it is "optimized" for dealing with data in chunks of 32 bytes. (Compilers, such as Solidity, have to do more work and generate more bytecode when data isn't in chunks of 32 bytes, which effectively leads to higher gas cost.)
+
 ```solidity
 function cage() external auth {
         live = 0;
@@ -171,7 +174,7 @@ function slip(bytes32 ilk, address usr, int256 wad) external auth {
     }
 ```
 
-This function modifies the user's collateral balance.Adds the user balance with the token that is supplied(wad).
+This function modifies the user's collateral balance.Adds the user balance with the token that is supplied(wad) as a collateral.Also might be subtracting the collateral because the data type is int.
 
 ```solidity
 function flux(bytes32 ilk, address src, address dst, uint256 wad) external {
@@ -181,7 +184,7 @@ function flux(bytes32 ilk, address src, address dst, uint256 wad) external {
     }
 ```
 
-This function  transfer collateral between users.Requires an address to modify another address's gem or dai balance.Subtract the transferred collateral balance from the sender and adds to the destination.
+This function  transfer collateral between users.Requires an address to modify another address's gem or dai balance.Subtract the transferred collateral balance from the sender and adds to the destination.This is moving collateral between two vaults.
 
 ```solidity
 function move(address src, address dst, uint256 rad) external {
@@ -191,7 +194,11 @@ function move(address src, address dst, uint256 rad) external {
     }
 ```
 
-This function transfer stablecoin between users.Requires an address to modify another address's gem or dai balance.Subtracts the DAI balance of source and adds it to the destination.
+This function transfer stablecoin between users.Requires an address to modify another address's gem or dai balance.Subtracts the DAI balance of source and adds it to the destination.They're moving arbitrarily collateral which can make system economically weak.
+
+how does this function make sure this is all it need to update the stablecoin? There's no any calls to other contract as well.If you know the answer, send PR I'm willing to know.
+
+The flux and move doesn't change the total circulating supply, it just change who owns it.
 
 ```solidity
 function either(bool x, bool y) internal pure returns (bool z) {
