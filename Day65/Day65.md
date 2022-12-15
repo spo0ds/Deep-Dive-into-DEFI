@@ -252,7 +252,7 @@ Function for implemeting add and or.
     }
 ```
 
-This function modifies the vault.
+This function modifies the vault.Adding debt, removing debt, adding collateral and removing collateral are all being dumped into the same function.The reason to pull all in one function is that is makes the function versatile.Let's you want to add collateral and mint dai, you could do that.Let's say you need to put in more collateral because of volatility not in your favor without minting dai, you could do that.Let's say you want to take down the amount of dai that you've got etc.
 
 ```solidity
 require(live == 1, "Vat/not-live");
@@ -304,6 +304,7 @@ Total debt will be the addition of these two.
 ```solidity
 require(either(dart <= 0, both(_mul(ilk.Art, ilk.rate) <= ilk.line, debt <= Line)), "Vat/ceiling-exceeded");
 ```
+Whatever you're doing with the vault, it should either decrease the debt or decrease the debt but not go beyond the ceiling.
 
 First multiplication of ilk.Art and ilk.rate should be less than equals to ilk.line which means multiplication of total normalized stablecoin debt and accumulated rates should be less than or equals to debt ceiling.
 
@@ -315,6 +316,8 @@ Or change in debt should be less than or equals to 0.
 require(either(both(dart <= 0, dink >= 0), tab <= _mul(urn.ink, ilk.spot)), "Vat/not-safe");
 ```
 
+We're checking like a concept of safeness.
+
 Either change in debt should be less than or equals to 0 or change in collateral should be more than or equals to 0.
 
 Or calculated tab above should be less than or equals to the multiplication of collateral balance and collateral price with safety margin.
@@ -324,6 +327,7 @@ This ensures that the vault is safe or less risky than before.
 ```solidity
 require(either(both(dart <= 0, dink >= 0), wish(u, msg.sender)), "Vat/not-allowed-u");
 ```
+More unsafe is more dai to the same amount of collateral which is some sort of measure of collateral ratio.Someone could repay our debt and make it less risky without any sort of approvals but if they're borrowing and making in more risky then they need approval.
 
 Change in debt should be <=0 and change in collateral should be >=0.
 
@@ -332,6 +336,7 @@ Or address should be allowed to modify the vault.
 ```solidity
 require(either(dink <= 0, wish(v, msg.sender)), "Vat/not-allowed-v");
 ```
+v is the one who stands if the amount of collateral goes down.
 
 Either change in collateral should be <=0 or address v should be allowed to modify vault.
 
@@ -339,12 +344,18 @@ Either change in collateral should be <=0 or address v should be allowed to modi
 ```solidity
 require(either(dart >= 0, wish(w, msg.sender)), "Vat/not-allowed-w");
 ```
+You can't put in massive negative dart for kicks but you're going to need wish between w and the sender.
+
+w is the one who stands to lose if the amount of dai goes down.
 
 Either change in debt should be >=0 or address w should be allowed to modify vault.
 
 ```solidity
 require(either(urn.art == 0, tab >= ilk.dust), "Vat/dust");
 ```
+It's just checking that the debt is wither 0 or it's more than there's like sort of small dust amount left in the urn.
+
+Non-dusty amount because it's not worth it for anyone to liquidate so no one's ever going to bother for it.It just ends of being kind of like dead.
 
 Either normalized outstanding stablecoin debt should be 0 or tab calculated above should be greater then or equals to the minimum possible debt of the vault.
 
