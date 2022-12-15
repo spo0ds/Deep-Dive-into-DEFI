@@ -377,3 +377,64 @@ Stores the modified vault of that address u in the mapping.
 
 Sets the collateral type with the collateral type that's being modified here.
 
+```solidity
+function fork(bytes32 ilk, address src, address dst, int dink, int dart) external {
+        Urn storage u = urns[ilk][src];
+        Urn storage v = urns[ilk][dst];
+        Ilk storage i = ilks[ilk];
+
+        u.ink = _sub(u.ink, dink);
+        u.art = _sub(u.art, dart);
+        v.ink = _add(v.ink, dink);
+        v.art = _add(v.art, dart);
+
+        uint utab = _mul(u.art, i.rate);
+        uint vtab = _mul(v.art, i.rate);
+
+        // both sides consent
+        require(both(wish(src, msg.sender), wish(dst, msg.sender)), "Vat/not-allowed");
+
+        // both sides safe
+        require(utab <= _mul(u.ink, i.spot), "Vat/not-safe-src");
+        require(vtab <= _mul(v.ink, i.spot), "Vat/not-safe-dst");
+
+        // both sides non-dusty
+        require(either(utab >= i.dust, u.art == 0), "Vat/dust-src");
+        require(either(vtab >= i.dust, v.art == 0), "Vat/dust-dst");
+    }
+```
+
+Fork is used to split the vault - binary approval or splitting/merging vaults.
+
+```solidity
+Urn storage u = urns[ilk][src];
+Urn storage v = urns[ilk][dst];
+Ilk storage i = ilks[ilk];
+```
+
+We load u, v and i  and we're doing it on storage.Why they've used storage?  If you know send the PR.
+
+Maybe it's like the inefficiency of bringing such large structs out of storage because each slot of these in an urn would be it's own like sload.Maybe that cost outweighs the cost of reading and doing writing to individuals.
+
+```solidity
+u.ink = _sub(u.ink, dink);
+u.art = _sub(u.art, dart);
+v.ink = _add(v.ink, dink);
+v.art = _add(v.art, dart);
+
+uint utab = _mul(u.art, i.rate);
+uint vtab = _mul(v.art, i.rate);
+```
+
+Calculating the respective variable.
+
+```solidity
+require(both(wish(src, msg.sender), wish(dst, msg.sender)), "Vat/not-allowed");
+```
+
+Intuitively funds are following from the source to the destination address but since we're dealing with the ints that can be counter-intuitive.You could be moving funds from the destination to the source because you subtract from the source and add to the destination but if you're putting in negative numbers then you'll be subtracting a negative number by adding a negative number i.e subtracting.
+
+They kind of assumed that both sides.The main idea is either split into two or to merge all funds into one so then both sides will be taking on some kind of approval.
+
+
+
