@@ -69,3 +69,25 @@ For this, we need an exchange. An exchange is an organized market. This is exact
 The core function of an exchange is to ensure fair and orderly trading as well as efficient dissemination of price information for any securities trading on that exchange. We need an interface to actually interact with the order book with supply and demand, and we need rules that govern that interaction and also that data fed back to us. We need to see what the transactions are in the marketplace. So an exchange allows us to interact with the order book by providing fair and orderly trading. So fairness implies rules that are going to level the playing field. The order book is implied by the orderly trading. They will maintain and organize the order book so that we can interact with it. So we have rules and organization around the order book, and then they're also going to be giving us price information. They're going to tell us about the transactions that are happening within the marketplace.
 
 This gives us the ability to trade. When a trade occurs, there is an exchange between a buyer and a seller. Hence the name. Exchanges allow traders to exchange.
+
+
+**Broker-Dealer**
+
+Before trading begins, we need to have an account. This account is where all of our balances and transactions are maintained. Most of the time, traders are going to trade using a broker. Broker-dealers must meet certain financial responsibility requirements, including:
+
+- a minimum amount of liquid assets, or net capital.
+- taking certain steps to safeguard the customer funds and securities
+    - This implies that the broker is going to be in custody of or have custody of customer funds and securities. So they hold those particular funds and securities for investors and traders.
+- making and preserving accurate books and records
+    - We saw that exchanges facilitate trading, and now we're seeing that brokers and dealers provide account management services for traders' accounts. When we trade, we usually open an account with a broker. We tell the broker what trades we'd like to make, and the broker executes these trades through an exchange on our behalf. On the backend, the broker may use multiple exchanges to execute our trade. On the front end, the brokers keep track of our balances and transactions.
+
+A broker is any person engaged in the business of effecting transactions in securities for the account of others. In old movies, people can be seen calling their broker to buy or sell shares of a particular stock. Now we typically have online brokers where they're still brokering for us; it's a software relationship. We tell the software which trades we want to execute, and the software goes ahead and keeps track of our balances and transactions.
+
+A dealer is any person engaged in the business of buying and selling securities for his own account, whether through a broker or otherwise. It's important to know that a dealer typically operates as a business. The definition of a dealer doesn't include a trader. A trader is a person who buys or sells securities for his or her own account, either individually or in a fiduciary capacity, but not as part of a regular business. A fiduciary capacity is when you're trading for someone else and are responsible for their funds, but not as a business. This could be a friend or a family member. In many cases, brokers also engage in dealing. Many online brokers that we're used to, like Interactive Brokers or TD Ameritrade, also trade for their own accounts. Dealing in a particular asset is usually part of a company's proprietary trading arm or market-making activities.
+
+With stocks, we're used to saying that we trade with a broker. However, with crypto currencies, we more often hear about trades within exchanges. On the Coinbase home page, they tell us it's an exchange. However, we can see that they also give us the ability to open an account. This means that the account holder is dealing directly with an exchange and not a broker. This was not the case with the NYSE. We saw that in order to create an account or get a membership with the NYSE, you have to have a broker-dealer license.
+
+Coinbase specifically states that they're not a broker. So it's an exchange, and they're not giving us advice. All they're doing is facilitating the ability to trade. We're fully responsible for understanding the implications of our actions while using the exchange.
+
+
+
