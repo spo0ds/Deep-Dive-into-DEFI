@@ -125,3 +125,43 @@ A long trade is simply buying a stock and only requires you to have enough money
 Short traders are traders who seek to profit from a stock's price decline. An account with special requirements and borrowing privileges called a margin account is required to be able to short sell a stock. This is because an investor technically borrows the shares from the stock brokerage, immediately sells them, and attempts to buy them back at a lower price with the intention of returning the borrowed shares and profiting from the difference. It happens instantly behind the scenes when you choose to short a stock.
 
 A short sale can be riskier than buying a stock and is not recommended for inexperienced investors. This is because since you make money when a stock price falls and lose money when the stock price rises, potential gains are capped at 100% as a stock can go no lower than $0, but potential losses are technically unlimited as a stock price has no upper limit.
+
+**Leverage**
+
+The obvious everyday use of leverage is housing. There are not many of us who go out and pay cash when we're buying a house. So there's an element of leverage involved. If we're buying somewhere for, let's say, $200K, a deposit might be $20K, but we end up borrowing $180K. The second-biggest one after a house is a car, and again, there aren't many people who'll go out and spend $30K cash on a brand new BMW. So they'll go out and put down a deposit of $5,000 and borrow the rest. They're leveraging to get an asset.
+
+Let's say you're convinced a certain share is going to go up in price, and you want to have as much exposure as possible to that share. You might decide that, over the next year, the share is going to go up 20%, so you decide to borrow $10K to invest in the share. It costs you 5% a year, but you're confident that you can beat the cost of the financing through the growth of the share price.
+
+So the really basic principle of leverage is using a small sum of money and effectively borrowing more money, so magnifying the size of the money that you've got to get a bigger exposure to something, whether it's a car, a house, or an individual share. When it comes to investing or trading, there are clearly risks and rewards.
+
+Let's go back to the example where we borrow our mythical $10,000 at 5% per year to gain exposure to a share. The plus point is if the share price goes up 20% over a year. So we've made 20% on our $10,000. We've made a profit of $2K, and it's only costing us $500 in interest. So the clear benefit is that we can get more exposure. So if we're correct, we make more money than if we were not using leverage. If we only put down $1000 and it goes up 20%, we've only made $200. So leverage, when we're right, gives us more bang for our buck.
+
+Let's say a share has dropped 20% in a year. We've borrowed. It's now only worth $8K, and on top of that, we're paying a 5% charge. So for leverage, the obvious plus point is that it magnifies our profits, but if we're magnifying our profits, then we're doing the same with our losses. So increased exposure means we're going to end up potentially facing bigger losses if our decision turns out to be wrong, and this is true for investing and trading when we're using leverage.
+
+
+**Margin Trading**
+
+In something like foreign exchange, you might have a $10,000 position, and the initial margin requirement might only be 5%. So you're in a position where you are controlling $10,000 but only tying up $500 of your cash. Of course, if the position moves against you, you need more money in the account to cover losses. On things like shares, the margin requirement may be a bit higher because they can be a bit more volatile.
+
+Let's say the margin requirement on an individual share is 10%. So you use contracts for difference CFDs to open a $1000 position on a specific share. The margin requirement is 10%. So 10% of $1000 is $100. You do get the $100 back when you close out the trade. This money is freed up and deposited into your account, plus any profit or loss. It's effectively just a deposit to secure that position, but if there are already running losses, they'll need free money in the account to cover those losses.
+
+
+**Counterparty risks**
+
+It's all about the banks. Let's have a bunch of school kids. We've got Alan and his friend John. John likes to eat sweets every single day. John's father obviously wants to make sure that his son doesn't swell up to a great size, so he restricts the amount of money that he gives John. So John is constantly running into liquidity issues in finance. He doesn't have enough money to buy the sweets he needs.
+
+So he goes to his friend Alan. John has big bags of sweets he keeps underneath his bed, and Alan's always saying, "Why don't you eat those sweets?" John says, "That's my store, but I still need money to buy more sweets." "I need $10 to buy the sweets." Alan decides to give him $10, but John needs to put his sweet reserves in an escrow account. So if he doesn't pay him back in a week, then Alan is getting those sweets. So they find Julia, a friend of those who can run the escrow account for them. Julia will hold those sweets while John is borrowing that money, and when he pays the money back, John will get the sweet.
+
+So banks put up collateral in return for the loans they get from other banks, just like in our example.
+
+For example, let's say John's father is on the news. His company is having a few problems. Alan will be hesitant to trust John that he will return the $10 because his father is having difficulties. John says, "I will give you my whole bag of sweets." " It's more than those ten dollars." But there are problems with those bags of sweets because they could be old and made with corn syrup, which is not good for health, so Alan thinks John is not a good counter party.The same things are happening with the banks. They're looking at their counterparties, like JP Morgan said about the Spanish bank. "I don't know how much exposure you have to, you know, Greek debt, for example." In many cases, the parties are refusing to deal with each other.
+
+**Trade Slippage**
+
+You go out on the market and buy 100 shares for $10. Let's just say that you decide to sell. The price goes up to $10.50. You want to make a winning trade, so you move your stop to $10.25. But what needs to happen in order for you to sell at $10.25? Well, if the price goes to that level, you need to have at least some people out there willing to buy 100 shares at $10.25.
+
+Let's say that at $10.25, we have a trader willing to purchase 25 shares. Then, at $10.20, we have somebody that's willing to purchase 50 shares, and at $10.10, they're willing to purchase 100 shares. So what's the actual slippage?
+
+The original plan was that you wanted to sell 100 shares at $10.25, but behind the scenes, in all actuality, there were only 25 shares that someone wanted to buy at that price. So there's a problem with the math. So if the price hits your stop, you're going to get 25 at the $10.25 mark. That person is now gone, but you still have 75 shares left. The next buyer available is at $10.20.This person will purchase 50 shares, and we've got 25 shares left, which is known as slippage. You wanted to get out at $10.25, but now all of a sudden you're getting out at $10.20.
+
+That's 5 cents of slippage. Slippage is simply the difference between what you want to get out of something and what you actually get out of it. The remaining shares will be sold at $10.10. How much slippage occurred in the last 25 shares? It's 15 cents. Just because you see certain stock prices doesn't mean that you're actually going to be able to get out at whatever price you see. The more volatile a stock is, the more slippage you can expect.
