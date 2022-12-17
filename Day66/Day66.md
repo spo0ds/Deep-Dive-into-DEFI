@@ -45,4 +45,14 @@ On the green side, we have the number of bidders in the marketplace. This repres
 The first thing we care about whenever we're going to make a trade is whether we're on the buy side or the sell side. We need to be thinking about the order book when we're thinking about which side we're going to be on because we're going to be targeting the other side. If we're trying to sell, we're going to be looking at buyers, and if we're trying to buy, we're going to be looking at sellers.
 
 
+**Market**
 
+When trading begins, we usually say, "We're trading in the markets." We can refer to it as the collection of financial instruments like stock, bonds, or crypto. We're going to talk about the market for specific financial instruments. We're going to use the same example of an order book here too.
+
+![Example](Images/n2.png)
+
+From an economics perspective, they lead off by saying that a market is one of the many varieties of systems where parties engage in exchange. Most markets rely on sellers offering their goods in exchange for money from buyers. If we look at the order book, we have a buy side and a sell side. In our case, the sell side is offering bitcoin, which is the supply. On the buy side, the buyers are offering their money for bitcoin. This market economy is really very similar to what the order book gives us. The order book gives us the market.
+
+According to finance, a financial market is a place in which people trade at prices that reflect supply and demand. The term "market" means the aggregate of the possible buyers and sellers of a certain good and the transactions between them. So the order book is showing us the supply (seller prices) and the demand (buyer prices). This definition is really saying the same thing that we saw before using different terms.
+
+The terms buy and sell are used in the definition of economics. The terms demand and supply are used in finance. So economics and finance are telling us that a market requires buyers and sellers. This is also known as "supply" and "demand." If we have supply and demand, we're on our way to having a market. The order book gives us just that. An order book can be thought of as a market building block. The order books are the way that we organize the buyers and sellers. In a market, we must consider the total, including all buyers and sellers.
