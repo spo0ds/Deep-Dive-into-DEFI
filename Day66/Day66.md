@@ -56,3 +56,16 @@ From an economics perspective, they lead off by saying that a market is one of t
 According to finance, a financial market is a place in which people trade at prices that reflect supply and demand. The term "market" means the aggregate of the possible buyers and sellers of a certain good and the transactions between them. So the order book is showing us the supply (seller prices) and the demand (buyer prices). This definition is really saying the same thing that we saw before using different terms.
 
 The terms buy and sell are used in the definition of economics. The terms demand and supply are used in finance. So economics and finance are telling us that a market requires buyers and sellers. This is also known as "supply" and "demand." If we have supply and demand, we're on our way to having a market. The order book gives us just that. An order book can be thought of as a market building block. The order books are the way that we organize the buyers and sellers. In a market, we must consider the total, including all buyers and sellers.
+
+
+**Exchange**
+
+In order to participate in a market as a trader, we need to be able to interact with the order book. In order to trade, we need a window into the market. We require an interface for exchanges. Let's suppose that we have a market. This means that we have supply and demand, and somewhere in this market, there are also transactions that are occurring. So as traders, we're ready to go ahead and trade, but a couple of questions jump right out at us.
+
+How do we do it? Where's the order book? How is it maintained? What are even the rules for interacting with the order book?
+
+For this, we need an exchange. An exchange is an organized market. This is exactly what we need. We show up to a market, we know there's a supply and a demand, and we know that there are transactions, but there's no organization whatsoever. If we have an exchange, we have an authorized mark. So those pieces that supply that demand in the transactions are going to be organized for us.
+
+The core function of an exchange is to ensure fair and orderly trading as well as efficient dissemination of price information for any securities trading on that exchange. We need an interface to actually interact with the order book with supply and demand, and we need rules that govern that interaction and also that data fed back to us. We need to see what the transactions are in the marketplace. So an exchange allows us to interact with the order book by providing fair and orderly trading. So fairness implies rules that are going to level the playing field. The order book is implied by the orderly trading. They will maintain and organize the order book so that we can interact with it. So we have rules and organization around the order book, and then they're also going to be giving us price information. They're going to tell us about the transactions that are happening within the marketplace.
+
+This gives us the ability to trade. When a trade occurs, there is an exchange between a buyer and a seller. Hence the name. Exchanges allow traders to exchange.
