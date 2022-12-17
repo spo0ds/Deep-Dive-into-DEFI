@@ -22,3 +22,27 @@ Equity instruments are any contract that evidences the residual interest in the 
 Financial asset is any asset that is right to exchange financial instruments with another entity under condition that are potentially favourable to the entity where as financial liabilities  is a contractual obligation to exchange financial instrument with another entity under condition that are potentially unfavourable.Usually the classification of an item as financial asset or financial liabilities is understood from the point of view of the issuer.So if the exchange of the financial instrument happen under condition which will favourable to the issuer then it constitutes as financial assets else it's considered as a financial liablity.
 
 For the users of financial statements, the accounting treatment of this instrument is crucial importance.In order to take care of the presentation, recognition and measurement and discloures of these financial instruments, there're standards by accounting bodies around the world.
+
+
+**Order Book**
+
+Assume we have a marketable instrument (stock, bond, or cryptocurrency). The order book for that instrument is going to be a set of all open orders. Understanding these outstanding orders is the most important part of trading. Many people start out by looking at historical data and charts. They try to predict prices, but once they get into the nitty-gritty of actually submitting orders, they run into trouble. We're starting with the order book because it allows us to understand what we're doing when we begin actually submitting orders, trying to take advantage of price movements.
+
+Order books can be really intimidating when you look at them for the first time. They typically have a lot going on—changing numbers, flashing indicators. It's really hard to keep up if you've never looked at one before. Here is the [order book] (https://www.binance.com/en/orderbook/ETH_USDT) of ETH/USDT.
+
+![orderBook](Images/n1.png)
+
+You can notice that you see some flashes and movements going on. When you try, it's difficult to see and understand what's going on. We'll look at an order book as an example. This is static; it doesn't have any movements, and it's got round numbers so that we can easily read it and understand what is going on.
+
+![example](Images/n2.png)
+
+On the vertical axis, we have prices in the market place.In this particular book, we start at 85 and move up to 115. On the horizontal axis, we have size. The size is the number of units. These units depend upon what particular financial instruments we're dealing with. These units could be shares, dollars, or coins. It can be any particular financial instrument that we want to deal with. Together, when we look at both the horizontal and vertical axes, we have the number of units at each price.
+
+At 85, we have 1100 units; at 86, we have 300 units, and so on. If we are talking stocks, we would say that at each price, we have this many shares available on the order book. With respect to the order book, the word "available" can be one or more things. The shares or crypto coins could be available to either buyers or for seller.That is why we have two different colors—red and green. All of the prices in red with their corresponding units represent the number of coins or shares that are available for buyers. These are sellers in the marketplace who make supply available for buyers to enter the market.
+
+On the green side, we have the number of bidders in the marketplace. This represents the number of shares or coins that a seller could use to get out of the market. So we have the sell side of the order book and the buy side of the order book.
+
+The first thing we care about whenever we're going to make a trade is whether we're on the buy side or the sell side. We need to be thinking about the order book when we're thinking about which side we're going to be on because we're going to be targeting the other side. If we're trying to sell, we're going to be looking at buyers, and if we're trying to buy, we're going to be looking at sellers.
+
+
+
