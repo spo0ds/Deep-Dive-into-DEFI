@@ -90,4 +90,28 @@ With stocks, we're used to saying that we trade with a broker. However, with cry
 Coinbase specifically states that they're not a broker. So it's an exchange, and they're not giving us advice. All they're doing is facilitating the ability to trade. We're fully responsible for understanding the implications of our actions while using the exchange.
 
 
+**Market Makers**
 
+Brokers can profit from their customers' purchases and sales of stock or other assets by charging a commission on those transactions. However, this isn't the only way for various market participants to make money from the sale of assets. There are entities called market makers who actually make the market viable by providing liquidity.
+
+At any given point in time, they offer to both buy and sell certain assets. They offer $900 worth of company A shares to anyone who wants to sell them, and they charge $902 per share if you want to buy them. As can be seen, there's a difference between the $900, which is called the "bid price," and the $902, which is called the "ask price." That $2 difference is called the spread, and it's how market makers are rewarded for providing liquidity.
+
+Are brokers automatically market-makers?
+
+No. They can be, but don't have to be.
+
+Assume Bill owns one share of company A, which he wishes to sell for $950, and Sarah wishes to purchase one share of company A for $850, with both placing their orders with broker A. Without the market maker, there'd be little liquidity, and if Bill wasn't hurrying to sell, he'd have to settle for $100 less than his asked price, except for Sarah's bid price. If market maker A, who owns a large number of company A shares and has a lot of money, steps in, Bil and Sarah suddenly have other options.
+
+Market makers are high-frequency trading companies. Rather than an individual manually setting the bid and ask price, it tends to be done automatically through algorithms.
+
+**Market Index**
+
+You've likely heard news reporters say things like "The Dow is up 100 points" or "S&P is down 5 points." But what does that mean?
+
+A stock market index measures the performance of a collection of stocks. Indices track how the overall market performs by measuring these stocks collectively rather than only looking at the performance of a single stock. Think of it this way: If you focus too closely on just one thing, you might not have a good understanding of the larger picture. This is why an index's performance provides more complete information than the performance of individual stocks. Indices provide a wider view of the stock market as a whole.
+
+The first index was the Dow Jones Industrial Average. Financial reporter Charles Dow added up the closing prices of the 12 largest stocks at the time and divided the total by 12 to get the average. Today, Dow consists of 30 of the largest and most successful companies in the US. These companies are handpicked by experts to represent a wide variety of industries. Some of these companies affect the average more than others, though, because many indices are weighted. Think of the idea of weighting like grades: a final exam is going to make up a larger portion of your grade than a daily homework assignment. In the Dow, companies with higher prices are given more weight.
+
+While the Dow is the oldest and most known index, some believe that its measurement is less representative of the overall market than the S&P 500, even though they often perform similarly to each other. The S&P 500 measures the performance of 500 of the largest publicly traded companies in the US. Due to its broad exposure, some believe that the S&P 500 is the best measurement of the US stock market. The S&P 500 is weighted by market cap. The market cap is the number of a company's outstanding shares multiplied by the price per share. Because of this, the companies with the largest total market value have the greatest impact on the average of the S&P 500.
+
+The Nasdaq Composite, also known as the Nasdaq, is comprised of approximately 3000 companies traded on the Nasdaq exchange. The Nasdaq includes more smaller companies than the other indices but also includes many of the largest tech companies like Apple, Microsoft, and Amazon. Some of these companies may also be included on the Dow, the S&P 500, or both. Each index helps to measure how the overall market is doing through the performance of the securities it tracks.
