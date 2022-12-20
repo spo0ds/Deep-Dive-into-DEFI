@@ -45,6 +45,24 @@ Atomic swapping technology is still in its early stages and has several limitati
 
 # Liquidity pools and automated market makers
 
+**Liquidity pools**
+
+Liquidity pools, in essence, are pools of tokens that are locked in a smart contract. They're used to facilitate trading by providing liquidity.
+
+On Coinbase and Binance, trading is done based on the order book. This is also the way traditional stock exchanges work. In this order book model, buyers and sellers come together and place their orders. Buyers tend to buy certain assets for the lowest price possible, while sellers try to sell the same asset for as much as possible. For trades to happen, both buyers and sellers have to agree on the price. This can happen by either a buyer bidding higher or a seller lowering their price.
+
+What if no one is willing to place their orders at a fair price level? What if there aren't enough coins that you want to buy?
+
+This is where market makers come into play. They facilitate trading by always being willing to buy or sell a particular asset. By doing so, they provide liquidity. So the users can always trade and don't have to wait for another counterparty to show up.
+
+We can reproduce this in Defi, but this is really slow, expensive, and pretty much results in a poor user experience. The order book model relies heavily on market makers willing to always make a market in a certain asset. Without market makers, an exchange becomes instantly illiquid. On top of that, market makers usually charge different prices for an asset by constantly changing their prices. This results in a huge number of orders and cancellations that are being sent to exchanges. Ethereum can only process 12–15 transactions per second, and the block time of 10–19 seconds is not really a viable option for an order book exchange. On top of that, every interaction with a smart contract costs a gas fee. As a result, market makers would go bankrupt simply by updating their orders.
+
+**How do they work?**
+
+A single liquidity pool holds two tokens, and each pool creates a new market for that particular pair of tokens. DAI/ETH can be a good example of a popular liquidity pool on Uniswap. When a new pool is created, the first liquidity provider is the one that sets the initial price of the assets in the pool. The liquidity provider is incentivized to supply equal value for both tokens in the pool. If the initial price of the tokens diverges from the current global market price, it creates an instant arbitrage opportunity that can result in lost capital for the liquidity provider. This concept of supplying tokens in the correct ratio remains the same for other liquidity providers that are willing to add more funds to the pool later.
+
+When liquidity is supplied to the pool, the liquidity provider receives special tokens called LP tokens in proportion to how much liquidity they supplied to the pool. When the trade is facilitated by the pool, 0.3% fee is proportionally distributed amongst all the LP token holders. If the liquidity provider wants to get their underlying liquidity back plus any accrued fees, they must burn their LP token. Each token swap that the liquidity pool facilitates results in a price adjustment according to a deterministic pricing algorithm called AMM.
+
 **AMM**
 
 Ever wondered how decentralized exchanges process trades and discover prices?
@@ -63,11 +81,11 @@ Let's say you're a banana farmer. You're tired of only eating bananas. You live 
 
 Here the liquidity pool has 50,000 bananas and oranges, and the product of these is equal to 2.5 billion. So let's say a banana farmer comes along with 7,000 bananas to trade. He gives them to the smart contract, and the contract has 57,000 bananas. We need to know how many oranges to give to the banana farmer. We take 2.5 billion and divide by 57,000, which is 43859. This is the number of oranges that should be left over in the smart contract. However, right now there are 50,000. So we find out the difference and give it to the banana farmer, which is 6140. As more and more oranges are bought, they become more expensive. This is why the banana farmer didn't get exactly 7000 oranges back, and 57,000 * 43,859 does equal to 2.5 billion.
 
-**impairment loss**
+**impermanent loss**
 
-Although AMMs provide significant returns to LPs, there's risk involved. The most common is impairment loss. This phenomenon arises when the price ratio of assets and liquidity pools changes. LPs who have deposited funds in affected pools will automatically incur an impairment loss. The greater the shift in the price ratio, the greater the loss.
+Although AMMs provide significant returns to LPs, there's risk involved. The most common is impermanent loss. This phenomenon arises when the price ratio of assets and liquidity pools changes. LPs who have deposited funds in affected pools will automatically incur an impermanent loss. The greater the shift in the price ratio, the greater the loss.
 
-However, there is a reason why this loss is referred to as an impairment. As long as you do not withdraw deposited tokens while the pool is experiencing a price ratio shift, it is still possible to mitigate the loss. The loss disappears when the prices of the tokens revert to the original value at which they were deposited, and those who withdraw funds before the prices revert suffer permanent losses. Regardless, it is possible for the income received via transaction fees to cover such losses.
+However, there is a reason why this loss is referred to as an impermanent. As long as you do not withdraw deposited tokens while the pool is experiencing a price ratio shift, it is still possible to mitigate the loss. The loss disappears when the prices of the tokens revert to the original value at which they were deposited, and those who withdraw funds before the prices revert suffer permanent losses. Regardless, it is possible for the income received via transaction fees to cover such losses.
 
 
 
