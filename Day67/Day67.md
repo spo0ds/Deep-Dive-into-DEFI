@@ -98,4 +98,11 @@ It gets really tricky when both assets' prices start moving. In short, if they g
 However, there is a reason why this loss is referred to as an impermanent. As long as you do not withdraw deposited tokens while the pool is experiencing a price ratio shift, it is still possible to mitigate the loss. The loss disappears when the prices of the tokens revert to the original value at which they were deposited, and those who withdraw funds before the prices revert suffer permanent losses. Regardless, it is possible for the income received via transaction fees to cover such losses.
 
 
+**Rug Pull**
+
+A rugpull is a malicious maneuver in the cryptocurrency industry where crypto developers abandon projects and run away with investors' funds, otherwise known as a scam coin. Rug pulls most often happen in the DEFI ecosystem, especially on DEXs, where malicious individuals create a token and list it on DEX, then pair the scam coin with a leading cryptocurrency like Ethereum. When a large number of unsuspecting investors exchange their ETH for their listed token, the creators withdraw everything from the liquidity pool, causing the coin price to fall to zero.
+
+Rug pulls can happen during or after an ICO (initial coin offering). Scam coin promoters may even use social media to create a temporary buzz around it in order to gain attention. They may also initially inject a substantial amount of liquidity into their pool to cultivate investor confidence. Another major characteristic of a possible rug pull is a coin that skyrockets in price within hours. For example, a rug-pull coin can move from 0 to 50 times within 24 hours. This trick is meant to drive the FOMO (fear of missing out) that leads to more people investing in the token.
+
+Rug pull thrives on DEXs because, unlike centralized cryptocurrency exchanges, DEXs allow users to list tokens free of charge and without audit. Furthermore, creating tokens on open-source blockchain protocols like Ethereum is easy and free. Make sure to research more about the coin and look for telltale signs of rugpulls like a low liquidity pool, low team credibility, or unknown founders, short lock-in periods, extreme rewards, few wallet holders, ambiguous and unclear white papers, and large promotional spending and marketing.
 
