@@ -134,7 +134,63 @@ We take the BAT token address passed in by the trader to find the exchange throu
 Then we head over to the second contract, which is the ETH:BAT contract, and in this contract we call `ethToTokenTransfer` function, which adds the Ethereum to the pool and removes the BAT tokens accordingly based on the amount of the pool's current ratio. The same logic as an ETH to token swap is used, and then tokens are transferred back to the trader for the amount of BAT tokens taken out.
 
 
+**Comparison of Unswap v1 vs v2 vs v3**
 
+**Uniswap V1**
+
+It allows traders on the Ethereum network to use AMM to trade with a pool of money at any point in time with very low fees, and they could theoretically trade for an infinite amount of coins. In Uniswap, you can give $200 and get 1 ETH, and then if you give $200 again, we will get 0.9 ETH because the price of Ethereum went up and the pool charged you more for it. The money in the pool is deposited by other investors, and we get to trade with their money. V1 had many different liquidity pools, and all the pools had to contain at least Ethereum. However, if you want to trade DAI for BAT, you have to interact with each pool, meaning extra work.
+
+**Uniswap V2**
+
+Version 2 fixed the above problem by creating pools that don't need Ethereum. Here, we can create any pool that we want, including a USDT and BAT pool that allows us to swap tokens.
+
+**Uniswap V3**
+
+The big update in V3 is `concentrated liquidity`.Liquidity means money that you provide to someone else so that they can use it for something.
+
+- Concentrated liquidity
+    The benefit of concentrated liquidity is that you can make your money work even harder by simply giving it some rules. Normally, when you want to be an investor and put your money into a uniswap pair like USDC or Ethereum, you lend your assets to the pool. Now the pool lets other traders trade your assets back and forth, basically collecting very small fees from those traders so that they can pay you. This way, traders are happy to trade, and you're happy to lend your money.
+
+    When you provide liquidity, it evenly spreads your money for traders to use between the prices of 0 and infinity. This means that whether Ethereum goes to $100,000 or even plops down to $50, the money that you've provided is fairly allocated across all price ranges for traders. V3 changes this. Instead of letting your assets be spread thin across all price ranges, you can now select where you want to deploy your concentrated liquidity. So instead of giving it some USDC and then some Ethereum and then basically collecting fees, you can allow the liquidity pool to be used between price ranges, like using Eth:DAI only in the range of $3000 and $4000.
+    
+    The benefit of this is that your capital is essentially multiplied. When the price falls out of those ranges, two major things happen.
+    -  You obviously stop earning fees.
+
+    This is quite simple, as you only provided your assets to collect fees in those ranges.
+    -  The money that you've provided will be turned into one single asset.
+    
+    For example, let's say that Ethereum is crashing. It crashes from $3500 to $1000. Previously, all of your capital was held in Ethereum and USDC. Now it's only in the form of Ethereum. In V2, you would always have at least a little bit of both tokens, but V3 changes that.
+    
+This is beneficial because by supplying between the ranges of $3000 and $4000, you're effectively placing a $3000 ethereum limit sell order and a $4000 limit buy order. In simple terms, if you supply liquidity between $3000 and $4000, you're basically saying that the LP would have all ETH if the price went under $3000 and only USD if the price went above $4000. Of course, there's going to be a little bit of impermanent loss.
+
+
+- Concentrated Multiplier
+
+Me and you both supply the ETH:USDC liquidity pool. For this example, let's assume Ethereum is $1750. The way that was done is V2, where the liquidity is spread evenly across all price ranges and you've invested $10,000. I, on the other hand, decide to supply $10,000 to the pool, but only when the price of Ethereum ranges from $1500 to $2500.
+
+What fees do we both collect?
+
+Well, it really depends upon the volume that Ethereum is trading at. Let's assume that you collect 4% a year, or $400. On the other hand, I, who deploy my capital in a specific range, will earn `eight and a third times` that much. So 8.3 * 400 = $3332. even though we've invested the same amount. But here's a case where I could get wrecked by an impermanent loss. Anyway, as long as the price does stay in that range, I will earn a much better return than you. Even a better way of thinking about it is that I could simply supply $1200, keeping all the $8800 safe, and earn the same amount in fees as you.
+
+This concentrated liquidity is useful for situations like stablecoin pools, where there are two assets that hardly ever change in price in relation to each other. For example, the pool that holds DAI:USDC hardly ever gets out of the range of $0.99 to $1.01. The capital multiplier isn't 8.33 like in the example. It's 200 x, and the most you can get is 4000x. This only happens when you provide liquidity within a very narrow range of 0.1%.
+
+- Active liquidity
+
+If you supply liquidity in the range of $25 to $35 and two tokens, when the price of the tokens drops out of those ranges, your liquidity will instantly turn into one token. Essentially, the token is dumped whenever it reaches the $25 price point. After that, if the price keeps dropping, your liquidity is technically inactive. You're not earning any fees or even changing due to impermanent loss.
+
+- NFT liquidity tokens
+
+A LP token is given to the liquidity providers or investors so that they can prove that they actually provided money to a specific pool, and using that LP token, you can redeem it for your portion of the pool at any time. Another cool thing is that you can actually trade them, and in the past, there was only one type of LP token per pool. However, now that we have price ranges, we actually must create NFTs that have specific data attached to them. For example, I could have the NFT USDC:ETH LP token with a price range of $2000 to $3000.
+    
+- Licensing
+
+This means you can't copy or fork the code for two years, and since a ton of other exchanges on the other networks are quite literally Uniswap with different branding,, Uniswap is not going to appreciate this. This licensing protects their code for a while.
+
+There were a few fixes that actually made uniswap swaps even cheaper, meaning less gas fees.
+    
+    
+    
+    
 
 
 
