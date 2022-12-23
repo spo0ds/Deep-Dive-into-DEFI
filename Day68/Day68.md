@@ -110,9 +110,13 @@ def tokenToEthTransferOutput(eth_bought: uint256(wei), max_tokens: uint256, dead
 The calculations are exactly the same as an Eth-token swap but in reverse.
 
 > invariant = eth_pool * token_pool
+
 > new_token_pool = token_pool + tokens_in
-> We add whatever the token was that was supplied to the pool.
+
+We add whatever the token was that was supplied to the pool.
+
 > new_eth_pool = invariant / (new_token_pool - (0.3 % fee ))
+
 > eth_out = eth_pool - new_eth_pool
 
 **Swapping tokens for tokens**
@@ -189,7 +193,27 @@ This means you can't copy or fork the code for two years, and since a ton of oth
 There were a few fixes that actually made uniswap swaps even cheaper, meaning less gas fees.
     
     
-    
+**Frontrunning and sandwich attacks**
+
+Sandwich attacks are a common type of DEX attack. It is a "frontrunning attack." Imagine that someone is running in front of you. You're going to do something, but someone is cutting you off and doing it before you're about to do it. Attackers are taking advantage of a victim who is trying to perform a swap. This can happen in every kind of DEX. In order to execute the attack, the attackers need to buy and sell the token on the same block, and in the middle of the transaction, the victim transaction is there trying to swap like a sandwich.
+
+![Sandwich](Images/n3.png)
+
+The miners who are building and verifying the blocks are taking the transactions and assembling the block one by one. They will receive the list of transactions, and the first transactions to enter the block will have the highest fee. That's why the attacker above is willing to pay high fees in order to place its transaction just before the victim's transaction, and the attacker will create another transaction with a lower gas price than the victim's transaction, which will be after the victim has swapped tokens.
+
+**How is it related to slippage?**
+
+Basically, all these things happen because users are willing to pay higher bids for a token. Once you set your `slippage tolerance` very high, like 20%, when transactions are created and sent to the blockchain, it's a parameter that's telling the smart contract how many tokens you're willing to receive. If you place 1%, it will set a large amount of tokens, but if you set 20%, you're basically telling the smart contract that you're willing to get fewer tokens in return. Once you set high slippage, attackers will detect your transaction and frontrun, making a sandwich and stealing the money.
+
+Let's say I want to buy 5000 BUSD worth of ETH tokens. The current price of ETH is 20 BUSD. I'm setting a slippage tolerance of 20%. It means that I'm willing to buy 1 ETH for 24 BUSD, which is 20% more than $20. A potential attacker can earn those 20% on behalf of the victim, i.e., 20% of 5000 is $1000 BUSD.
+
+But how does the attacker know about my transaction?
+
+**MemPool**
+
+All the appended transactions that are going to get into blocks are residing in the mempool. So every time I send a transaction to the blockchain, the transaction goes to the mempool, and the miners pick the transaction and put it into the blocks depending on the amount of fees I'm willing to pay. So transactions with higher fees are the first ones to get into the blocks.
+
+Mempool is public, so the attacker has programs (a bot) that are connected to this kind of Ethereum node and constantly read the mempool, trying to hunt down transactions with high slippage amounts. So every time they find this kind of transaction before they get into the block, they simulate it and run it inside their simulator to see the workflow, like their buying transaction, victim buying transaction, and selling transaction, and try to find out if they are profitable. If they're profitable, they'll launch the transaction on the blockchain.
     
 
 
