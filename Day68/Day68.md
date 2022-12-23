@@ -191,6 +191,7 @@ A LP token is given to the liquidity providers or investors so that they can pro
 This means you can't copy or fork the code for two years, and since a ton of other exchanges on the other networks are quite literally Uniswap with different branding,, Uniswap is not going to appreciate this. This licensing protects their code for a while.
 
 There were a few fixes that actually made uniswap swaps even cheaper, meaning less gas fees.
+  
     
     
 **Frontrunning and sandwich attacks**
