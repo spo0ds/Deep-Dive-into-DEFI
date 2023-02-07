@@ -36,7 +36,7 @@ With that, there are three types of pools:
 
 Pools with strong assets having a higher percentage usually results in less imparmanent loss.
 
-[impermanentLoss](Images/n4.png)
+![impermanentLoss](Images/n4.png)
 
 The trade-off for this imparmanent loss is usually a higher slippage amount for traders.Essentially the result of less liquidity for the tokens with less weight.
 
