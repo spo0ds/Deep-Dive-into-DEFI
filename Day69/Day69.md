@@ -58,68 +58,68 @@ Before trading, we need liquidity. Adding liquidity works similarly to Uniswap. 
 
 The price is determined by a pricing formula for the pool, which is a generalization of the constant product formula of Uniswap.
 
-## Smart Contract Walkthrough
+## Smart Contract walkthrough 
 
-### BFactory.sol 
+### BFactory.sol 
 
-This contract builds the new pool and logs their addresses.
+This contract builds the new pool and log their addresses.
 
 ```solidity
 import "./BPool.sol";
 ```
 
-We need the BPool contract to create a new pool from the factory contract.
+We need BPool contract to create a new pool from the factory contract.
 
 ```solidity
 contract BFactory is BBronze {}
 ```
 
-The BFactory contract inherits the BBronze contract, which simply returns the "BRONZE" bytes 32.I don't exactly know why we're returning it yet.
+BFactory contract is inheriting BBronze contract which just returns the bytes32 of the "BRONZE". I don't exactly know why we're returning this yet.
 
-```solidity 
+```solidity 
 event LOG_NEW_POOL(
-        address indexed caller,
-        address indexed pool
-    );
+        address indexed caller,
+        address indexed pool
+    );
 
-    event LOG_BLABS(
-        address indexed caller,
-        address indexed blabs
-    );
+    event LOG_BLABS(
+        address indexed caller,
+        address indexed blabs
+    );
 ```
 
-Events for logging when a new pool is created, the old blab address, and the new blab address
+Events for logging when a new pool is created and old blab address and new blab address. 
 
 ```solidity
 mapping(address=>bool) private _isBPool;
 ```
 
-mapping for whether the address is a pool or not.
+Mapping for whether the address is a pool or not.
 
 ```solidity
 function isBPool(address b)
-        external view returns (bool)
-    {
-        return _isBPool[b];
-    }
+        external view returns (bool)
+    {
+        return _isBPool[b];
+    }
 ```
 
 This function returns whether that address is a pool or not.
 
 ```solidity
 function newBPool()
-        external
-        returns (BPool)
-    {}
+        external
+        returns (BPool)
+    {}
 ```
 
-This is the function for creating new pools from factory contract.
+This is the function for creating new pool from factory contract.
 
 ```solidity
 BPool bpool = new BPool();
 ```
 
-The BPool contract variable is instantiated.Uniswap used an interface to create pools, but here we're instantiating a contract with the new keyword, and then we'll create the pool.
+instantiate of BPool contract variable.Uniswap used interface to create pool but here we're instantiating a contract with the new keyword and then we'll create the pool.
 
 ```solidity
 _isBPool[address(bpool)] = true;
@@ -131,13 +131,13 @@ We're setting that bpool variable address to true because that is the pool we ju
 emit LOG_NEW_POOL(msg.sender, address(bpool));
 ```
 
-We're emitting the address that created the pool and the pool address.
+We're emitting address that created the pool and the pool address.
 
 ```solidity
 bpool.setController(msg.sender);
 ```
 
-We're setting the controller to be the creator because the controller has special rights regarding that pool.
+We're setting the controller to be the creater because controller has special rights regarding that pool.
 
 ```solidity
 return bpool;
@@ -149,34 +149,34 @@ We're returning that pool.
 address private _blabs;
 ```
 
-We're creating the _blabs private variable, so we need the getter for this variable.
+We're creating the _blabs private variable because we might decide later on to now use that wallet address. One can change wallet address.
 
 ```solidity
 constructor() public {
-        _blabs = msg.sender;
-    }
+        _blabs = msg.sender;
+    }
 ```
 
-We're setting the blabs address to the deployer in the constructor.
+We're setting the blabs address to the deployer in the constructor. That means Balancer's address will be the "_blabs".
 
 ```solidity
 function getBLabs()
-        external view
-        returns (address)
-    {
-        return _blabs;
-    }
+        external view
+        returns (address)
+    {
+        return _blabs;
+    }
 ```
 
 Getter for that blabs variable.
 
 ```solidity
 function setBLabs(address b)
-        external
-    {}
+        external
+    {}
 ```
 
-This function sets the blabs address. This could imply granting a new address access to that pool.
+This function sets the blabs address. This might be giving right about that pool to new address.
 
 ```solidity
 require(msg.sender == _blabs, "ERR_NOT_BLABS");
@@ -194,7 +194,33 @@ emits the old and new blabs addresses.
 _blabs = b;
 ```
 
-sets the new address for the blabs.
+sets the new address to the blabs.
 
+```solidity
+function collect(BPool pool)
+        external 
+    {}
+```
+
+This function is for collecting rewards "developer fee". It will only be on by the governance.
+
+```solidity
+require(msg.sender == _blabs, "ERR_NOT_BLABS");
+```
+
+This line made me believe that the function is for collecting developer fees because initially "_blabs" is the deployer of the contract which is Balancer itself.
+
+```solidity
+uint collected = IERC20(pool).balanceOf(address(this));
+```
+
+This returns the balance of the liquidity pool token "BAL" that this contract is holding for the developer to collect developer fees.
+
+```solidity
+bool xfer = pool.transfer(_blabs, collected);
+require(xfer, "ERR_ERC20_FAILED");
+```
+
+This transfer the collected balance from the contract to the _blabs address and for the transaction to execute successfully, xfer must be true.
 
 
