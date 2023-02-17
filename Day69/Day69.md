@@ -214,7 +214,7 @@ This line made me believe that the function is for collecting developer fees bec
 uint collected = IERC20(pool).balanceOf(address(this));
 ```
 
-This returns the balance of the liquidity pool token "BAL" that this contract is holding for the developer to collect developer fees.
+This returns the balance of the liquidity pool token "BPT" that this contract is holding for the developer to collect developer fees.
 
 ```solidity
 bool xfer = pool.transfer(_blabs, collected);
@@ -224,3 +224,414 @@ require(xfer, "ERR_ERC20_FAILED");
 This transfer the collected balance from the contract to the _blabs address and for the transaction to execute successfully, xfer must be true.
 
 
+## BPool.sol
+
+```solidity
+import "./BToken.sol";
+import "./BMath.sol";
+```
+
+It imports it's ERC20 token contract and math for the DeFi calculation. We'll go into essential math for the balancer protocol.
+
+```solidity
+contract BPool is BBronze, BToken, BMath {
+}
+```
+
+BPool contract is inheriting from other three contract. BBronze simple returns bytes32 of the "BRONZE", BToken is the ERC20 implementation of their token "BPT" and BMath is for all mathematical calculation and automation.
+
+```solidity
+struct Record {
+        bool bound;   // is token bound to pool
+        uint index;   // private
+        uint denorm;  // denormalized weight
+        uint balance;
+    }
+```
+
+```solidity
+event LOG_SWAP(
+        address indexed caller,
+        address indexed tokenIn,
+        address indexed tokenOut,
+        uint256         tokenAmountIn,
+        uint256         tokenAmountOut
+    );
+```
+
+This is an event for swapping the token.
+
+```solidity
+ event LOG_JOIN(
+        address indexed caller,
+        address indexed tokenIn,
+        uint256         tokenAmountIn
+    );
+    
+  event LOG_EXIT(
+        address indexed caller,
+        address indexed tokenOut,
+        uint256         tokenAmountOut
+    );
+```
+
+Join is an event for how much token I want to swap and EXIT for how much I got.
+
+```solidity
+event LOG_CALL(
+        bytes4  indexed sig,
+        address indexed caller,
+        bytes           data
+    ) anonymous;
+```
+
+This is an anonymous event where it fires signature of the caller, caller address and any data.Anonymous events are cheaper and can only be called using contract address.
+
+```solidity
+modifier _logs_() {
+        emit LOG_CALL(msg.sig, msg.sender, msg.data);
+        _;
+    }
+``` 
+
+Interesting modifier for firing events maybe for gas efficient.
+
+```solidity
+modifier _lock_() {
+        require(!_mutex, "ERR_REENTRY");
+        _mutex = true;
+        _;
+        _mutex = false;
+    }
+``` 
+
+This modifier prevents the re-entracy attack.
+
+```solidity
+modifier _viewlock_() {
+        require(!_mutex, "ERR_REENTRY");
+        _;
+    }
+```
+
+To viewlock mutex needs to be false.
+
+```solidity 
+bool private _mutex;
+```
+
+private variable for the mutex. It's just like a flag variable. One get to enter if the flag is false and the entered contract / address sets the mutex to true.
+
+```solidity
+address private _factory;    // BFactory address to push token exitFee to
+```
+
+"_factory" is the address of the factory contract.
+
+```solidity
+address private _controller; // has CONTROL role
+```
+
+The controller of the liquidity pool.
+
+```solidity
+bool private _publicSwap; // true if PUBLIC can call SWAP functions
+```
+
+It determines whether the pool is public or private.
+
+```solidity
+uint private _swapFee;
+```
+
+It's a fee for the swap in a liquidity pool.
+
+```solidity
+bool private _finalized;
+```
+
+Pool is finalized then it can be changed like swapFee and people can interact with the pool.
+
+```solidity
+address[] private _tokens;
+```
+
+```solidity
+mapping(address=>Record) private  _records;
+```
+
+This mapping keeps track of the properties of that particular token.
+
+```solidity
+uint private _totalWeight;
+```
+
+total weightage of the pool of the token.
+
+```solidity
+constructor() public {
+        _controller = msg.sender;
+        _factory = msg.sender;
+        _swapFee = MIN_FEE;
+        _publicSwap = false;
+        _finalized = false;
+    }
+```
+
+controller and factory are both factory contract because this pool contract is being called by the factory contract.It sets the min fee, public swap and finalized to be false because it's not public to swap and the pool is not finalized yet.
+
+```solidity
+function isPublicSwap()
+        external view
+        returns (bool)
+    {
+        return _publicSwap;
+    }
+
+    function isFinalized()
+        external view
+        returns (bool)
+    {
+        return _finalized;
+    }
+
+    function isBound(address t)
+        external view
+        returns (bool)
+    {
+        return _records[t].bound;
+    }
+```
+
+These are view functions.
+
+```solidity
+function getNumTokens()
+        external view
+        returns (uint) 
+    {
+        return _tokens.length;
+    }
+```
+
+```solidity
+function getCurrentTokens()
+        external view _viewlock_
+        returns (address[] memory tokens)
+    {
+        return _tokens;
+    }
+```
+
+```solidity
+function getFinalTokens()
+        external view
+        _viewlock_
+        returns (address[] memory tokens)
+    {
+        require(_finalized, "ERR_NOT_FINALIZED");
+        return _tokens;
+    }
+```
+
+```solidity
+function getDenormalizedWeight(address token)
+        external view
+        _viewlock_
+        returns (uint)
+    {
+
+        require(_records[token].bound, "ERR_NOT_BOUND");
+        return _records[token].denorm;
+    }
+```
+
+```solidity
+function getTotalDenormalizedWeight()
+        external view
+        _viewlock_
+        returns (uint)
+    {
+        return _totalWeight;
+    }
+```
+
+```solidity
+function getNormalizedWeight(address token)
+        external view
+        _viewlock_
+        returns (uint)
+    {
+
+        require(_records[token].bound, "ERR_NOT_BOUND");
+        uint denorm = _records[token].denorm;
+        return bdiv(denorm, _totalWeight);
+    }
+```
+
+```solidity
+function getBalance(address token)
+        external view
+        _viewlock_
+        returns (uint)
+    {
+
+        require(_records[token].bound, "ERR_NOT_BOUND");
+        return _records[token].balance;
+    }
+```
+
+This function returns how much balance that particular token is. "_viewlock_" is a modifier which needs the mutex to be false.This function also needs that the token must be bound to the pool and then only returns the balance of that token.
+
+```solidity
+function getSwapFee()
+        external view
+        _viewlock_
+        returns (uint)
+    {
+        return _swapFee;
+    }
+```
+
+Simply returns the swapFee of the pool.
+
+```solidity
+function getController()
+        external view
+        _viewlock_
+        returns (address)
+    {
+        return _controller;
+    }
+```
+
+Returns the controller of the pool.Controller has special right regarding the pool. We can say to be the creator of the pool.
+
+```solidity
+function setSwapFee(uint swapFee)
+        external
+        _logs_
+        _lock_
+    { }
+```
+
+Function sets the swap fee. "_logs_" modifier just emits an event i.e signature, msg.sender and the data. Similary "_lock_" modifier needs to have needs to have mutex to false, then sets mutex to true during this no any address could set the swap fee and after work is done sets the mutex to false.
+
+```solidity
+require(!_finalized, "ERR_IS_FINALIZED");
+```
+
+Can only set the swap fee when the pool is not finalized.
+
+```solidity
+require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
+```
+
+Only the creator of the pool can set the swap fee.
+
+```solidity
+require(swapFee >= MIN_FEE, "ERR_MIN_FEE");
+require(swapFee <= MAX_FEE, "ERR_MAX_FEE");
+```
+
+swap fee must be greater than equal to min fee and less than equal to max fee.We can see max and min fee from "BConst.sol".
+
+```solidity
+uint public constant BONE              = 10**18;
+uint public constant MIN_FEE           = BONE / 10**6;
+uint public constant MAX_FEE           = BONE / 10;
+```
+
+```solidity
+_swapFee = swapFee;
+```
+
+Sets the swap fee provided by the controller.
+
+```solidity
+function setController(address manager)
+        external
+        _logs_
+        _lock_
+    {
+        require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
+        _controller = manager;
+    }
+```
+
+Sets the controller but only by the previous controller.
+
+```solidity
+function setPublicSwap(bool public_)
+        external
+        _logs_
+        _lock_
+    {
+        require(!_finalized, "ERR_IS_FINALIZED");
+        require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
+        _publicSwap = public_;
+    }
+```
+
+Sets the pool to be public so that anybody could interact with the pool.
+
+```solidity
+function finalize()
+        external
+        _logs_
+        _lock_
+    {}
+```
+
+This function sets the pool to be finalized. Once the pool is finalized, we can't change the parameters of the pool like swap fee.
+
+```solidity
+require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
+```
+
+Only the controller / creator of the pool can finalize the pool.
+
+```solidity
+require(!_finalized, "ERR_IS_FINALIZED");
+```
+
+Pool needs not to be finalized.
+
+```solidity
+require(_tokens.length >= MIN_BOUND_TOKENS, "ERR_MIN_TOKENS");
+```
+
+There must be atleast two tokens.
+
+```solidity
+_finalized = true;
+_publicSwap = true;
+```
+
+Sets these parameters of the pools to be true.
+
+```solidity
+_mintPoolShare(INIT_POOL_SUPPLY);
+```
+
+This is an internal function defined at the end of the BPool contract.This "INIT_POOL_SUPPLY" is from BConst which is 100 * 10 ** 18
+
+```solidity
+function _mintPoolShare(uint amount)
+        internal
+    {
+        _mint(amount);
+    }
+```
+
+This "_mint" is an internal function inside "BTokenBase" which BToken inherits.
+
+```solidity
+function _mint(uint amt) internal {
+        _balance[address(this)] = badd(_balance[address(this)], amt);
+        _totalSupply = badd(_totalSupply, amt);
+        emit Transfer(address(0), address(this), amt);
+    }
+```
+
+This function mints the "BPT" token. This "badd" is a function taken from "BNum.sol" which just checks for addition overflow while adding the balance of the BPT token in the contract  of the BToken and also adds the totalSupply and emits and event saying this much token minted has been transferred from address 0 to this Btoken contract.
