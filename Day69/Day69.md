@@ -635,3 +635,42 @@ function _mint(uint amt) internal {
 ```
 
 This function mints the "BPT" token. This "badd" is a function taken from "BNum.sol" which just checks for addition overflow while adding the balance of the BPT token in the contract  of the BToken and also adds the totalSupply and emits and event saying this much token minted has been transferred from address 0 to this Btoken contract.
+
+```solidity
+_pushPoolShare(msg.sender, INIT_POOL_SUPPLY);
+```
+
+This is also an internal function which takes the controller address and total supply.
+
+```solidity
+function _pushPoolShare(address to, uint amount)
+        internal
+    {
+        _push(to, amount);
+    }
+```
+
+This function again calls internal "_push" function which is an internal function define in "BTokenBase" contract.
+
+```solidity
+function _push(address to, uint amt) internal {
+        _move(address(this), to, amt);
+    }
+```
+
+Again this function also calls "_move function".
+
+```solidity
+function _move(address src, address dst, uint amt) internal {
+        require(_balance[src] >= amt, "ERR_INSUFFICIENT_BAL");
+        _balance[src] = bsub(_balance[src], amt);
+        _balance[dst] = badd(_balance[dst], amt);
+        emit Transfer(src, dst, amt);
+    }
+```
+
+This internal function subtracts the BPT balance from the contract and add the supplied amount to the controller and emits an events.
+
+So this "_pushPoolShare" simply transfers token from the contract to the controller.
+
+
