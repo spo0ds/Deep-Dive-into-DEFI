@@ -858,4 +858,86 @@ EXIT_FEE is 0, so c0 is 0. We pass the first require statement. Then c1 will be 
 So we transfer such a minute amount to the factory contract.
 
 
+```solidity
+function unbind(address token)
+        external
+        _logs_
+        _lock_
+    {}
+```
 
+```solidity
+require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
+require(_records[token].bound, "ERR_NOT_BOUND");
+require(!_finalized, "ERR_IS_FINALIZED");
+```
+
+The same require statement is used as in the bind function.
+
+```solidity
+uint tokenBalance = _records[token].balance;
+```
+
+We get the balance of that token.
+
+```solidity
+uint tokenExitFee = bmul(tokenBalance, EXIT_FEE);
+```
+
+Calculate the token exit fee.
+
+```solidity
+ _totalWeight = bsub(_totalWeight, _records[token].denorm);
+ ```
+ 
+The total weight will be the subtraction of that token weight from the total weight. It's like if a basket contained 5 kg of mango and 5 kg of apple. The total weight is ten kilograms. So if we want to take mango, then the basket weight is 5 kg, and that is what we're doing here.
+ 
+ ```solidity
+ // Swap the token-to-unbind with the last token,
+// then delete the last token
+uint index = _records[token].index;
+uint last = _tokens.length - 1;
+```
+
+We get the total token in the index, reduce the length, and store it in the last variable.
+
+```solidity
+_tokens[index] = _tokens[last];
+```
+
+We store the reduced token length.
+
+```solidity
+_records[_tokens[index]].index = index;
+```
+
+Last un bind token will be the initail index. IDK why.
+
+```solidity
+_tokens.pop();
+```
+
+Remove that token from the array.
+
+```solidity
+_records[token] = Record({
+            bound: false,
+            index: 0,
+            denorm: 0,
+            balance: 0
+        });
+```
+
+That token is no longer bound to the pool.
+
+```solidity
+_pushUnderlying(token, msg.sender, bsub(tokenBalance, tokenExitFee));
+```
+
+Transfer that token to the account.
+
+```solidity
+_pushUnderlying(token, _factory, tokenExitFee);
+```
+
+Transfer the token exit fee to the factory contract.
