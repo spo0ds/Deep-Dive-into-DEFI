@@ -758,7 +758,7 @@ require(balance >= MIN_BALANCE, "ERR_MIN_BALANCE");
 
 Denormalized weight. Weights on a BPool, though often displayed as percentages, are configured and stored in their denormalized form. For instance, in a two-token pool with denormalized weights of A = 38 and B = 2, token A's percentage weight would be 38/(38 + 2), or 95%. Conversely, token B's proportion would be 2/(38+2), or 5%.
 
-So denorm must be greater than min weight, i.e., 10**18, and less than max weight, i.e., 10**68, and the balance of the token must be greater than min balance, i.e., 10**6.
+So denorm must be greater than min weight, i.e., 10 ** 18, and less than max weight, i.e., 10 ** 68, and the balance of the token must be greater than min balance, i.e., 10 ** 6.
 
 ```solidity
 // Adjust the denorm and totalWeight
@@ -853,7 +853,7 @@ function bmul(uint a, uint b)
 
 This is the multiplication function taken from BNum.sol. First we store the result of two numbers in c0, check for multiplication overflow, calculate c1, which must be greater than c0, then calculate c2, which is the divisor of c1 and Bone, and then return the result.
 
-EXIT_FEE is 0, so c0 is 0. We pass the first require statement. Then c1 will be 10**9. Again, we pass the require statement. c2 will then be "10**-9."
+EXIT_FEE is 0, so c0 is 0. We pass the first require statement. Then c1 will be 10 ** 9. Again, we pass the require statement. c2 will then be "10 ** -9."
 
 So we transfer such a minute amount to the factory contract.
 
