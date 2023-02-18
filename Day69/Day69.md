@@ -837,4 +837,25 @@ else if (balance < oldBalance) {
 If the balance is less than the old balance, we're withdrawing the balance of that token. So first we calculate the amount to be withdrawn, store it in tokenBalanceWithdrawn, calculate the tokenExitFee, which we will discuss in a second, transfer the token from this pool to the account, and also transfer the exit fee to the factory contract.
 
 
+```solidity
+function bmul(uint a, uint b)
+        internal pure
+        returns (uint)
+    {
+        uint c0 = a * b;
+        require(a == 0 || c0 / a == b, "ERR_MUL_OVERFLOW");
+        uint c1 = c0 + (BONE / 2);
+        require(c1 >= c0, "ERR_MUL_OVERFLOW");
+        uint c2 = c1 / BONE;
+        return c2;
+    }
+```
+
+This is the multiplication function taken from BNum.sol. First we store the result of two numbers in c0, check for multiplication overflow, calculate c1, which must be greater than c0, then calculate c2, which is the divisor of c1 and Bone, and then return the result.
+
+EXIT_FEE is 0, so c0 is 0. We pass the first require statement. Then c1 will be 10**9. Again, we pass the require statement. c2 will then be "10**-9."
+
+So we transfer such a minute amount to the factory contract.
+
+
 
