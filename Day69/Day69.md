@@ -673,4 +673,168 @@ This internal function subtracts the BPT balance from the contract and add the s
 
 So this "_pushPoolShare" simply transfers token from the contract to the controller.
 
+```solidity
+function bind(address token, uint balance, uint denorm)
+        external
+        _logs_
+        // _lock_  Bind does not lock because it jumps to `rebind`, which does
+    {}
+```
+
+This function binds the token to the pool. It means simply attaching the token if we want to provide the liquidity.
+
+```solidity
+require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
+```
+
+Only the controller can call the function.
+
+```solidity
+require(!_records[token].bound, "ERR_IS_BOUND");
+```
+
+Tokens must not be bound to the pool.
+
+```solidity
+require(!_finalized, "ERR_IS_FINALIZED");
+```
+
+pool must not be finalized.
+
+```solidity
+require(_tokens.length < MAX_BOUND_TOKENS, "ERR_MAX_TOKENS");
+```
+
+Tokens in a pool must be less than 8 because
+
+```solidity
+uint public constant MAX_BOUND_TOKENS  = 8;
+```
+
+```solidity
+_records[token] = Record({
+            bound: true,
+            index: _tokens.length,
+            denorm: 0,    // balance and denorm will be validated
+            balance: 0   // and set by `rebind`
+        });
+```
+
+Here we populate the mapping, and `this shows the reason behind using the struct in the beginning.`  Bound denotes whether the token is linked to the pool or not, index represents how many tokens are present inside the pool, we still have no idea about denorm, and balance is set by rebinding, probably the balance of the LP token.
+
+```solidity
+_tokens.push(token);
+```
+
+We push the token that we want to keep in the pool.
+
+```solidity
+rebind(token, balance, denorm);
+```
+
+Then we call the rebind function.
+
+```solidity
+function rebind(address token, uint balance, uint denorm)
+        public
+        _logs_
+        _lock_
+    {}
+```
+
+```solidity
+require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
+require(_records[token].bound, "ERR_NOT_BOUND");
+require(!_finalized, "ERR_IS_FINALIZED");
+```
+
+This are same requires as in "bind" function.
+
+```solidity
+require(denorm >= MIN_WEIGHT, "ERR_MIN_WEIGHT");
+require(denorm <= MAX_WEIGHT, "ERR_MAX_WEIGHT");
+require(balance >= MIN_BALANCE, "ERR_MIN_BALANCE");
+```
+
+Denormalized weight. Weights on a BPool, though often displayed as percentages, are configured and stored in their denormalized form. For instance, in a two-token pool with denormalized weights of A = 38 and B = 2, token A's percentage weight would be 38/(38 + 2), or 95%. Conversely, token B's proportion would be 2/(38+2), or 5%.
+
+So denorm must be greater than min weight, i.e., 10**18, and less than max weight, i.e., 10**68, and the balance of the token must be greater than min balance, i.e., 10**6.
+
+```solidity
+// Adjust the denorm and totalWeight
+uint oldWeight = _records[token].denorm;
+```
+
+We're getting the percentage or portion of a particular token in the pool.
+
+```solidity
+if (denorm > oldWeight) {
+            _totalWeight = badd(_totalWeight, bsub(denorm, oldWeight));
+            require(_totalWeight <= MAX_TOTAL_WEIGHT, "ERR_MAX_TOTAL_WEIGHT");
+        } 
+```
+
+If the passed percentage is greater than the weightage of the pool, we first subtract the weightage and then add to the total weight. Maybe this total weightage represents the total LP tokens in the pool. The total weight must then be less than or equal to the maximum total weight, i.e., 10 ** 68.
+
+```solidity
+else if (denorm < oldWeight) {
+            _totalWeight = bsub(_totalWeight, bsub(oldWeight, denorm));
+        }   
+```
+
+If the weight of that token is greater, we subtract the old and new weights and then subtract the result from the total weight.
+
+This "else" condition adjusts the weight of the token in the pool.
+
+```solidity
+_records[token].denorm = denorm;
+```
+
+We pass the adjusted weightage.
+
+```solidity
+// Adjust the balance record and actual token balance
+uint oldBalance = _records[token].balance;
+```
+
+Now it's time to adjust the balance of that token.
+
+```solidity
+_records[token].balance = balance;
+```
+
+We directly store the supplied balance of the token here.
+
+```solidity
+if (balance > oldBalance) {
+            _pullUnderlying(token, msg.sender, bsub(balance, oldBalance));
+        } 
+```
+
+If the balance is greater than the balance present in the token, we call it the "pullUnderlying" function.
+
+```solidity
+function _pullUnderlying(address erc20, address from, uint amount)
+        internal
+    {
+        bool xfer = IERC20(erc20).transferFrom(from, address(this), amount);
+        require(xfer, "ERR_ERC20_FALSE");
+    }
+```
+
+This function just transfers the token from the account to the pool.
+
+```solidity
+else if (balance < oldBalance) {
+            // In this case liquidity is being withdrawn, so charge EXIT_FEE
+            uint tokenBalanceWithdrawn = bsub(oldBalance, balance);
+            uint tokenExitFee = bmul(tokenBalanceWithdrawn, EXIT_FEE);
+            _pushUnderlying(token, msg.sender, bsub(tokenBalanceWithdrawn, tokenExitFee));
+            _pushUnderlying(token, _factory, tokenExitFee);
+        }
+```
+
+If the balance is less than the old balance, we're withdrawing the balance of that token. So first we calculate the amount to be withdrawn, store it in tokenBalanceWithdrawn, calculate the tokenExitFee, which we will discuss in a second, transfer the token from this pool to the account, and also transfer the exit fee to the factory contract.
+
+
 
