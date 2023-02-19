@@ -941,3 +941,198 @@ _pushUnderlying(token, _factory, tokenExitFee);
 ```
 
 Transfer the token exit fee to the factory contract.
+
+```solidity
+// Absorb any tokens that have been sent to this contract into the pool
+    function gulp(address token)
+        external
+        _logs_
+        _lock_
+    {
+        require(_records[token].bound, "ERR_NOT_BOUND");
+        _records[token].balance = IERC20(token).balanceOf(address(this));
+    }
+```
+
+This function stores the token balance that's been sent to this contract.
+
+```solidity
+function getSpotPrice(address tokenIn, address tokenOut)
+        external view
+        _viewlock_
+        returns (uint spotPrice)
+    {}
+```
+
+This function gets the current price of the asset in the marketplace. If ETH is 1600 $ and I enter ETH and USD, the result must be 1600 * 10 ** 18. This is the rate at which we can exchange.
+
+```solidity
+require(_records[tokenIn].bound, "ERR_NOT_BOUND");
+require(_records[tokenOut].bound, "ERR_NOT_BOUND");
+```
+
+Both tokens must be bound to the pool.
+
+```solidity
+Record storage inRecord = _records[tokenIn];
+Record storage outRecord = _records[tokenOut];
+```
+
+We create the storage variable of type "Record," which is the struct, and store all the information about it from the mapping records to this storage variable.
+
+```solidity
+return calcSpotPrice(inRecord.balance, inRecord.denorm, outRecord.balance, outRecord.denorm, _swapFee);
+```
+
+Then we pass the balance, their weights, and the swap fee to this function.
+
+```solidity
+/**********************************************************************************************
+    // calcSpotPrice                                                                             //
+    // sP = spotPrice                                                                            //
+    // bI = tokenBalanceIn                ( bI / wI )         1                                  //
+    // bO = tokenBalanceOut         sP =  -----------  *  ----------                             //
+    // wI = tokenWeightIn                 ( bO / wO )     ( 1 - sF )                             //
+    // wO = tokenWeightOut                                                                       //
+    // sF = swapFee                                                                              //
+    **********************************************************************************************/
+    function calcSpotPrice(
+        uint tokenBalanceIn,
+        uint tokenWeightIn,
+        uint tokenBalanceOut,
+        uint tokenWeightOut,
+        uint swapFee
+    )
+        public pure
+        returns (uint spotPrice)
+    {
+        uint numer = bdiv(tokenBalanceIn, tokenWeightIn);
+        uint denom = bdiv(tokenBalanceOut, tokenWeightOut);
+        uint ratio = bdiv(numer, denom);
+        uint scale = bdiv(BONE, bsub(BONE, swapFee));
+        return  (spotPrice = bmul(ratio, scale));
+    }
+```
+
+This is the function taken from BMath.sol. This is like the constant product formula, i.e., x * y = k, that Uniswap uses.
+
+We first calculate the numer, which is just the ratio of the token balance that we want to exchange with its weight. Denom is a token that we want for its weight. Then we calculate the ratio. After this, we calculate the scale and multiply the result by the scale to get the result.
+
+```solidity
+function getSpotPriceSansFee(address tokenIn, address tokenOut)
+        external view
+        _viewlock_
+        returns (uint spotPrice)
+    {}
+``` 
+
+This function calculates the spot price if the swap fee is zero. Everything is the same as with the above function, except this takes 0 in swapFee.
+
+```solidity
+function joinPool(uint poolAmountOut, uint[] calldata maxAmountsIn)
+        external
+        _logs_
+        _lock_
+    {}
+```
+
+This function allows liquidity providers to join the existing pool and get LP tokens based on the amount they have provided.
+
+```solidity
+require(_finalized, "ERR_NOT_FINALIZED");
+```
+
+pool must be finalized to join.
+
+```solidity
+uint poolTotal = totalSupply();
+```
+
+totalSupply is the ERC20 implementation that returns the total supply of the liquidity token.
+
+```solidity
+uint ratio = bdiv(poolAmountOut, poolTotal);
+```
+
+We calculate the ratio based on how much liquidity token we're giving to the liquidity provider.
+
+```solidity
+require(ratio != 0, "ERR_MATH_APPROX");
+```
+
+Of course, the ratio must be greater than 0 because we can't give more liquidity tokens than the total supply.
+
+```solidity
+for (uint i = 0; i < _tokens.length; i++) {}
+```
+
+We go through every token that the creator of the pool has mentioned. If the creator has mentioned ETH, USD, and USDT, we go through each token that the newly joined liquidity provider is going to provide.
+
+```solidity
+address t = _tokens[i];
+```
+
+We store the address of each token.
+
+```solidity
+uint bal = _records[t].balance;
+```
+
+We get the balance of the tokens in the pool.
+
+```solidity
+uint tokenAmountIn = bmul(ratio, bal);
+```
+
+We calculate how much the newly joined liquidity provider must pay. "bmul" is a function taken from BNum that checks for multiplication overflow.
+
+```solidity
+require(tokenAmountIn != 0, "ERR_MATH_APPROX");
+```
+
+The token amount that we need to pay must be greater than 0.
+
+```solidity
+require(tokenAmountIn <= maxAmountsIn[i], "ERR_LIMIT_IN");
+```
+
+The token that we need to pay must not be greater than the amount that we have specified. If so, we have to do the calculation again.
+
+```solidity
+_records[t].balance = badd(_records[t].balance, tokenAmountIn);
+```
+
+We add the balance for that token in our "_records" mapping.
+
+```solidity
+emit LOG_JOIN(msg.sender, t, tokenAmountIn);
+```
+
+We emit an event saying that this liquidity provider has provided this amount of this token.
+
+```solidity
+_pullUnderlying(t, msg.sender, tokenAmountIn);
+```
+
+We get that token balance from the joint liquidity provider for this contract.
+
+```solidity
+_mintPoolShare(poolAmountOut);
+```
+
+We mint the liquidity token for that liquidity provider.
+
+```solidity
+_pushPoolShare(msg.sender, poolAmountOut);
+```
+
+We transfer that amount to the liquidity provider.
+
+
+
+
+
+
+
+
+
