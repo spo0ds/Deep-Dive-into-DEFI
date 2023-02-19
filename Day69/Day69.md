@@ -1128,7 +1128,196 @@ _pushPoolShare(msg.sender, poolAmountOut);
 
 We transfer that amount to the liquidity provider.
 
+```solidity
+function exitPool(uint poolAmountIn, uint[] calldata minAmountsOut)
+        external
+        _logs_
+        _lock_
+    {}
+```
 
+This function is used when a liquidity provider wants to take out all of his or her tokens.
+
+```solidity
+require(_finalized, "ERR_NOT_FINALIZED");
+
+uint poolTotal = totalSupply();
+```
+
+The pool must be finalized, and we must obtain the total supply of tokens for the pool.
+
+```solidity
+uint exitFee = bmul(poolAmountIn, EXIT_FEE);
+```
+
+Liquidity providers need to pay a fee while exiting the pool.
+
+```solidity
+uint pAiAfterExitFee = bsub(poolAmountIn, exitFee);
+```
+
+We calculate the exact token after subtracting the exit fee.
+
+```solidity
+uint ratio = bdiv(pAiAfterExitFee, poolTotal);
+require(ratio != 0, "ERR_MATH_APPROX");
+```
+
+We get the ratio, which must be greater than 0.
+
+```solidity
+_pullPoolShare(msg.sender, poolAmountIn);
+```
+
+We get those liquidity tokens from the provider and put them into the smart contract.
+
+```solidity
+_pushPoolShare(_factory, exitFee);
+```
+
+We transfer that exitFee to the factory contract.
+
+```solidity
+_burnPoolShare(pAiAfterExitFee);
+```
+
+We burn those tokens.
+
+```solidity
+for (uint i = 0; i < _tokens.length; i++) {
+            address t = _tokens[i];
+            uint bal = _records[t].balance;
+            uint tokenAmountOut = bmul(ratio, bal);
+            require(tokenAmountOut != 0, "ERR_MATH_APPROX");
+            require(tokenAmountOut >= minAmountsOut[i], "ERR_LIMIT_OUT");
+            _records[t].balance = bsub(_records[t].balance, tokenAmountOut);
+            emit LOG_EXIT(msg.sender, t, tokenAmountOut);
+            _pushUnderlying(t, msg.sender, tokenAmountOut);
+        }
+```
+
+We just transfer all the tokens provided by the liquidity provider into the pool.
+
+```solidity
+function swapExactAmountIn(
+        address tokenIn,
+        uint tokenAmountIn,
+        address tokenOut,
+        uint minAmountOut,
+        uint maxPrice
+    )
+        external
+        _logs_
+        _lock_
+        returns (uint tokenAmountOut, uint spotPriceAfter)
+    {}
+```
+
+This function lets us specify the token amount that we want to get, get the token amount that we want, and also returns the price after the swap.
+
+```solidity
+require(_records[tokenIn].bound, "ERR_NOT_BOUND");
+require(_records[tokenOut].bound, "ERR_NOT_BOUND");
+require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
+```
+
+Tokens in and out must be bound to the pool, and the pool must be public.
+
+```solidity
+Record storage inRecord = _records[address(tokenIn)];
+Record storage outRecord = _records[address(tokenOut)];
+```
+
+We get the data of those in and out tokens in these storage variables.
+
+```solidity
+require(tokenAmountIn <= bmul(inRecord.balance, MAX_IN_RATIO), "ERR_MAX_IN_RATIO");
+```
+
+The token amount that we want to swap must be less than the ratio of the total balance of that token in a pool. MAX_IN_RATIO is BONE / 2 which is 10 ** 18 / 2  which is 5 * 10 ** 17.
+
+```solidity
+uint spotPriceBefore = calcSpotPrice(
+                                    inRecord.balance,
+                                    inRecord.denorm,
+                                    outRecord.balance,
+                                    outRecord.denorm,
+                                    _swapFee
+                                );
+```
+
+We calculate the spot price before the swap.
+
+```solidity
+require(spotPriceBefore <= maxPrice, "ERR_BAD_LIMIT_PRICE");
+```
+
+The exchange rate must be smaller than the user has specified.
+
+```solidity
+tokenAmountOut = calcOutGivenIn(
+                            inRecord.balance,
+                            inRecord.denorm,
+                            outRecord.balance,
+                            outRecord.denorm,
+                            tokenAmountIn,
+                            _swapFee
+                        );
+```
+
+This function calculates the token that we want given the token in and token out data, the token in that we have specified, and the swap fee.
+
+```solidity
+require(tokenAmountOut >= minAmountOut, "ERR_LIMIT_OUT");
+```
+
+We require that the token amount be greater than the minimum amount specified.
+
+```solidity
+inRecord.balance = badd(inRecord.balance, tokenAmountIn);
+outRecord.balance = bsub(outRecord.balance, tokenAmountOut);
+```
+
+We add the token that we want to swap and subtract the token that we got in exchange.
+
+```solidity
+spotPriceAfter = calcSpotPrice(
+                                inRecord.balance,
+                                inRecord.denorm,
+                                outRecord.balance,
+                                outRecord.denorm,
+                                _swapFee
+                            );
+```
+
+We calculate the spot price after the trade.
+
+```solidity
+require(spotPriceAfter >= spotPriceBefore, "ERR_MATH_APPROX");     
+require(spotPriceAfter <= maxPrice, "ERR_LIMIT_PRICE");
+require(spotPriceBefore <= bdiv(tokenAmountIn, tokenAmountOut), "ERR_MATH_APPROX");
+```
+
+require statements that we need to satisfy.
+
+```solidity
+emit LOG_SWAP(msg.sender, tokenIn, tokenOut, tokenAmountIn, tokenAmountOut);
+```
+
+event specifying that the trade has been done.
+
+```solidity
+_pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
+_pushUnderlying(tokenOut, msg.sender, tokenAmountOut);
+```
+
+We get the token in from the swapper to the contract and the token out from the pool to the swapper.
+
+```solidity
+return (tokenAmountOut, spotPriceAfter);
+```
+
+We get the amount of tokens that we get after the swap and the exchange rate after the swap.
 
 
 
