@@ -60,6 +60,8 @@ The price is determined by a pricing formula for the pool, which is a generaliza
 
 ## Smart Contract walkthrough 
 
+If I don't write the explanation below the code, it means that I don't know what it's doing or why they have declared it, but later down the line you'll figure out the purpose.
+
 ### BFactory.sol 
 
 This contract builds the new pool and log their addresses.
