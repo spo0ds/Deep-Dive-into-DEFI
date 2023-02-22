@@ -1319,6 +1319,72 @@ return (tokenAmountOut, spotPriceAfter);
 
 We get the amount of tokens that we get after the swap and the exchange rate after the swap.
 
+```solidity
+function swapExactAmountOut(
+        address tokenIn,
+        uint maxAmountIn,
+        address tokenOut,
+        uint tokenAmountOut,
+        uint maxPrice
+    )
+        external
+        _logs_
+        _lock_ 
+        returns (uint tokenAmountIn, uint spotPriceAfter)
+    {}
+```
+
+This function is like before. It calculates the exact token in based on the given token out.
+
+```solidity
+function joinswapExternAmountIn(address tokenIn, uint tokenAmountIn, uint minPoolAmountOut)
+        external
+        _logs_
+        _lock_
+        returns (uint poolAmountOut)
+
+    {        }
+```
+
+Pay tokenAmountIn of token tokenIn to join the pool, getting poolAmountOut of the pool shares.
+
+```solidity
+function joinswapPoolAmountOut(address tokenIn, uint poolAmountOut, uint maxAmountIn)
+        external
+        _logs_
+        _lock_
+        returns (uint tokenAmountIn)
+    {}
+```
+
+Specify poolAmountOut pool shares that you want to get, and a token tokenIn to pay with. This costs tokenAmountIn tokens (these went into the pool).
+
+```solidity
+function exitswapPoolAmountIn(address tokenOut, uint poolAmountIn, uint minAmountOut)
+        external
+        _logs_
+        _lock_
+        returns (uint tokenAmountOut)
+    {}
+```
+
+Pay poolAmountIn pool shares into the pool, getting tokenAmountOut of the given token tokenOut out of the pool.
+
+```solidity
+function exitswapExternAmountOut(address tokenOut, uint tokenAmountOut, uint maxPoolAmountIn)
+        external
+        _logs_
+        _lock_
+        returns (uint poolAmountIn)
+    {}
+```
+
+Specify tokenAmountOut of token tokenOut that you want to get out of the pool. This costs poolAmountIn pool shares (these went into the pool).
+
+
+
+
+
 
 
 
