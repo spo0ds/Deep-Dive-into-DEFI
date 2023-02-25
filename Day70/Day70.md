@@ -39,3 +39,84 @@ The curve finance uses special curve looks like:
 For certain regions, it keeps flat, meaning that when you move between two quantities, the price doesn't really fluctuate that much, whereas on Uniswap, it fluctuates a lot more. The benefit of the flat region is that you have a pretty stable price. However, if you go outside the range, you get a very lopsided range. The reason that this is okay is because the range of stable coins can only be between $0.95 and $1.05. If it varies greater than that, then something else is clearly wrong, and it's actually not a curve problem to keep it within this kind of range that we've defined.
 
 The amazing thing about this particular formula is that the curve can get the slippage (amount of loss between stablecoins) to be literally less than 1%. So in our previous example, rather than losing $400, the most they would lose is maybe $10, which is a massive improvement.
+
+## Math behind Curve Finance
+
+Here we'll derive the equation of the curve, and you'll have a better understanding of how the pricing on the curve is determined. For the trade of stablecoin, we can express it with the equation:
+
+>x + y = C
+
+Let's say we start with 50 DAI (x) and 50 USDC (y). So c equals 100. If I were to sell 20 DAI for USDC, I would get 20 DAI, so the remaining USDC is 30 and DAI is 70. If I sell 30 of my USDC, then the amount of DAI that needs to be inside the pool is 20. In all cases, the total number of tokens remains the same.
+
+However, in the real world, the price of DAI is not exactly equal to the price of USDC. So we also want to use the equation that says, "The price of DAI is not exactly equal to the price of USDC." We can do that with the constant product formula.
+
+> x * y = K
+
+This graph basically says, "The fewer tokens there are, the more expensive it gets."
+
+Curve finance combines these two graphs, and you'll get the curve below.
+
+![curve](Images/n5.png)
+
+Let's try creating the curve. We'll start with the condition that says:
+
+> x + y = D
+
+And we'll also use the constant product formula.
+
+> $${ x * y = ( D/2 )^2 }$$
+
+Combining the two equations above, we get,
+
+> $${ x * y + xy = D + ( D/2 )^2 }$$
+
+However, when this equation is plotted on a graph, it looks like this:
+
+![graph](Images/n10.png)
+
+not something that's flat in the middle.
+
+We can accomplish it by amplifying the `x + y = D` part of the equation. So we multiply the equation with variable `chi ( χ )`.
+
+> $${ χ (x + y) + xy = χD + ( D/2 )^2 }$$
+
+When the variable `χ = 0` , we're left with 
+
+> $${ x * y = ( D/2 )^2 }$$
+
+So the equation becomes the constant product curve.
+
+On the other hand, when `χ = ∞`, we're left with an equation that looks like a constant sum.
+
+> χ (x + y) = χD
+
+Increasing χ  makes the curve more and more flat.This is also true when x + y is big. So we want to express that when χ  is big, the curve is flat, and when χ is small, the curve acts like a constant product formula regardless of how big or small x + y is. We can do this by taking this equation:
+
+> χ (x + y) = χD
+
+We normalize it by dividing both sides by D. We get:
+
+> Dχ (x + y) = χD^2
+
+Now our equation looks like this:
+
+> $${ Dχ (x + y) + xy = χD^2 + ( D/2 )^2 }$$
+
+This is exactly the same equation that is mentioned in the curve whitepaper.
+
+![chi](Images/n11.png)
+
+Furthermore, in the whitepaper, set χ equals to:
+
+![chiValue](Images/n12.png)
+
+In order to do so, we make χ dynamic. When the portfolio is in perfect balance, it’s equal to a constant A, but it falls off to 0 when it's out of balance.
+
+Then we can put the value of chi in the above equation.
+
+![final](Images/n13.png)
+
+"When a portfolio of coins {xi} is loaded up, we need to calculate D, and we
+need to hold this equation true when we perform trades (e.g. swap xi into xj ).
+That is done by finding an iterative, converging solution either for D, or for xj
+when all other variables are known."
