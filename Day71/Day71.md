@@ -9,3 +9,115 @@ Impermanent loss insurance means if I put some liquidity into a pool, prices can
 Liquidity providers pay monthly to protect themselves if something really bad happens. With Bancor, you pay 15% of the trading fees that you earn as a liquidity provider into a pool that protects you and your fellow liquidity providers from impermanent losses. As mentioned, Bancor also uses fees earned on its own BNT supplied to its pool to help fund its insurance payouts, and after covering the cost of insurance, it then burns any excess fees to keep the total supply in check.
 
 BNT is not a governance token on its own. You need to actually stake BNT in Bancor in order to get voting rights to vote in the Bancor DAO. Whenever you stake your BNT tokens, you technically receive vBNT. One could technically say Bancor has a POS governance model. All the voters in the Bancor DAO are both BNT holders and liquidity providers, whereas in a DEX like Uniswap, token holders who vote on the changes don't have to be liquidity providers. This basically means all BNT holders will be voting in a way that is most likely beneficial to all the other liquidity providers, while on the other hand, Uniswap holders will vote in a way that's exclusively beneficial for the Uni token and not necessarily the liquidity providers.
+
+## Smart contract walkthrough
+
+### Vault.sol
+
+Vault allows for the secure management and withdrawal of tokens. 
+
+First we can see alots of imports in the vault contract.
+
+```solidity
+// SPDX-License-Identifier: SEE LICENSE IN LICENSE
+pragma solidity 0.8.13;
+
+import { Address } from "@openzeppelin/contracts/utils/Address.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+
+import { ITokenGovernance } from "@bancor/token-governance/contracts/ITokenGovernance.sol";
+
+import { IVault, ROLE_ASSET_MANAGER } from "./interfaces/IVault.sol";
+import { Upgradeable } from "../utility/Upgradeable.sol";
+import { IERC20Burnable } from "../token/interfaces/IERC20Burnable.sol";
+import { Token } from "../token/Token.sol";
+import { TokenLibrary } from "../token/TokenLibrary.sol";
+
+import { Utils, AccessDenied, NotPayable, InvalidToken } from "../utility/Utils.sol";
+```
+
+Here's a brief explanation of each import:
+
+    Address from @openzeppelin/contracts/utils/Address.sol: This is a library provided by the OpenZeppelin framework that provides various utility functions for working with Ethereum addresses.
+
+    IERC20 from @openzeppelin/contracts/token/ERC20/IERC20.sol: This is an interface for the ERC20 token standard, which defines a set of functions that a token contract should implement.
+
+    SafeERC20 from @openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol: This is a library provided by the OpenZeppelin framework that provides a safe way to interact with ERC20 tokens, preventing common errors such as reentrancy attacks and incorrect token transfers.
+
+    ReentrancyGuardUpgradeable from @openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol: This is a contract provided by the OpenZeppelin framework that helps prevent reentrancy attacks by using a mutex lock.
+
+    PausableUpgradeable from @openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol: This is a contract provided by the OpenZeppelin framework that allows the contract owner to pause certain functions in case of emergency.
+
+    ITokenGovernance from @bancor/token-governance/contracts/ITokenGovernance.sol: This is an interface for the governance contract of the Bancor token.
+
+    IVault and ROLE_ASSET_MANAGER from ./interfaces/IVault.sol: These are interfaces defined in the IVault.sol file in the same directory, which define the functions and roles of the Vault smart contract.
+
+    Upgradeable from ../utility/Upgradeable.sol: This is a contract that provides the basic functionality for upgradeable contracts, allowing the contract owner to upgrade the contract logic without losing the state.
+
+    IERC20Burnable from ../token/interfaces/IERC20Burnable.sol: This is an interface for ERC20 tokens that can be burned (destroyed).
+
+    Token and TokenLibrary from ../token/Token.sol: These are contracts that define the implementation of the Token contract, which represents an ERC20 token with added functionality for burning and minting.
+
+    Utils, AccessDenied, NotPayable, and InvalidToken from ../utility/Utils.sol: These are utility contracts that define various error messages and other utility functions used throughout the contract.
+    
+Now we define the Vault contract.
+
+```solidity
+abstract contract Vault is IVault, Upgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable, Utils {}
+```
+
+The abstract keyword means that the Vault contract cannot be instantiated on its own, but needs to be inherited by another contract that will provide the necessary implementation for its abstract functions. An abstract contract is a way to define a contract with unimplemented functions and variables that can be used as a parent contract for other contracts to inherit from and implement the missing functionality.
+
+```solidity
+using Address for address payable;
+using SafeERC20 for IERC20;
+using TokenLibrary for Token;
+```
+
+The using keyword is used to bring in functionality from a library contract.
+
+```solidity
+// the address of the BNT token
+    IERC20 internal immutable _bnt;
+
+    // the address of the BNT token governance
+    ITokenGovernance internal immutable _bntGovernance;
+
+    // the address of the vBNT token
+    IERC20 internal immutable _vbnt;
+
+    // the address of the vBNT token governance
+    ITokenGovernance internal immutable _vbntGovernance;
+```
+
+The purpose of each variable declaration is as follows:
+
+    _bnt: This is a variable of type IERC20, which is an interface for the Bancor Network Token (BNT) ERC20 contract. 
+
+    _bntGovernance: This is a variable of type ITokenGovernance, which is an interface for the BNT token governance contract. 
+
+    _vbnt: This is a variable of type IERC20, which is an interface for the Bancor Vortex (vBNT) ERC20 contract. 
+
+    _vbntGovernance: This is a variable of type ITokenGovernance, which is an interface for the vBNT token governance contract. 
+    
+The variable are marked as internal which means they are only accessible within the contract and immutable, meaning that their value cannot be changed once they are initialized.
+
+```solidity
+/**
+     * @dev a "virtual" constructor that is only used to set immutable state variables
+     */
+    constructor(
+        ITokenGovernance initBNTGovernance,
+        ITokenGovernance initVBNTGovernance
+    ) validAddress(address(initBNTGovernance)) validAddress(address(initVBNTGovernance)) {
+        _bntGovernance = initBNTGovernance;
+        _bnt = initBNTGovernance.token();
+        _vbntGovernance = initVBNTGovernance;
+        _vbnt = initVBNTGovernance.token();
+    }
+```
+
+
