@@ -14,7 +14,7 @@ BNT is not a governance token on its own. You need to actually stake BNT in Banc
 
 ### Vault.sol
 
-Vault allows for the secure management and withdrawal of tokens. 
+Vault allows for the secure management and withdrawal of tokens.
 
 First we can see alots of imports in the vault contract.
 
@@ -62,7 +62,7 @@ Here's a brief explanation of each import:
     Token and TokenLibrary from ../token/Token.sol: These are contracts that define the implementation of the Token contract, which represents an ERC20 token with added functionality for burning and minting.
 
     Utils, AccessDenied, NotPayable, and InvalidToken from ../utility/Utils.sol: These are utility contracts that define various error messages and other utility functions used throughout the contract.
-    
+
 Now we define the Vault contract.
 
 ```solidity
@@ -95,14 +95,14 @@ The using keyword is used to bring in functionality from a library contract.
 
 The purpose of each variable declaration is as follows:
 
-    _bnt: This is a variable of type IERC20, which is an interface for the Bancor Network Token (BNT) ERC20 contract. 
+    _bnt: This is a variable of type IERC20, which is an interface for the Bancor Network Token (BNT) ERC20 contract.
 
-    _bntGovernance: This is a variable of type ITokenGovernance, which is an interface for the BNT token governance contract. 
+    _bntGovernance: This is a variable of type ITokenGovernance, which is an interface for the BNT token governance contract.
 
-    _vbnt: This is a variable of type IERC20, which is an interface for the Bancor Vortex (vBNT) ERC20 contract. 
+    _vbnt: This is a variable of type IERC20, which is an interface for the Bancor Vortex (vBNT) ERC20 contract.
 
-    _vbntGovernance: This is a variable of type ITokenGovernance, which is an interface for the vBNT token governance contract. 
-    
+    _vbntGovernance: This is a variable of type ITokenGovernance, which is an interface for the vBNT token governance contract.
+
 The variable are marked as internal which means they are only accessible within the contract and immutable, meaning that their value cannot be changed once they are initialized.
 
 ```solidity
@@ -120,4 +120,91 @@ The variable are marked as internal which means they are only accessible within 
     }
 ```
 
+The constructor also has two modifiers: validAddress(address(initBNTGovernance)) and validAddress(address(initVBNTGovernance)). These modifiers ensure that both parameters are valid Ethereum addresses by checking if they are not null. If either of the addresses is null, the constructor will revert with an InvalidAddress() error message, which is defined in the Utils contract. It's a upgradeable contract so we can set modifier in the constructor.
 
+```solidity
+function __Vault_init() internal onlyInitializing {
+        __Upgradeable_init();
+        __Pausable_init();
+        __ReentrancyGuard_init();
+
+        __Vault_init_unchained();
+    }
+```
+
+It is marked with the onlyInitializing modifier, which restricts its execution to occur only during contract initialization. This is achieved by using a boolean flag that is set to true when the contract is being initialized and then set to false when the initialization is complete.
+
+The function itself calls three other initialization functions: **Upgradeable_init(), **Pausable_init(), and \_\_ReentrancyGuard_init(). These functions are inherited from other contracts and perform their respective initialization tasks.
+
+Finally, the function calls \_\_Vault_init_unchained(), which is another internal function that contains the remaining initialization logic specific to the Vault contract. This separation of initialization logic into two functions is a common pattern in upgradeable contracts to allow for easier upgrades and modifications of initialization logic in the future.
+
+```solidity
+/**
+     * @dev performs contract-specific initialization
+     */
+    function __Vault_init_unchained() internal onlyInitializing {}
+
+    // solhint-enable func-name-mixedcase
+
+    /**
+     * @dev returns the asset manager role
+     */
+    function roleAssetManager() external pure returns (bytes32) {
+        return ROLE_ASSET_MANAGER;
+    }
+
+    // allows execution only by an authorized operation
+    modifier whenAuthorized(
+        address caller,
+        Token token,
+        address payable target,
+        uint256 amount
+    ) {
+        if (!isAuthorizedWithdrawal(caller, token, target, amount)) {
+            revert AccessDenied();
+        }
+
+        _;
+    }
+
+    /**
+     * @dev returns whether withdrawals are currently paused
+     */
+    function isPaused() external view returns (bool) {
+        return paused();
+    }
+
+    /**
+     * @dev pauses withdrawals
+     *
+     * requirements:
+     *
+     * - the caller must have the ROLE_ADMIN privileges
+     */
+    function pause() external onlyAdmin {
+        _pause();
+    }
+
+    /**
+     * @dev unpauses withdrawals
+     *
+     * requirements:
+     *
+     * - the caller must have the ROLE_ADMIN privileges
+     */
+    function unpause() external onlyAdmin {
+        _unpause();
+    }
+```
+
+The function **Vault_init_unchained() is an internal function that is used for contract-specific initialization. It is called by the **Vault_init() function which is also internal and is only callable during contract initialization. This function calls some other initialization functions inherited from other contracts such as **Upgradeable_init(), **Pausable_init(), and \_\_ReentrancyGuard_init(). The onlyInitializing modifier restricts the access to the function to only be available during initialization.
+
+The roleAssetManager() function is a public function that returns a bytes32 value which represents the asset manager role.
+
+The whenAuthorized() modifier is used to restrict the execution of a function only to authorized operations. It takes four arguments, including the caller's address, a token address, a target address, and a uint256 amount. It reverts with an AccessDenied() error if the isAuthorizedWithdrawal() function returns false.
+
+The isPaused() function is a public function that returns a boolean value indicating whether withdrawals are currently paused.
+
+The pause() function is a public function that pauses withdrawals. It requires that the caller has the ROLE_ADMIN privilege.
+
+The unpause() function is a public function that unpauses withdrawals. It also requires that the caller has the ROLE_ADMIN privilege.
