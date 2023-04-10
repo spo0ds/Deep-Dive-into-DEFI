@@ -208,3 +208,123 @@ The isPaused() function is a public function that returns a boolean value indica
 The pause() function is a public function that pauses withdrawals. It requires that the caller has the ROLE_ADMIN privilege.
 
 The unpause() function is a public function that unpauses withdrawals. It also requires that the caller has the ROLE_ADMIN privilege.
+
+```solidity
+function withdrawFunds(
+        Token token,
+        address payable target,
+        uint256 amount
+    ) external validAddress(target) nonReentrant whenNotPaused whenAuthorized(msg.sender, token, target, amount) {}
+```
+
+The function withdraws funds from the Vault contract and sends them to the target address.The function declaration takes three parameters: Token token, which is an instance of the Token contract, address payable target, which is the address to which the funds will be transferred, and uint256 amount, which is the amount of funds to withdraw.The validAddress modifier checks if the target address is a valid Ethereum address.The nonReentrant modifier ensures that the function cannot be called again before the previous call has completed.The whenNotPaused modifier ensures that the function can only be called when the contract is not paused.The whenAuthorized modifier checks whether the caller is authorized to withdraw funds from the contract.
+
+```solidity
+function isAuthorizedWithdrawal(
+        address caller,
+        Token token,
+        address target,
+        uint256 amount
+    ) internal view virtual returns (bool);
+```
+
+The isAuthorizedWithdrawal function is just a declaration of a function that takes four parameters: caller, token, target, and amount. This function is intended to be implemented by contracts that extend the Vault contract and inherit from the AccessControl contract.The actual implementation of the isAuthorizedWithdrawal function is left to the inheriting contract that implements it. In this way, the Vault contract can be customized to implement authorization constraints specific to the needs of the application.
+
+For example, if a Vault contract is used to hold funds for a decentralized exchange, the isAuthorizedWithdrawal function might be implemented to check whether the caller is a registered trading bot and whether the target address is a whitelisted liquidity pool contract. If these conditions are not met, the function would return false, and the withdrawal would be denied.
+
+```solidity
+if (amount == 0) {
+            return;
+        }
+```
+
+This code block checks if the amount to withdraw is zero. If it is, the function returns immediately without doing anything.
+
+ If the withdraw amount is zero, the function simply returns without doing anything. This does cost some gas.A contract that inherits from the Vault contract might want to implement its own withdraw function that has different behavior when the withdraw amount is zero.
+ 
+ ```solidity
+ if (token.isNative()) {
+            target.sendValue(amount);
+        } else {
+            token.safeTransfer(target, amount);
+        }
+```
+
+This checks if the token to withdraw is a native token, which means it is ether. If it is, the funds are transferred using the sendValue function of the target address, which avoids the gas limit issue that occurs when using a regular transfer function. If it is not a native token, the safeTransfer function of the token contract is called to transfer the funds to the target address.
+
+```solidity
+function isNative(Token token) internal pure returns (bool) {
+        return address(token) == NATIVE_TOKEN_ADDRESS;
+    }
+```
+
+```
+The reason why a regular transfer for a native token (i.e., ETH) exceeds the gas limit is due to a limitation in the Ethereum Virtual Machine (EVM) called the "2300 gas stipend".
+
+When a contract receives a call from another contract, it is only provided with a limited amount of gas (currently 2300 gas) for execution. This limited gas stipend is intended to prevent malicious contracts from consuming too much gas or executing indefinitely, which could cause the network to become congested or even halt.
+
+A regular ETH transfer involves sending a message to the recipient's address, which triggers a fallback function in the recipient's contract. This fallback function consumes gas, and if it consumes more than 2300 gas, the transaction will revert due to an out-of-gas error.
+
+To work around this limitation, the sendValue method is used instead of the regular transfer or send methods. The sendValue method is a low-level method that uses the call function, which does not have the same gas limits as the regular transfer functions.
+```
+
+```solidity
+function burn(
+        Token token,
+        uint256 amount
+    ) external nonReentrant whenNotPaused whenAuthorized(msg.sender, token, payable(address(0)), amount) {}
+```
+
+It has the nonReentrant and whenNotPaused modifiers applied to it, meaning that it cannot be called again until the previous call has completed and that it can only be called when the contract is not paused. Additionally, it has the whenAuthorized modifier applied, which checks if the caller is authorized to perform the given action (burning the specified amount of the specified token).
+
+```solidity
+        if (amount == 0) {
+            return;
+        }
+
+        if (token.isNative()) {
+            revert InvalidToken();
+        }
+```
+
+This checks if the amount argument is zero and specified token is the native token of the network.If it is, then the function reverts with an InvalidToken error. This is because the Vault contract only supports ERC-20 tokens, so native tokens cannot be burned.
+
+```
+The reason the contract reverts if someone tries to burn the native token is because native tokens cannot be burned, i.e., destroyed. Native tokens, such as Ether, are a fundamental part of the Ethereum network, and they cannot be destroyed or removed from circulation.
+
+In the case of the Vault contract, native tokens are handled differently from other ERC20 tokens because they don't have a burn function. Therefore, attempting to burn a native token doesn't make sense and would result in an error, so the contract is designed to revert the transaction and prevent any loss of funds.
+
+On the other hand, users can withdraw native tokens from the Vault, because the contract can simply transfer them to the user's address, without destroying them.
+```
+
+The native token address for the Ethereum is `0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`.
+
+```solidity
+        if (token.isEqual(_bnt)) {
+            _bntGovernance.burn(amount);
+        } else if (token.isEqual(_vbnt)) {
+            _vbntGovernance.burn(amount);
+        } else {
+            IERC20Burnable(address(token)).burn(amount);
+        }
+```
+
+First checks if the specified token is equal to the _bnt or _vbnt tokens. These are special tokens that have their own governance modules, which are contracts responsible for managing the supply and burning of these tokens. If the token is equal to _bnt or _vbnt, then the corresponding governance module's burn function is called with the specified amount.
+
+If the token is not equal to _bnt or _vbnt, then the burn function of the IERC20Burnable interface is called on the token instance with the specified amount. This assumes that the specified token implements the IERC20Burnable interface, which is an extension of the IERC20 interface that adds a burn function to the standard ERC-20 interface.
+
+```solidity
+function isPayable() public view virtual returns (bool);
+```
+
+The isPayable function returns a boolean value indicating whether the contract can receive Ether or not.The purpose of the isPayable function is to allow a contract to indicate whether or not it can receive native tokens, such as Ether. If a contract wants to receive native tokens, it should override the isPayable function to return true. If the contract does not want to receive native tokens, it should override the function to return false.
+
+```solidity
+receive() external payable {
+        if (!isPayable()) {
+            revert NotPayable();
+        }
+    }
+```
+
+The receive function is a fallback function that is triggered when someone tries to send Ether to the contract without specifying a function to call. The receive function checks whether the contract is allowed to receive Ether by calling the isPayable function. If the isPayable function returns false, the receive function reverts with an error message. If the isPayable function returns true, the receive function accepts the Ether and does nothing with it.
