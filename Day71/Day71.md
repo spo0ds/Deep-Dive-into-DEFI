@@ -579,4 +579,21 @@ The __ExternalProtectionVault_init_unchained() function sets up the administrati
 
 The _setRoleAdmin function is defined in the OpenZeppelin AccessControlUpgradeable.sol contract. This contract provides a set of access control tools to enable role-based access control in Solidity contracts.
 
+## ExternalRewardsVault.sol
 
+ It is responsible for managing external rewards, which can be paid out to users of the protocol.
+ 
+ ```solidity
+ function isAuthorizedWithdrawal(
+        address caller,
+        Token /* Token */,
+        address /* target */,
+        uint256 /* amount */
+    ) internal view override returns (bool) {
+        return hasRole(ROLE_ASSET_MANAGER, caller);
+    }
+```
+ 
+ The contract defines an isAuthorizedWithdrawal() function which is used to check whether a caller is authorized to withdraw tokens from the contract. This function takes four arguments: caller, Token, target, and amount. It checks whether the caller has the ROLE_ASSET_MANAGER role, and returns true if they do.
+ 
+ 
