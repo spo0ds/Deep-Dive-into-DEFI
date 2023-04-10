@@ -328,3 +328,179 @@ receive() external payable {
 ```
 
 The receive function is a fallback function that is triggered when someone tries to send Ether to the contract without specifying a function to call. The receive function checks whether the contract is allowed to receive Ether by calling the isPayable function. If the isPayable function returns false, the receive function reverts with an error message. If the isPayable function returns true, the receive function accepts the Ether and does nothing with it.
+
+## MasterVault.sol
+
+The Master Vault contract is the main contract for managing the funds of the Bancor protocol and ensuring that only authorized parties can access and manage those funds.It inherits from the Vault contract and implements the IMasterVault interface, which defines the functions that can be used to manage the funds held by the Master Vault.
+
+IVersioned: This import is an interface from the utility/interfaces/IVersioned.sol file and is used by the MasterVault contract to provide a version number for the contract.
+
+ROLE_ASSET_MANAGER: This is a constant defined in the interfaces/IVault.sol file and is used as a role for the MasterVault contract.
+
+```solidity
+// the asset manager role is required to access all the funds
+bytes32 constant ROLE_ASSET_MANAGER = keccak256("ROLE_ASSET_MANAGER");
+```
+
+```
+No, the fact that a role is required to access funds does not necessarily mean that Bancor is centralized.In the case of Bancor, the role-based access control is used to manage access to the BNT reserve, which is a critical component of the Bancor ecosystem. By controlling access to the reserve, Bancor can ensure that only authorized parties are able to interact with the reserve and that the reserve is protected from unauthorized withdrawals or misuse. 
+```
+
+`What's the difference between Uniswap and Bancor based on role based access mechanism?`
+
+```
+Uniswap, being a completely decentralized protocol, does not have a role-based access control mechanism. Instead, anyone with an Ethereum wallet can interact with the protocol and use its functions, such as swapping tokens or providing liquidity. There is no privileged access to the protocol's functions or funds, and everything is done through smart contracts that execute autonomously on the blockchain.
+
+On the other hand, Bancor has a more centralized approach, where certain roles have specific privileges and permissions to access and manage the funds of the protocol. For example, the Asset Manager role in Bancor has the authority to manage and withdraw funds from the protocol's vault contract. Bancor's approach can be considered more centralized compared to Uniswap, as the protocol has specific roles and permissions that can access its functions and funds. However, it's worth noting that Bancor's governance model is constantly evolving, and the protocol has been working to become more decentralized over time.
+```
+
+```
+The role-based access manager ensures that only authorized parties are able to withdraw funds from the reserve, such as the asset manager or the BNT manager. So, in theory, your deposited funds cannot be utilized by the role-based manager without your explicit consent.
+
+That being said, it's important to note that all smart contracts are executed on the blockchain, which is a public ledger. This means that all transactions, including those involving the reserve, are publicly visible and cannot be reversed or modified. So, while the role-based access manager helps to ensure that only authorized parties can interact with the reserve, it's ultimately up to the user to determine whether they trust the protocol and its administrators to manage their funds appropriately.
+```
+
+```solidity
+contract MasterVault is IMasterVault, Vault {}
+```
+
+MasterVault implements all of the functions and events defined in both of these interfaces.
+
+```solidity
+// the BNT manager role is only required to access the BNT reserve
+bytes32 private constant ROLE_BNT_MANAGER = keccak256("ROLE_BNT_MANAGER");
+```
+
+The constant is used to define a role-based access control mechanism where certain functions can only be called by an account that has been granted the ROLE_BNT_MANAGER role. Specifically, the comment suggests that the ROLE_BNT_MANAGER role is only required to access the BNT reserve.
+
+`What's the difference between "ROLE_ASSET_MANAGER" and "ROLE_BNT_MANAGER"?`
+
+"ROLE_ASSET_MANAGER" and "ROLE_BNT_MANAGER" are two different roles defined in the MasterVault contract.
+
+The "ROLE_ASSET_MANAGER" role is used to manage all other assets held by the MasterVault contract besides the BNT token. The holder of this role can deposit and withdraw any other asset held by the contract.
+
+On the other hand, the "ROLE_BNT_MANAGER" role is used specifically to manage the BNT token held by the contract. The holder of this role can deposit and withdraw BNT tokens, as well as perform other operations that involve the BNT reserve, such as minting or burning the Bancor Network Token (BNT) in exchange for other assets.
+
+```solidity
+// upgrade forward-compatibility storage gap
+uint256[MAX_GAP - 0] private __gap;
+```
+
+It is a technique used to ensure forward-compatibility of smart contracts, which is called "Upgradeability". The upgradeability approach allows smart contracts to be updated in a way that does not break their original functionality or require the creation of a new smart contract.
+
+The uint256[MAX_GAP - 0] private __gap; line of code is creating a storage gap, which is an unused storage variable that can be used to add new variables to the smart contract in future upgrades without overwriting existing storage variables.
+
+`MAX_GAP` is define in Upgradeable.sol.
+
+```solidity
+uint32 internal constant MAX_GAP = 50;
+```
+
+ By reserving this storage gap, the smart contract is allowing for the addition of new storage variables in future upgrades without breaking the existing functionality or overwriting existing storage variables.
+ 
+ `Doesn't this cost more gas?`
+ 
+ Declaring a large array in a contract can have some gas cost associated with it, but in the case of using the array to create a storage gap for forward compatibility, the gas cost is a one-time expense that is only incurred during contract deployment.
+ 
+ `How does it provides the storage slot for upgrades? `
+ 
+ When a contract is deployed, the EVM (Ethereum Virtual Machine) reserves a continuous block of storage slots for that contract. The contract can then store data in these reserved storage slots as it needs.
+
+When the contract is upgraded, the upgraded contract might need to store additional data, or might need to modify the existing data structures. To prevent the upgraded contract from overwriting the data already stored by the original contract, a "gap" is left between the original data structures and the new data structures. The gap is left empty so that the new data structures can be added without overwriting the old ones.
+
+To reserve the gap, the contract includes a private storage array with a large number of unused elements. These unused elements are essentially "dead" storage slots that can be used as a gap. Since the unused elements are not being used by the contract, the gap will not overwrite any existing data when the upgraded contract is deployed.
+
+This method of reserving storage slots is gas-efficient, since the EVM only charges for the amount of storage actually used by the contract. The unused storage slots in the gap are not charged for, since they are never used by the contract.
+
+```solidity
+constructor(
+        ITokenGovernance initBNTGovernance,
+        ITokenGovernance initVBNTGovernance
+    ) Vault(initBNTGovernance, initVBNTGovernance) {}
+```
+
+The constructor of the MasterVault contract initializes the parent Vault contract by calling its constructor with two arguments, initBNTGovernance and initVBNTGovernance.
+
+```solidity
+/**
+     * @dev fully initializes the contract and its parents
+     */
+    function initialize() external initializer {
+        __MasterVault_init();
+    }
+
+    // solhint-disable func-name-mixedcase
+
+    /**
+     * @dev initializes the contract and its parents
+     */
+    function __MasterVault_init() internal onlyInitializing {
+        __Vault_init();
+
+        __MasterVault_init_unchained();
+    }
+
+    /**
+     * @dev performs contract-specific initialization
+     */
+    function __MasterVault_init_unchained() internal onlyInitializing {
+        // set up administrative roles
+        _setRoleAdmin(ROLE_ASSET_MANAGER, ROLE_ADMIN);
+        _setRoleAdmin(ROLE_BNT_MANAGER, ROLE_ADMIN);
+    }
+
+```
+
+    initialize(): This is an external function that calls the __MasterVault_init() function to fully initialize the contract and its parents.
+
+    __MasterVault_init(): This is an internal function that calls the __Vault_init() function to initialize the parent Vault contract, and then calls __MasterVault_init_unchained() to perform contract-specific initialization.
+
+    __MasterVault_init_unchained(): This is an internal function that sets up the administrative roles for the contract using _setRoleAdmin(). Specifically, it sets the role admin for ROLE_ASSET_MANAGER and ROLE_BNT_MANAGER to be ROLE_ADMIN.
+
+Overall, the purpose of these functions is to ensure that the MasterVault contract is fully initialized and set up with the appropriate administrative roles.
+
+```solidity
+/**
+     * @inheritdoc Upgradeable
+     */
+    function version() public pure override(IVersioned, Upgradeable) returns (uint16) {
+        return 1;
+    }
+
+    /**
+     * @inheritdoc Vault
+     */
+    function isPayable() public pure override(IVault, Vault) returns (bool) {
+        return true;
+    }
+
+    /**
+     * @dev returns the BNT manager role
+     */
+    function roleBNTManager() external pure returns (bytes32) {
+        return ROLE_BNT_MANAGER;
+    }
+```
+
+    version(): This function overrides the version() function in both the IVersioned and Upgradeable interfaces. It returns a uint16 indicating the version of the contract. This is used to track upgrades to the contract over time.
+
+    isPayable(): This function overrides the isPayable() function in both the IVault and Vault contracts. It returns a boolean value indicating whether the contract can receive ETH payments.
+
+    roleBNTManager(): This function returns the bytes32 value of the ROLE_BNT_MANAGER constant. It is an external function, which means it can be called from outside the contract, and it is marked as pure because it does not modify the state of the contract. The purpose of this function is to provide a way for other contracts to access the ROLE_BNT_MANAGER value.
+    
+```solidity
+function isAuthorizedWithdrawal(
+        address caller,
+        Token token,
+        address /* target */,
+        uint256 /* amount */
+    ) internal view override returns (bool) {
+        return (token.isEqual(_bnt) && hasRole(ROLE_BNT_MANAGER, caller)) || hasRole(ROLE_ASSET_MANAGER, caller);
+    }
+```
+
+It is overriding the isAuthorizedWithdrawal() function defined in the Vault contract and is used to implement role-based access control for withdrawals.
+
+The function first checks if the token being withdrawn is the Bancor Network Token (BNT) by calling the isEqual() function of the Token struct and comparing it with the _bnt variable, which represents the BNT token instance. If the token is the BNT token, it then checks if the caller has the ROLE_BNT_MANAGER or ROLE_ASSET_MANAGER role by calling the hasRole() function inherited from the AccessControlUpgradeable contract. If the token is not the BNT token, it checks if the caller has the ROLE_ASSET_MANAGER role.
+
+If the caller has the required role, the function returns true, indicating that the withdrawal is authorized. If the caller does not have the required role, the function returns false, indicating that the withdrawal is not authorized.
