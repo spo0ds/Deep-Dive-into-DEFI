@@ -504,3 +504,79 @@ It is overriding the isAuthorizedWithdrawal() function defined in the Vault cont
 The function first checks if the token being withdrawn is the Bancor Network Token (BNT) by calling the isEqual() function of the Token struct and comparing it with the _bnt variable, which represents the BNT token instance. If the token is the BNT token, it then checks if the caller has the ROLE_BNT_MANAGER or ROLE_ASSET_MANAGER role by calling the hasRole() function inherited from the AccessControlUpgradeable contract. If the token is not the BNT token, it checks if the caller has the ROLE_ASSET_MANAGER role.
 
 If the caller has the required role, the function returns true, indicating that the withdrawal is authorized. If the caller does not have the required role, the function returns false, indicating that the withdrawal is not authorized.
+
+## ExternalProtectionVault.sol
+
+It is designed to hold external reserve tokens and provide protection against their volatility by allowing the external reserve tokens to be swapped for BNT tokens in the Bancor network.
+
+The contract is similar to the MasterVault contract, except it has a more limited set of functions, which are specific to the role of holding external reserve tokens.
+
+```solidity
+    /**
+     * @dev fully initializes the contract and its parents
+     */
+    function initialize() external initializer {
+        __ExternalProtectionVault_init();
+    }
+
+    // solhint-disable func-name-mixedcase
+
+    /**
+     * @dev initializes the contract and its parents
+     */
+    function __ExternalProtectionVault_init() internal onlyInitializing {
+        __Vault_init();
+
+        __ExternalProtectionVault_init_unchained();
+    }
+
+    /**
+     * @dev performs contract-specific initialization
+     */
+    function __ExternalProtectionVault_init_unchained() internal onlyInitializing {
+        // set up administrative roles
+        _setRoleAdmin(ROLE_ASSET_MANAGER, ROLE_ADMIN);
+    }
+```
+
+The initialize() function is used to fully initialize the contract and its parent contracts. It is an external function that can be called after the contract has been deployed to set the initial values of the contract's state variables.
+
+```solidity
+    modifier initializer() {
+        bool isTopLevelCall = !_initializing;
+        require(
+            (isTopLevelCall && _initialized < 1) || (!AddressUpgradeable.isContract(address(this)) && _initialized == 1),
+            "Initializable: contract is already initialized"
+        );
+        _initialized = 1;
+        if (isTopLevelCall) {
+            _initializing = true;
+        }
+        _;
+        if (isTopLevelCall) {
+            _initializing = false;
+            emit Initialized(1);
+        }
+    }
+```
+
+```
+    The modifier first checks whether _initializing is false. If _initializing is true, it means that the function is already being initialized, so the modifier does not do anything.
+    Next, the modifier checks whether the current function call is the first time the contract is being initialized. It does this by checking whether _initialized is less than 1.
+    If both conditions are met, the modifier sets _initialized to 1 and emits an Initialized event. This marks the function as initialized and ensures that it cannot be initialized again in the future.
+    The modifier then checks whether the function is being called from a top-level context (i.e., not from another contract). It does this by checking whether AddressUpgradeable.isContract(address(this)) is false.
+    If the function is being called from a top-level context, the modifier sets _initializing to true at the beginning of the function call. This indicates that the function is currently being initialized.
+    The modifier then executes the body of the function using the _ placeholder.
+    After the function body is executed, the modifier checks again whether the function is being called from a top-level context. If it is, the modifier sets _initializing back to false to indicate that the initialization process is complete.
+    Finally, the modifier emits an Initialized event if the function is being called from a top-level context. This signals that the function has been successfully initialized.
+```
+
+The __ExternalProtectionVault_init() function is an internal function that is called by the initialize() function. This function is marked with the onlyInitializing modifier, which ensures that it can only be called during the initialization phase of the contract.
+
+It calls the __Vault_init() function inherited from the Vault contract to initialize the bntGovernance and vbntGovernance state variables. It then calls the __ExternalProtectionVault_init_unchained() function to perform contract-specific initialization.
+
+The __ExternalProtectionVault_init_unchained() function sets up the administrative roles by calling the _setRoleAdmin() function inherited from the AccessControl contract. It sets the role admin of the ROLE_ASSET_MANAGER role to the ROLE_ADMIN role. This means that only accounts with the ROLE_ADMIN role can add or remove asset managers.
+
+The _setRoleAdmin function is defined in the OpenZeppelin AccessControlUpgradeable.sol contract. This contract provides a set of access control tools to enable role-based access control in Solidity contracts.
+
+
