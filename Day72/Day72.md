@@ -299,3 +299,259 @@ By having a receive() function, the contract can receive ETH from external accou
 ```
 
 The purpose of the validRouteLength modifier in the arbitrage contract is to check whether the specified number of routes is supported before executing a function. This is to prevent invalid inputs that may lead to errors or unexpected behavior in the contract.
+
+```solidity
+    /**
+     * @dev sets the rewards settings
+     *
+     * requirements:
+     *
+     * - the caller must be the admin of the contract
+     */
+    function setRewards(
+        Rewards calldata newRewards
+    ) external onlyAdmin validFee(newRewards.percentagePPM) greaterThanZero(newRewards.maxAmount) {}
+```
+
+The setRewards function sets the reward settings for the arbitrage transactions. It takes in a Rewards struct containing two parameters: percentagePPM and maxAmount, which determine the percentage fee charged and the maximum amount of tokens that can be earned as rewards.
+
+The function first checks that the caller is the admin of the contract, as specified by the onlyAdmin modifier.
+
+```solidity
+    // In Upgradeable.sol
+    modifier onlyAdmin() {
+        _hasRole(ROLE_ADMIN, msg.sender);
+
+        _;
+    }
+```
+
+The modifier restricts access to a function to only the accounts that have been assigned the ROLE_ADMIN role.
+
+It then checks that the new percentagePPM value is valid (i.e., between 0 and 1,000,000), and that the maxAmount is greater than zero, as specified by the validFee and greaterThanZero modifiers.
+
+```solidity
+    // Utils.sol
+    // ensures that the fee is valid
+    modifier validFee(uint32 fee) {
+        _validFee(fee);
+
+        _;
+    }
+
+    // error message binary size optimization
+    function _validFee(uint32 fee) internal pure {
+        if (fee > PPM_RESOLUTION) {
+            revert InvalidFee();
+        }
+    }
+
+`   // verifies that a value is greater than zero
+    modifier greaterThanZero(uint256 value) {
+        _greaterThanZero(value);
+
+        _;
+    }
+
+    // error message binary size optimization
+    function _greaterThanZero(uint256 value) internal pure {
+        if (value == 0) {
+            revert ZeroValue();
+        }
+    }
+```
+
+This function provides a way for the admin of the contract to adjust the rewards for arbitrage transactions in a flexible and transparent way.
+
+```solidity
+        uint32 prevPercentagePPM = newRewards.percentagePPM;
+        uint256 prevMaxAmount = _rewards.maxAmount;
+```
+
+The two lines are used to store the current values of percentagePPM and maxAmount of the _rewards variable, which represent the previous rewards configuration.This is done before actually setting the new rewards configuration, so that the previous value can be used for reference in case of future changes or to revert back to it if needed.
+
+```solidity
+        // return if the rewards are the same
+        if (prevPercentagePPM == newRewards.percentagePPM && prevMaxAmount == newRewards.maxAmount) {
+            return;
+        }
+```
+
+The code you provided checks if the new rewards being set are the same as the existing rewards. If the new rewards are the same as the existing rewards, the function returns without making any further changes. This is done to prevent unnecessary gas consumption and to avoid setting duplicate rewards.
+
+```solidity
+_rewards = newRewards;
+```
+
+This assigns the new reward configuration to the contract's _rewards state variable. This means that the new rewards configuration is now the active one that will be used to calculate rewards for users. 
+
+```solidity
+    /**
+     * @dev execute multi-step arbitrage trade between exchanges
+     */
+    function execute(
+        Route[] calldata routes,
+        uint256 sourceAmount
+    ) public payable nonReentrant validRouteLength(routes) greaterThanZero(sourceAmount) {}
+```
+
+The execute function is a multi-step arbitrage trade between exchanges in the Bancor protocol. It takes in an array of Route objects and a sourceAmount, which is the amount of the initial token that will be used to perform the arbitrage. 
+
+`Why this function is declared as public instead of external?`
+
+The reason it is declared as public instead of external is likely because it needs to be called from inside the contract as well (specifically, to allocate rewards). 
+
+```solidity
+        // verify that the last token in the process is BNT
+        if ((address(routes[routes.length - 1].targetToken) != address(_bnt))) {
+            revert InvalidInitialAndFinalTokens();
+        }
+```
+
+It verifies that the last token in the series of trades defined by the routes parameter is BNT (the Bancor Network Token). If the last token is not BNT, it reverts the transaction and throws an InvalidInitialAndFinalTokens error, indicating that the trade cannot be executed as defined.
+
+```solidity
+         // take a flashloan for the source amount on Bancor v3 and perform the trades
+        _bancorNetworkV3.flashLoan(
+            Token(address(_bnt)),
+            sourceAmount,
+            IFlashLoanRecipient(address(this)),
+            abi.encode(routes, sourceAmount)
+        );
+```
+
+Once this is verified, the next step is to execute the trade. This is done by calling the flashLoan function on the Bancor Network V3 contract. The flashLoan function is used to borrow tokens from the Bancor liquidity pool for the duration of the transaction. The flashLoan function takes four arguments:
+
+```
+    The token to be borrowed (in this case, BNT).
+    The amount of the token to be borrowed (in this case, sourceAmount).
+    The recipient of the borrowed tokens (in this case, the current contract address).
+    The data to be passed to the recipient (in this case, the routes array and sourceAmount).
+```
+
+The flashLoan function will execute the arbitrage trade using the specified routes, and then return the borrowed BNT token back to the liquidity pool, along with the flashloan fee.
+
+After the trade is executed, the last step is to allocate the rewards. The _allocateRewards function is called to distribute a portion of the profits to the contract owner and the caller of the execute function.
+
+```solidity
+        // allocate the rewards
+        _allocateRewards(routes, sourceAmount, msg.sender);
+```
+
+The _allocateRewards function is called to allocate the rewards to the user who executed the arbitrage trade.
+
+The function takes three arguments:
+
+    routes: an array of Route structs which describe the sequence of trades that were performed to complete the arbitrage trade.
+    sourceAmount: the amount of source token that was traded in the arbitrage.
+    user: the address of the user who executed the arbitrage trade.
+    
+The function calculates the total profit made from the arbitrage trade, which is the difference between the final amount of BNT received and the initial amount of source token spent, taking into account any fees charged by the exchanges along the way.
+
+The profit is then split between the user and the protocol based on a pre-determined fee schedule. The user receives a percentage of the profit as a reward, and the rest is retained by the protocol. The reward is transferred to the user's address, and the protocol's share of the profit is added to the protocol's balance in the master vault. 
+
+```solidity
+    /**
+     * @dev callback function for bancor V3 flashloan
+     */
+    function onFlashLoan(
+        address caller,
+        IERC20 erc20Token,
+        uint256 amount,
+        uint256 feeAmount,
+        bytes memory data
+    ) external {}
+```
+
+The onFlashLoan function is the callback function that is called by the BancorNetwork contract after a flash loan is taken by the execute function.
+
+`Why does it declared as external instead of public?`
+
+When the Bancor V3 contract executes a flash loan, it calls the onFlashLoan function of the recipient contract (in this case, the arbitrage contract) to perform some custom logic with the borrowed funds. The onFlashLoan function needs to be declared as external so that the Bancor V3 contract can call it correctly during the flash loan execution.
+
+Furthermore, the onFlashLoan function doesn't need to be accessed externally by other contracts, so there is no need to declare it as public.
+
+```solidity
+        // validate inputs
+        if (msg.sender != address(_bancorNetworkV3) || caller != address(this)) {
+            revert InvalidFlashLoanCaller();
+        }
+```
+
+ It ensures that the function is being called by the BancorNetworkV3 contract and that the caller is the current contract (i.e., address(this)). 
+ 
+ ```solidity
+ // decode the data
+(Route[] memory routes, uint256 sourceAmount) = abi.decode(data, (Route[], uint256));
+```
+
+The code decodes the data parameter passed in the flash loan request into a tuple consisting of an array of Route structs and a sourceAmount variable. This is done using the abi.decode() function, which takes the data parameter as input and a tuple type, (Route[], uint256), specifying the expected data types and structure of the decoded output.
+
+The Route struct is a custom data structure defined in the Arbitrage contract, representing a single trade route in the arbitrage sequence. The sourceAmount variable represents the initial amount of the flash loan, which will be used as the source amount in the first trade of the sequence.
+
+Once the data parameter is decoded, the function proceeds to execute the arbitrage trade sequence using the routes array and sourceAmount variable.
+
+abi.decode is a built-in Solidity function that allows you to decode data from a byte array to a specific data type.
+
+```solidity
+// perform the trade routes
+Token sourceToken = Token(address(_bnt));
+```
+
+sourceToken is used to keep track of the current token being traded. In each iteration of the for loop, the sourceToken is swapped for the targetToken of the current trade route, so that the resulting token balance after the trade becomes the sourceToken for the next trade.
+
+`Why do we need to track the current token being traded?`
+
+We need to track the current token being traded because the function is performing multiple trades in a sequence, where the output of one trade is used as the input for the next trade. Each trade is executed on a different token pair, so we need to keep track of the current token being traded so that we can use it as the input token for the next trade. The output token of each trade becomes the input token of the next trade, and this process continues until all the trades in the sequence have been executed. By keeping track of the current token being traded, we can ensure that the correct token pairs are used for each trade, and that the sequence of trades is executed correctly.
+
+`Is it because bancor trades everything into BNT we ned to track the token?`
+
+Yes, that's correct. Bancor's liquidity network is designed to use BNT as the bridge token, which means that every trade route ultimately involves swapping some token for BNT, and then swapping that BNT for the next token in the route. Therefore, it's necessary to track the current token being traded, so that the contract can use it as the source token for the next trade in the route.
+
+```solidity
+        for (uint256 i = 0; i < routes.length; i++) {
+            // save the current balance
+            uint256 previousBalance = routes[i].targetToken.balanceOf(address(this));
+
+            // perform the trade
+            _trade(
+                routes[i].exchangeId,
+                sourceToken,
+                routes[i].targetToken,
+                sourceAmount,
+                routes[i].minTargetAmount,
+                routes[i].deadline,
+                routes[i].customAddress,
+                routes[i].customInt
+            );
+
+            // the current iteration target token is the source token in the next iteration
+            sourceToken = routes[i].targetToken;
+
+            // the resulting trade amount is the source amount in the next iteration
+            sourceAmount = routes[i].targetToken.balanceOf(address(this)) - previousBalance;
+        }
+```
+
+Code block loops over each trade route defined in the routes array, performs a trade for each route, and updates the source token and source amount for the next trade.
+
+For each route, the current balance of the target token (the token to be acquired) is saved before the trade is performed. The _trade function is then called with the exchange ID, source token, target token, source amount, minimum target amount, deadline, and custom address and integer specified in the route. This function executes the trade on the specified exchange and returns the amount of target token acquired.
+
+After the trade, the source token for the next trade is set to the target token of the current trade. This is because the target token acquired in the current trade will be used as the source token for the next trade. Similarly, the source amount for the next trade is updated to be the difference between the current balance of the target token and the previous balance of the target token. This is because the source amount for the next trade is the amount of target token acquired in the current trade.
+
+This loop continues until all routes have been executed. Once all trades have been executed, the function will have acquired the desired token in the final trade route.
+
+```solidity
+        // return the flashloan
+        erc20Token.safeTransfer(msg.sender, amount + feeAmount);
+```
+
+This code transfers the flashloaned tokens back to the original caller along with the fee amount charged by the protocol for facilitating the flash loan.
+
+msg.sender is the address of the contract that initiated the flash loan, and amount + feeAmount is the total amount of tokens that need to be returned to the lending protocol.
+
+`Doesn't fee amount be subtracted from the amount?`
+
+No, because the fee is transferred to the bancor.
+
+
