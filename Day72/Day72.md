@@ -554,4 +554,320 @@ msg.sender is the address of the contract that initiated the flash loan, and amo
 
 No, because the fee is transferred to the bancor.
 
+```solidity
+    /**
+     * @dev handles the trade logic per route
+     */
+    function _trade(
+        uint256 exchangeId,
+        Token sourceToken,
+        Token targetToken,
+        uint256 sourceAmount,
+        uint256 minTargetAmount,
+        uint256 deadline,
+        address customAddress,
+        uint256 customInt
+    ) private {}
+```
+
+The _trade function handles the trade logic for each specific DEX route. It takes in several parameters such as the exchange ID, source token, target token, source amount, minimum target amount, deadline, custom address, and custom integer. Depending on the exchange ID, it executes a trade on that specific DEX.
+
+```solidity
+            if (exchangeId == EXCHANGE_ID_BANCOR_V2) {
+            // allow the network to withdraw the source tokens
+            _setExchangeAllowance(sourceToken, address(_bancorNetworkV2), sourceAmount);
+
+            // build the conversion path
+            address[] memory path = new address[](3);
+            path[0] = address(sourceToken);
+            path[1] = customAddress; // pool token address
+            path[2] = address(targetToken);
+
+            uint256 val = sourceToken.isNative() ? sourceAmount : 0;
+
+            // perform the trade
+            _bancorNetworkV2.convertByPath{ value: val }(
+                path,
+                sourceAmount,
+                minTargetAmount,
+                address(0x0),
+                address(0x0),
+                0
+            );
+
+            return;
+        }
+```
+
+It handles the trade logic for the Bancor V2 exchange. The function first allows the Bancor network to withdraw the source tokens from the trader's account by calling the _setExchangeAllowance function.
+
+It creates an array path that defines the conversion path. The path array has three elements: the address of the sourceToken, the address of the Bancor pool token (customAddress), and the address of the targetToken.
+
+After building the path, checks whether the sourceToken is a native token (e.g., ETH). If it is, it sets the val variable to sourceAmount; otherwise, it sets val to 0.
+
+Finally, the function calls the convertByPath function of the Bancor V2 contract (_bancorNetworkV2) with the following parameters:
+
+    path: the array that defines the conversion path
+    sourceAmount: the amount of sourceToken to convert
+    minTargetAmount: the minimum amount of targetToken that must be received in the trade
+    address(0x0): the address of the affiliate account (optional)
+    address(0x0): the address of the wallet that will receive the target tokens (optional)
+    0: the deadline (optional)
+
+If the trade is successful, the function returns. Otherwise, an error will be thrown.
+
+```solidity
+        if (exchangeId == EXCHANGE_ID_BANCOR_V3) {
+            // allow the network to withdraw the source tokens
+            _setExchangeAllowance(sourceToken, address(_bancorNetworkV3), sourceAmount);
+
+            uint256 val = sourceToken.isNative() ? sourceAmount : 0;
+
+            // perform the trade
+            _bancorNetworkV3.tradeBySourceAmountArb{ value: val }(
+                sourceToken,
+                targetToken,
+                sourceAmount,
+                minTargetAmount,
+                deadline,
+                address(0x0)
+            );
+
+            return;
+        }
+```
+
+This code block is executed when the exchangeId equals EXCHANGE_ID_BANCOR_V3, which means the trade will be executed using Bancor V3.
+
+First, the contract allows the Bancor V3 network to withdraw the required amount of source tokens from the sender by calling the _setExchangeAllowance function. Then, a value of either sourceAmount or 0 (if the source token is native to the blockchain) is set to val.
+
+The _bancorNetworkV3.tradeBySourceAmountArb function is then called to execute the trade, with the following parameters:
+
+    sourceToken: The address of the source token being traded.
+    targetToken: The address of the target token being traded.
+    sourceAmount: The amount of source tokens being traded.
+    minTargetAmount: The minimum amount of target tokens the sender is willing to receive in exchange for the source tokens.
+    deadline: A timestamp representing the deadline for the trade to be executed by. If the trade is not executed by this timestamp, it will fail.
+    affiliateAccount: An address representing the affiliate account that will receive a portion of the trading fees. This parameter is optional and is set to the zero address (address(0x0)) in this case.
+
+After the trade is executed, the function returns.
+
+```solidity
+        if (exchangeId == EXCHANGE_ID_UNISWAP_V2 || exchangeId == EXCHANGE_ID_SUSHISWAP) {
+            IUniswapV2Router02 router = exchangeId == EXCHANGE_ID_UNISWAP_V2 ? _uniswapV2Router : _sushiSwapRouter;
+
+            // allow the router to withdraw the source tokens
+            _setExchangeAllowance(sourceToken, address(router), sourceAmount);
+
+            // build the path
+            address[] memory path = new address[](2);
+
+            // perform the trade
+            if (sourceToken.isNative()) {
+                path[0] = address(_weth);
+                path[1] = address(targetToken);
+                router.swapExactETHForTokens{ value: sourceAmount }(minTargetAmount, path, address(this), deadline);
+            } else if (targetToken.isNative()) {
+                path[0] = address(sourceToken);
+                path[1] = address(_weth);
+                router.swapExactTokensForETH(sourceAmount, minTargetAmount, path, address(this), deadline);
+            } else {
+                path[0] = address(sourceToken);
+                path[1] = address(targetToken);
+                router.swapExactTokensForTokens(sourceAmount, minTargetAmount, path, address(this), deadline);
+            }
+
+            return;
+        }
+```
+
+This code is executed if the selected exchange is either Uniswap v2 or SushiSwap. The code allows the selected router (either Uniswap v2 or SushiSwap router) to withdraw source tokens from the user's account, and then performs the trade.
+
+The first step is to create an instance of the router to use for the trade. This is done by checking if the exchange ID is Uniswap v2 or SushiSwap and setting the router variable accordingly.
+
+Next, the code sets the exchange allowance for the selected router to withdraw the source token. This is done by calling the _setExchangeAllowance function with the source token, the address of the router, and the amount of source tokens to allow.
+
+The next step is to build the path for the trade. If the source token is the native token (such as ETH), the path is set to go from WETH (wrapped ETH) to the target token. If the target token is the native token, the path is set to go from the source token to WETH. Otherwise, the path is set to go directly from the source token to the target token.
+
+Finally, the trade is performed using the swapExactTokensForTokens, swapExactTokensForETH, or swapExactETHForTokens function of the router, depending on the path that was built. These functions take as input the source amount, minimum target amount, path, recipient address, and deadline. If the source token is the native token, the swapExactETHForTokens function is called. If the target token is the native token, the swapExactTokensForETH function is called. Otherwise, the swapExactTokensForTokens function is called.
+
+After the trade is performed, the function returns.
+
+```solidity
+        if (exchangeId == EXCHANGE_ID_UNISWAP_V3) {
+            address tokenIn = sourceToken.isNative() ? address(_weth) : address(sourceToken);
+            address tokenOut = targetToken.isNative() ? address(_weth) : address(targetToken);
+
+            if (tokenIn == address(_weth)) {
+                IWETH(address(_weth)).deposit{ value: sourceAmount }();
+            }
+
+            // allow the router to withdraw the source tokens
+            _setExchangeAllowance(Token(tokenIn), address(_uniswapV3Router), sourceAmount);
+
+            // build the params
+            ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
+                tokenIn: tokenIn,
+                tokenOut: tokenOut,
+                fee: uint24(customInt), // fee
+                recipient: address(this),
+                deadline: deadline,
+                amountIn: sourceAmount,
+                amountOutMinimum: minTargetAmount,
+                sqrtPriceLimitX96: uint160(0)
+            });
+
+            // perform the trade
+            _uniswapV3Router.exactInputSingle(params);
+
+            if (tokenOut == address(_weth)) {
+                IWETH(address(_weth)).withdraw(_weth.balanceOf(address(this)));
+            }
+
+            return;
+        }
+```
+
+This code block is used to execute a trade on Uniswap v3 exchange.
+
+Get the address of the input token and output token. If the input token is the native token, then get the WETH address, otherwise, get the address of the input token. Similarly, if the output token is the native token, get the WETH address, otherwise, get the output token's address.
+
+If the input token is WETH, deposit the ETH value sent in the transaction to WETH.
+
+Set the allowance for the Uniswap v3 router to withdraw the input token.
+
+Build the parameters for the trade. These parameters include input token, output token, fee, recipient, deadline, input amount, minimum output amount, and price limit. The ISwapRouter.ExactInputSingleParams struct is used to define the parameters.
+
+Execute the trade on Uniswap v3 using the exactInputSingle function of the router with the defined parameters.
+
+If the output token is WETH, withdraw the WETH tokens from the contract and transfer them to the contract owner.
+
+```solidity
+        revert InvalidExchangeId();
+```
+
+If exchangeId does not match any of the known exchange IDs (e.g. it is an unrecognized or unsupported value), the function execution will be reverted with the InvalidExchangeId() error message.
+
+```solidity
+    /**
+     * @dev allocates the rewards to the caller and burns the rest
+     */
+    function _allocateRewards(Route[] calldata routes, uint256 sourceAmount, address caller) internal {}
+```
+
+This function _allocateRewards is responsible for allocating rewards to the caller and burning the rest of the tokens.It takes in three arguments:
+
+    Route[] calldata routes an array of Route struct containing information about the token exchange routes.
+    uint256 sourceAmount the amount of the source token to be traded.
+    address caller the address of the contract caller.
+    
+```solidity
+        // get the total amount
+        uint256 totalAmount = _bnt.balanceOf(address(this));
+```
+
+The total amount of BNT token in the contract is calculated and stored in totalAmount variable.
+
+```solidity
+        // calculate the rewards to send to the caller
+        uint256 rewardAmount = MathEx.mulDivF(totalAmount, _rewards.percentagePPM, PPM_RESOLUTION);
+```
+
+The reward amount is calculated by multiplying the total amount of BNT tokens with the percentage share _rewards.percentagePPM and then dividing it by PPM_RESOLUTION which is equal to 1,000,000.
+
+```solidity
+        // limit the rewards by the defined limit
+        if (rewardAmount > _rewards.maxAmount) {
+            rewardAmount = _rewards.maxAmount;
+        }
+```
+
+If the reward amount exceeds the _rewards.maxAmount, the reward amount is set to the maximum reward amount defined in the _rewards.maxAmount.
+
+```solidity
+        // calculate the burn amount
+        uint256 burnAmount = totalAmount - rewardAmount;
+```
+
+The burn amount is calculated by subtracting the reward amount from the total amount of BNT tokens in the contract.
+
+```solidity
+        // burn the tokens
+        if (burnAmount > 0) {
+            _bnt.safeTransfer(address(_bnt), burnAmount);
+        }
+```
+
+If the burn amount is greater than 0, the _bnt token contract transfers the burn amount of tokens to its own address, effectively burning them.
+
+```solidity
+        // transfer the rewards to the caller
+        if (rewardAmount > 0) {
+            _bnt.safeTransfer(caller, rewardAmount);
+        }
+```
+
+If the reward amount is greater than 0, the _bnt token contract transfers the reward amount of tokens to the caller address.
+
+```solidity
+        // build the list of exchange ids
+        uint16[] memory exchangeIds = new uint16[](routes.length);
+        for (uint256 i = 0; i < routes.length; i++) {
+            exchangeIds[i] = routes[i].exchangeId;
+        }
+```
+
+This loop builds an array exchangeIds containing the exchange ids of all the exchanges used in the trade route.
+
+```solidity
+        // build the token path
+        address[] memory path = new address[](routes.length + 1);
+        path[0] = address(_bnt);
+        for (uint256 i = 0; i < routes.length; i++) {
+            path[i + 1] = address(routes[i].targetToken);
+        }
+```
+
+This loop builds an array path containing the token addresses in the trade route. The first token in the array is always BNT, and the remaining tokens are the target tokens of the trade routes.
+
+`Why does the function calculates the burn amount and burn that many bnt tokens?`
+
+The burn is necessary to ensure that the value of the remaining tokens does not decrease due to the increase in supply caused by the arbitrage. This is important because BNT is a collateral token that is used to back the Bancor liquidity pool. By burning the tokens, the total supply of BNT decreases, which helps to maintain the value of the remaining tokens.
+
+```solidity
+    /**
+     * @dev set exchange allowance to the max amount if it's less than the input amount
+     */
+    function _setExchangeAllowance(Token token, address exchange, uint inputAmount) private {
+        if (token.isNative()) {
+            return;
+        }
+        uint allowance = token.toIERC20().allowance(address(this), exchange);
+        if (allowance < inputAmount) {
+            // increase allowance to the max amount if allowance < inputAmount
+            token.safeIncreaseAllowance(exchange, type(uint256).max - allowance);
+        }
+    }
+```
+
+This is a private function that sets the exchange allowance to the maximum amount if it's less than the input amount.This function takes three parameters - a Token object, an address of the exchange, and an input amount. 
+
+If the token is native, meaning it's ETH, then there's no need to set an allowance, so the function simply returns.
+
+The toIERC20() function is called on the Token object to convert it to an IERC20 interface. The allowance is then checked for the current contract and the exchange passed in.
+
+If the current allowance is less than the input amount, then the following code is executed:
+        The safeIncreaseAllowance() function is called on the Token object to increase the allowance of the exchange to the maximum amount. The type(uint256).max returns the maximum value that can be stored in a uint256 variable, and it's subtracted by the current allowance to set the allowance to the maximum value.
+
+This function ensures that the exchange has enough allowance to perform the trade without running out of gas or encountering other errors.
+
+Allowance represents the amount of tokens that the exchange address is allowed to spend on behalf of the arbitrage contract.
+
+
+
+
+
+
+
+
 
