@@ -102,3 +102,237 @@ If the user chooses a tick range of ±1%, they would provide liquidity by deposi
 
 As trades are executed within the tick range of ±1%, the bonding curve will adjust to maintain the constant product. For example, if a buyer purchases 10 tokens at a price of 101 USDC per token, the bonding curve will shift to a new price point that maintains the constant product of 2500 USDC-tokens. This could result in a new price of 99.01 USDC per token, which would create a new tick range of ±1% around that price.
 
+## Smart Contract Walkthrough
+
+### CarbonController.sol
+
+The purpose of the contract is to serve as a controller for trading and investment strategies between different token pairs. It contains functionality for creating new trading pairs, creating and updating investment strategies, setting trading fees, and managing emergency stops and pausing of the contract.
+
+```solidity
+import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import { IVersioned } from "../utility/interfaces/IVersioned.sol";
+import { Pairs, Pair } from "./Pairs.sol";
+import { Token } from "../token/Token.sol";
+import { Strategies, Strategy, TradeAction, Order, TradeTokens } from "./Strategies.sol";
+import { Upgradeable } from "../utility/Upgradeable.sol";
+import { IVoucher } from "../voucher/interfaces/IVoucher.sol";
+import { ICarbonController } from "./interfaces/ICarbonController.sol";
+import { Utils, AccessDenied } from "../utility/Utils.sol";
+import { OnlyProxyDelegate } from "../utility/OnlyProxyDelegate.sol";
+import { MAX_GAP } from "../utility/Constants.sol";
+```
+
+Here's a brief description of each import:
+
+    ReentrancyGuardUpgradeable: This is an OpenZeppelin library that prevents reentrancy attacks by using a mutex lock.
+
+    PausableUpgradeable: This is another OpenZeppelin library that allows the contract owner to pause the contract in case of emergencies.
+
+    IVersioned: This is an interface for versioning contracts. It's used to check the version of other contracts that the CarbonController interacts with.
+
+    Pairs and Pair: These are contracts that define the pairs of tokens that the CarbonController can trade.
+
+    Token: This is the contract for the token that the CarbonController uses to trade with.
+
+    Strategies, Strategy, TradeAction, Order, and TradeTokens: These are contracts and enums that define the trading strategies that the CarbonController can use.
+
+    Upgradeable: This is a base contract that allows the CarbonController to be upgraded in the future.
+
+    IVoucher: This is an interface for a voucher contract that the CarbonController can interact with.
+
+    ICarbonController: This is an interface for the CarbonController itself.
+
+    Utils and AccessDenied: These are utility contracts that contain various helper functions and error messages.
+
+    OnlyProxyDelegate: This is a contract that restricts access to certain functions to only the proxy delegate.
+
+    MAX_GAP: This is a constant that defines the maximum allowed slippage for trades.
+    
+```solidity
+contract CarbonController is
+    ICarbonController,
+    Pairs,
+    Strategies,
+    Upgradeable,
+    ReentrancyGuardUpgradeable,
+    PausableUpgradeable,
+    OnlyProxyDelegate,
+    Utils
+{}
+```
+
+This is the declaration of the CarbonController smart contract. It declares that the contract implements the ICarbonController interface and inherits from several other contracts, including Pairs, Strategies, Upgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable, OnlyProxyDelegate, and Utils.
+
+```solidity
+    // the emergency manager role is required to pause/unpause
+    bytes32 private constant ROLE_EMERGENCY_STOPPER = keccak256("ROLE_EMERGENCY_STOPPER");
+```
+
+This role is required to pause or unpause the contract in case of an emergency. The role is assigned to a specific address, which is responsible for executing this function.
+
+```solidity
+    // the fees manager role is required to withdraw fees
+    bytes32 private constant ROLE_FEES_MANAGER = keccak256("ROLE_FEES_MANAGER");
+```
+
+ This role is required to withdraw fees from the contract. The role is assigned to a specific address that is responsible for managing and withdrawing the fees from the contract.
+ 
+ By defining these roles, the contract can ensure that only authorized parties can execute certain functions, providing an extra layer of security and control over the contract's operations.
+ 
+ ```solidity
+ uint16 private constant CONTROLLER_TYPE = 1;
+ ```
+ 
+ By setting a constant identifier for the ICarbonController interface, it makes it easier for other contracts to interact with the CarbonController contract. When a contract needs to reference the CarbonController contract, it can use the CONTROLLER_TYPE constant to ensure it is interacting with the correct type of contract.
+
+```solidity
+// the voucher contract
+IVoucher private immutable _voucher;
+```
+
+This variable can be used to interact with the voucher contract from within the CarbonController contract.
+
+```solidity
+// upgrade forward-compatibility storage gap
+uint256[MAX_GAP] private __gap;
+```
+
+The __gap array acts as a placeholder for any additional state variables that may be added to the contract in future upgrades. This is necessary because adding new state variables to an existing contract can break any existing contracts that rely on the old layout of the storage.
+
+```solidity
+    /**
+     * @dev a "virtual" constructor that is only used to set immutable state variables
+     */
+    constructor(IVoucher initVoucher, address proxy) OnlyProxyDelegate(proxy) {
+        _validAddress(address(initVoucher));
+
+        _voucher = initVoucher;
+    }
+```
+
+The purpose of the constructor is to initialize the contract's state variables, specifically the _voucher variable which is of type IVoucher. This variable is set to the value passed as initVoucher during the contract's deployment.
+
+The constructor also checks the validity of the initVoucher address by calling the _validAddress() function which ensures that the address is not zero (0x0).
+
+Finally, the constructor ensures that the contract is only accessible through the proxy by calling the OnlyProxyDelegate(proxy) modifier.
+
+```solidity
+    /**
+     * @dev fully initializes the contract and its parents
+     */
+    function initialize() external initializer {
+        __CarbonController_init();
+    }
+
+    // solhint-disable func-name-mixedcase
+
+    /**
+     * @dev initializes the contract and its parents
+     */
+    function __CarbonController_init() internal onlyInitializing {
+        __Pairs_init();
+        __Strategies_init();
+        __Upgradeable_init();
+        __ReentrancyGuard_init();
+        __Pausable_init();
+
+        __CarbonController_init_unchained();
+    }
+
+    /**
+     * @dev performs contract-specific initialization
+     */
+    function __CarbonController_init_unchained() internal onlyInitializing {
+        // set up administrative roles
+        _setRoleAdmin(ROLE_EMERGENCY_STOPPER, ROLE_ADMIN);
+        _setRoleAdmin(ROLE_FEES_MANAGER, ROLE_ADMIN);
+    }
+```
+
+Using the initializer keyword ensures that this function will be called only once, when the contract is deployed or upgraded, to set up any initial state or perform any necessary setup operations.
+
+These functions are used to fully initialize the CarbonController contract and its parent contracts, setting up necessary roles and permissions to manage the protocol.
+
+```solidity
+    /**
+     * @inheritdoc Upgradeable
+     */
+    function version() public pure override(IVersioned, Upgradeable) returns (uint16) {
+        return 2;
+    }
+
+    /**
+     * @dev returns the emergency stopper role
+     */
+    function roleEmergencyStopper() external pure returns (bytes32) {
+        return ROLE_EMERGENCY_STOPPER;
+    }
+
+    /**
+     * @dev returns the fees manager role
+     */
+    function roleFeesManager() external pure returns (bytes32) {
+        return ROLE_FEES_MANAGER;
+    }
+
+    /**
+     * @inheritdoc ICarbonController
+     */
+    function controllerType() external pure virtual returns (uint16) {
+        return CONTROLLER_TYPE;
+    }
+
+    /**
+     * @inheritdoc ICarbonController
+     */
+    function tradingFeePPM() external view returns (uint32) {
+        return _tradingFeePPM;
+    }
+
+    /**
+     * @dev sets the trading fee (in units of PPM)
+     *
+     * requirements:
+     *
+     * - the caller must be the admin of the contract
+     */
+    function setTradingFeePPM(uint32 newTradingFeePPM) external onlyAdmin validFee(newTradingFeePPM) {
+        _setTradingFeePPM(newTradingFeePPM);
+    }
+```
+
+    version(): This function returns the version of the contract, which is determined by the Upgradeable contract and IVersioned interface that the CarbonController contract inherits from. In this case, the function returns 2.
+
+    roleEmergencyStopper(): This function returns the ROLE_EMERGENCY_STOPPER constant, which is a unique identifier (hash) for the role that has the ability to pause and unpause the contract.
+
+    roleFeesManager(): This function returns the ROLE_FEES_MANAGER constant, which is a unique identifier (hash) for the role that has the ability to withdraw fees from the contract.
+
+    controllerType(): This function returns the CONTROLLER_TYPE constant, which is a unique identifier (integer) for the type of controller that this contract represents. In this case, CONTROLLER_TYPE is set to 1.
+
+    tradingFeePPM(): This function returns the current trading fee (in parts per million) that is applied to trades in the contract.
+
+    setTradingFeePPM(): This function sets a new trading fee (in parts per million) for the contract. It can only be called by the admin of the contract and requires that the new fee value is valid according to the validFee() modifier. The function calls _setTradingFeePPM() to actually set the new fee value.
+    
+_setTradingFeePPM() is an internal functio of "Strategies.sol".
+
+```solidity
+    /**
+     * @dev sets the trading fee (in units of PPM)
+     */
+    function _setTradingFeePPM(uint32 newTradingFeePPM) internal {
+        uint32 prevTradingFeePPM = _tradingFeePPM;
+        if (prevTradingFeePPM == newTradingFeePPM) {
+            return;
+        }
+
+        _tradingFeePPM = newTradingFeePPM;
+
+        emit TradingFeePPMUpdated({ prevFeePPM: prevTradingFeePPM, newFeePPM: newTradingFeePPM });
+    }
+```
+
+The function takes a uint32 input parameter newTradingFeePPM which represents the new trading fee to be set. The function first checks if the new trading fee is the same as the current trading fee. If it is the same, the function returns without making any changes. If the new trading fee is different from the current trading fee, the function updates the _tradingFeePPM state variable with the new trading fee.
+
+
+
