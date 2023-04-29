@@ -552,3 +552,60 @@ The function checks if a pair exists for the given tokens using \_pairExists(tok
 ```
 
 The function creates an array of the two tokens called tokens and passes it along with orders, strategyPair, msg.sender, and msg.value to \_createStrategy() to create a new strategy.Finally, the function returns the ID of the new strategy created using \_createStrategy().
+
+```solidity
+function updateStrategy(
+        uint256 strategyId,
+        Order[2] calldata currentOrders,
+        Order[2] calldata newOrders
+    ) external payable nonReentrant whenNotPaused onlyProxyDelegate {}
+```
+
+strategyId, which is the ID of the strategy to be updated, currentOrders, which is an array of the current orders associated with the strategy, and newOrders, which is an array of the new orders that will replace the current orders.
+
+```solidity
+    Pair memory strategyPair = _pairById(_pairIdByStrategyId(strategyId));
+```
+
+It retrieves the Pair associated with the given strategyId by calling the \_pairById() function.
+
+```solidity
+    /**
+     * returns the pairId associated with a given strategyId
+     */
+    function _pairIdByStrategyId(uint256 strategyId) internal pure returns (uint128) {
+        return uint128(strategyId >> 128);
+    }
+```
+
+The strategyId is a uint256 number that uniquely identifies a specific strategy. The function uses bit shifting to extract the first 128 bits of the strategyId, which represents the pairId.The function then returns this pairId as a uint128 type.
+
+The reason for doing this is that the strategyId is a 256-bit integer that encodes both the pairId and the strategyIndex. The pairId is the most significant 128 bits of the strategyId, while the strategyIndex is the least significant 128 bits. By extracting the first 128 bits of the strategyId, the \_pairIdByStrategyId function effectively returns the pairId associated with the given strategyId. This pairId is used to look up the Pair struct associated with the pair in the \_pairs mapping.
+
+```solidity
+        if (msg.sender != _voucher.ownerOf(strategyId)) {
+            revert AccessDenied();
+        }
+```
+
+It checks whether the caller of the function is the owner of the voucher associated with the given strategyId. If the caller is not the owner, the function reverts with an AccessDenied() error.
+
+```solidity
+        if (msg.value > 0 && !strategyPair.tokens[0].isNative() && !strategyPair.tokens[1].isNative()) {
+            revert UnnecessaryNativeTokenReceived();
+                }
+```
+
+It checks whether any ETH was sent with the function call and whether both tokens in the strategyPair are non-native tokens (i.e., not ETH). If both conditions are true, the function reverts with an UnnecessaryNativeTokenReceived() error.
+
+```solidity
+        _validateOrders(newOrders);
+```
+
+It checks whether the orders in newOrders are valid. If any order is invalid, the function reverts with an error.
+
+```solidity
+        _updateStrategy(strategyId, currentOrders, newOrders, strategyPair, msg.sender, msg.value);
+```
+
+It performs the actual update of the strategy with the new orders.
