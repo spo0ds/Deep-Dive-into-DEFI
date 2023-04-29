@@ -1,4 +1,5 @@
-## Carbon 
+## Carbon
+
 #### a decentralized protocol for asymmetric liquidity and trading
 
 ### Asymmetric Liquidity
@@ -13,7 +14,7 @@ On the other hand, asymmetric liquidity can also create opportunities for trader
 
 In the DeFi space, asymmetric liquidity is often addressed through the use of automated market makers (AMMs), which allow traders to execute trades without relying on traditional order book mechanisms. Instead, AMMs use a mathematical formula to determine the price of assets in a trading pair based on the available liquidity. This can help to mitigate the risks associated with asymmetric liquidity, by ensuring that trades are executed at fair prices even when one asset in a pair has significantly less liquidity than the other.
 
-### Overview 
+### Overview
 
 In traditional liquidity provision, users typically provide liquidity to a single pool, or curve, that allows for trading in both directions. For example, if a user provides liquidity to an Ethereum-USDC pool, they can buy Ethereum with USDC or sell Ethereum for USDC using the same pool.
 
@@ -33,7 +34,6 @@ It is possible that if a large number of liquidity providers set the same price 
 
 However, it's important to note that not all liquidity providers will set the same price range, and different trading strategies and preferences will result in a diverse set of liquidity providers with varying price ranges. Additionally, the liquidity providers who set price ranges that are outside the market consensus can potentially benefit from increased trading activity and arbitrage opportunities as the price of the token fluctuates.
 
-
 Each order has a corresponding bonding curve that is unique to that order. The bonding curve's shape and liquidity concentration range are determined by specific parameters set by the liquidity provider. These parameters can be adjusted directly without needing to close and recreate the liquidity position. This means that liquidity providers can make changes to their orders more efficiently and with less gas consumption.
 
 All of the individual orders and their corresponding curves are aggregated together to create on-chain liquidity for a given token pair. This means that the system pools the liquidity provided by all of the individual orders to create a larger pool of liquidity for trading activity.
@@ -44,36 +44,36 @@ To optimize liquidity utilization and trading efficiency, the system uses a rout
 
 - Asymmetric and Irreversible
 
-    In traditional liquidity pools, users provide liquidity to a single curve that trades symmetrically in both directions, allowing users to buy or sell the asset at any time, depending on market conditions.
+  In traditional liquidity pools, users provide liquidity to a single curve that trades symmetrically in both directions, allowing users to buy or sell the asset at any time, depending on market conditions.
 
-    However, in Carbon's liquidity pools, users provide liquidity to two separate curves that each trade in one direction. This means that users can create independent buy and sell orders that execute in a single direction and are irreversible once executed. This feature is desirable for users who wish to commit to a premeditated trading strategy and want to avoid the possibility of being affected by price fluctuations in the opposite direction.
+  However, in Carbon's liquidity pools, users provide liquidity to two separate curves that each trade in one direction. This means that users can create independent buy and sell orders that execute in a single direction and are irreversible once executed. This feature is desirable for users who wish to commit to a premeditated trading strategy and want to avoid the possibility of being affected by price fluctuations in the opposite direction.
 
-    For example, a user can create a buy order that executes when the price of the asset falls below a certain threshold and a sell order that executes when the price of the asset rises above a certain threshold. Once these orders are executed, the user has committed to the strategy and cannot reverse or cancel the orders. This feature is beneficial for users who want to automate their trading strategies and remove emotions and biases from their trading decisions.
-    
+  For example, a user can create a buy order that executes when the price of the asset falls below a certain threshold and a sell order that executes when the price of the asset rises above a certain threshold. Once these orders are executed, the user has committed to the strategy and cannot reverse or cancel the orders. This feature is beneficial for users who want to automate their trading strategies and remove emotions and biases from their trading decisions.
+
 - Concentrated and Adjustable
 
-    It allows users to set specific price ranges for their buy and sell orders. The price range is pre-defined, meaning that the user sets the price range at which they want to execute their trades. The liquidity pool concentrates liquidity within these price ranges, which means that trades are executed within the defined price range.
+  It allows users to set specific price ranges for their buy and sell orders. The price range is pre-defined, meaning that the user sets the price range at which they want to execute their trades. The liquidity pool concentrates liquidity within these price ranges, which means that trades are executed within the defined price range.
 
-    This feature allows users to have greater control over their trading strategies, as they can precisely set the price ranges at which they want to buy or sell their assets. It also helps prevent slippage, as trades are executed only within the pre-defined price range.
+  This feature allows users to have greater control over their trading strategies, as they can precisely set the price ranges at which they want to buy or sell their assets. It also helps prevent slippage, as trades are executed only within the pre-defined price range.
 
-    Furthermore, Carbon's order conditions can be adjusted on the fly without having to close and recreate the order, making it more gas-efficient to change order conditions. This means that if the user wants to modify the price range or other parameters of the order, they can do so without incurring additional gas fees associated with closing and recreating the order. This makes it more convenient and cost-effective for users to modify their trading strategies in real-time.
-    
+  Furthermore, Carbon's order conditions can be adjusted on the fly without having to close and recreate the order, making it more gas-efficient to change order conditions. This means that if the user wants to modify the price range or other parameters of the order, they can do so without incurring additional gas fees associated with closing and recreating the order. This makes it more convenient and cost-effective for users to modify their trading strategies in real-time.
+
 - Composable
 
-    It enables users to create more complex trading strategies by linking multiple orders together. This feature allows users to save time and gas fees by reducing the number of transactions required to create a multi-order strategy.
+  It enables users to create more complex trading strategies by linking multiple orders together. This feature allows users to save time and gas fees by reducing the number of transactions required to create a multi-order strategy.
 
-    When a user creates a multi-order strategy, Carbon's system automatically shifts liquidity between linked orders as they are filled. For example, if a user creates two orders - one to buy ETH when its price is between 1200 and 1300 USDC and another to sell ETH when its price is between 1500 and 1600 USDC - Carbon's system will automatically shift the ETH acquired in the buy order to the sell order once the market moves into the specified price range.
-    
+  When a user creates a multi-order strategy, Carbon's system automatically shifts liquidity between linked orders as they are filled. For example, if a user creates two orders - one to buy ETH when its price is between 1200 and 1300 USDC and another to sell ETH when its price is between 1500 and 1600 USDC - Carbon's system will automatically shift the ETH acquired in the buy order to the sell order once the market moves into the specified price range.
+
 - Re-usable
 
-    Tokens acquired in one order become available for trading in a linked order once the market moves into range. This feature allows users to re-use tokens acquired in one order to execute trades in linked orders.
-    
+  Tokens acquired in one order become available for trading in a linked order once the market moves into range. This feature allows users to re-use tokens acquired in one order to execute trades in linked orders.
+
 - MEV-Resistant
 
-    MEV (Maximal Extractable Value) refers to the additional profits extracted from a transaction by exploiting the transaction's order execution. Carbon's trading system is designed to be resistant to a common form of MEV known as sandwich attacks. Sandwich attacks occur when a malicious actor exploits the transparency of blockchain transactions to front-run and back-run trades by inserting their own transactions between a user's transactions in a block. This allows the attacker to capture profits that would otherwise go to the user.
+  MEV (Maximal Extractable Value) refers to the additional profits extracted from a transaction by exploiting the transaction's order execution. Carbon's trading system is designed to be resistant to a common form of MEV known as sandwich attacks. Sandwich attacks occur when a malicious actor exploits the transparency of blockchain transactions to front-run and back-run trades by inserting their own transactions between a user's transactions in a block. This allows the attacker to capture profits that would otherwise go to the user.
 
-    Carbon's trading system is designed to minimize the impact of sandwich attacks by using asymmetric liquidity. With asymmetric liquidity, each user strategy is composed of independent buy and sell orders that trade in a single direction and are irreversible on execution. This means that orders can't be sandwiched, as there is no way for a malicious actor to insert a transaction between two orders that trade in the same direction. Additionally, the system is designed to minimize the impact of MEV on liquidity providers by reducing the incentive for miners to exploit order execution. This is accomplished by using a fee structure that rewards liquidity providers for providing liquidity and disincentivizes miners from attempting to extract additional profits from transactions.
-    
+  Carbon's trading system is designed to minimize the impact of sandwich attacks by using asymmetric liquidity. With asymmetric liquidity, each user strategy is composed of independent buy and sell orders that trade in a single direction and are irreversible on execution. This means that orders can't be sandwiched, as there is no way for a malicious actor to insert a transaction between two orders that trade in the same direction. Additionally, the system is designed to minimize the impact of MEV on liquidity providers by reducing the incentive for miners to exploit order execution. This is accomplished by using a fee structure that rewards liquidity providers for providing liquidity and disincentivizes miners from attempting to extract additional profits from transactions.
+
 DEXs, including the popular Uniswap v3, operate on the invariant-function DEX model, where exchange rates are determined by equations that force the composition of the liquidity pool to adhere to a predefined profile ("bonding curve"). Liquidity providers are beholden to the parameters of the liquidity pool, which limits their agency to execute precise trading strategies and set their own exchange rates.
 
 The limitations of existing liquidity pools largely stem from the fact that each pool and its composite liquidity positions are governed by the same bonding curve in either direction. This means that the same curve is used for both buying and selling, and tokens sold by a liquidity pool may be repurchased by the pool at the same exchange rate. As a result, asymmetric trading strategies, which involve independent buy and sell patterns that are irreversible after being executed, remain largely unavailable on DEXs.
@@ -148,7 +148,7 @@ Here's a brief description of each import:
     OnlyProxyDelegate: This is a contract that restricts access to certain functions to only the proxy delegate.
 
     MAX_GAP: This is a constant that defines the maximum allowed slippage for trades.
-    
+
 ```solidity
 contract CarbonController is
     ICarbonController,
@@ -176,15 +176,15 @@ This role is required to pause or unpause the contract in case of an emergency. 
     bytes32 private constant ROLE_FEES_MANAGER = keccak256("ROLE_FEES_MANAGER");
 ```
 
- This role is required to withdraw fees from the contract. The role is assigned to a specific address that is responsible for managing and withdrawing the fees from the contract.
- 
- By defining these roles, the contract can ensure that only authorized parties can execute certain functions, providing an extra layer of security and control over the contract's operations.
- 
- ```solidity
- uint16 private constant CONTROLLER_TYPE = 1;
- ```
- 
- By setting a constant identifier for the ICarbonController interface, it makes it easier for other contracts to interact with the CarbonController contract. When a contract needs to reference the CarbonController contract, it can use the CONTROLLER_TYPE constant to ensure it is interacting with the correct type of contract.
+This role is required to withdraw fees from the contract. The role is assigned to a specific address that is responsible for managing and withdrawing the fees from the contract.
+
+By defining these roles, the contract can ensure that only authorized parties can execute certain functions, providing an extra layer of security and control over the contract's operations.
+
+```solidity
+uint16 private constant CONTROLLER_TYPE = 1;
+```
+
+By setting a constant identifier for the ICarbonController interface, it makes it easier for other contracts to interact with the CarbonController contract. When a contract needs to reference the CarbonController contract, it can use the CONTROLLER_TYPE constant to ensure it is interacting with the correct type of contract.
 
 ```solidity
 // the voucher contract
@@ -198,7 +198,7 @@ This variable can be used to interact with the voucher contract from within the 
 uint256[MAX_GAP] private __gap;
 ```
 
-The __gap array acts as a placeholder for any additional state variables that may be added to the contract in future upgrades. This is necessary because adding new state variables to an existing contract can break any existing contracts that rely on the old layout of the storage.
+The \_\_gap array acts as a placeholder for any additional state variables that may be added to the contract in future upgrades. This is necessary because adding new state variables to an existing contract can break any existing contracts that rely on the old layout of the storage.
 
 ```solidity
     /**
@@ -211,9 +211,9 @@ The __gap array acts as a placeholder for any additional state variables that ma
     }
 ```
 
-The purpose of the constructor is to initialize the contract's state variables, specifically the _voucher variable which is of type IVoucher. This variable is set to the value passed as initVoucher during the contract's deployment.
+The purpose of the constructor is to initialize the contract's state variables, specifically the \_voucher variable which is of type IVoucher. This variable is set to the value passed as initVoucher during the contract's deployment.
 
-The constructor also checks the validity of the initVoucher address by calling the _validAddress() function which ensures that the address is not zero (0x0).
+The constructor also checks the validity of the initVoucher address by calling the \_validAddress() function which ensures that the address is not zero (0x0).
 
 Finally, the constructor ensures that the contract is only accessible through the proxy by calling the OnlyProxyDelegate(proxy) modifier.
 
@@ -313,8 +313,8 @@ These functions are used to fully initialize the CarbonController contract and i
     tradingFeePPM(): This function returns the current trading fee (in parts per million) that is applied to trades in the contract.
 
     setTradingFeePPM(): This function sets a new trading fee (in parts per million) for the contract. It can only be called by the admin of the contract and requires that the new fee value is valid according to the validFee() modifier. The function calls _setTradingFeePPM() to actually set the new fee value.
-    
-_setTradingFeePPM() is an internal functio of "Strategies.sol".
+
+\_setTradingFeePPM() is an internal functio of "Strategies.sol".
 
 ```solidity
     /**
@@ -332,7 +332,223 @@ _setTradingFeePPM() is an internal functio of "Strategies.sol".
     }
 ```
 
-The function takes a uint32 input parameter newTradingFeePPM which represents the new trading fee to be set. The function first checks if the new trading fee is the same as the current trading fee. If it is the same, the function returns without making any changes. If the new trading fee is different from the current trading fee, the function updates the _tradingFeePPM state variable with the new trading fee.
+The function takes a uint32 input parameter newTradingFeePPM which represents the new trading fee to be set. The function first checks if the new trading fee is the same as the current trading fee. If it is the same, the function returns without making any changes. If the new trading fee is different from the current trading fee, the function updates the \_tradingFeePPM state variable with the new trading fee.
 
+```solidity
+    /**
+     * @inheritdoc ICarbonController
+     */
+    function createPair(
+        Token token0,
+        Token token1
+    ) external nonReentrant whenNotPaused onlyProxyDelegate returns (Pair memory) {
+        _validateInputTokens(token0, token1);
+        return _createPair(token0, token1);
+    }
+```
 
+The function creates a new trading pair with the given two tokens as inputs. It validates the input tokens by calling the \_validateInputTokens internal function and returns a new Pair structure representing the created trading pair.It is marked with the nonReentrant modifier from the ReentrancyGuardUpgradeable contract, which ensures that the function cannot be called again while it is still executing.The whenNotPaused modifier from the PausableUpgradeable contract ensures that the function can only be called when the contract is not paused.
 
+The onlyProxyDelegate modifier from the OnlyProxyDelegate contract ensures that the function can only be called by the proxy contract that delegates to the CarbonController contract.The function returns a Pair structure that contains information about the newly created trading pair.
+
+```solidity
+struct Pair {
+    uint128 id;
+    Token[2] tokens;
+}
+```
+
+The Pair struct has two fields:
+
+    id (type uint128): a unique identifier for the pair.
+    tokens (type Token[2]): an array of two Token structs that represent the two tokens that make up the pair.
+
+```solidity
+    /**
+     * @dev validates both tokens are valid addresses and unique
+     */
+    function _validateInputTokens(
+        Token token0,
+        Token token1
+    ) private pure validAddress(Token.unwrap(token0)) validAddress(Token.unwrap(token1)) {
+        if (token0 == token1) {
+            revert IdenticalAddresses();
+        }
+    }
+```
+
+The function takes in two parameters token0 and token1 of type Token. It first unwraps the tokens using the Token.unwrap function to obtain their underlying address and then validates that they are both valid addresses using the validAddress modifier.
+
+After validating that the two tokens are valid addresses, the function checks that they are not identical. If they are, then it reverts with an IdenticalAddresses error message.
+
+The Token.unwrap() function is defined as part of the type Token is address declaration. It is used to retrieve the underlying address value from a Token value. For example, if token is a Token value, then Token.unwrap(token) will return the underlying address value.
+
+```
+The type Token is address declaration creates a new type called Token that is an alias for the address type. This is done to improve code readability and make the code more self-documenting.
+
+Instead of using the generic address type throughout the code, the Token type is used to indicate that the variable represents an Ethereum token. This is a common pattern in Solidity code, where new types are created as aliases for existing types to make the code more expressive and self-documenting.
+```
+
+```solidity
+    /**
+     * @dev generates and stores a new pair, tokens are assumed unique and valid
+     */
+    function _createPair(Token token0, Token token1) internal returns (Pair memory) {
+        // validate pair existence
+        if (_pairExists(token0, token1)) {
+            revert PairAlreadyExists();
+        }
+
+        // sort tokens
+        Token[2] memory sortedTokens = _sortTokens(token0, token1);
+
+        // increment pair id
+        uint128 id = _lastPairId + 1;
+        _lastPairId = id;
+
+        // store pair
+        _pairsStorage[id] = sortedTokens;
+        _pairIds[sortedTokens[0]][sortedTokens[1]] = id;
+
+        emit PairCreated(id, sortedTokens[0], sortedTokens[1]);
+        return Pair({ id: id, tokens: sortedTokens });
+    }
+```
+
+This function generates and stores a new pair of tokens, assuming that the two tokens passed as parameters are unique and valid. Here's a breakdown of what the function does:
+
+    Validates the existence of the pair by calling the _pairExists() function. If the pair already exists, it reverts with the PairAlreadyExists error.
+
+    Sorts the tokens using the _sortTokens() function, which ensures that the tokens are sorted in a consistent order. This is important because pairs are stored based on their sorted order.
+
+    Increments the pair ID by one and stores the sorted tokens and the ID in the _pairsStorage mapping.
+
+    Stores the ID of the new pair in the _pairIds mapping, which is used to look up pairs by their tokens.
+
+    Emits a PairCreated event to notify any listeners that a new pair has been created.
+
+    Returns a Pair struct containing the pair ID and sorted tokens.
+
+```solidity
+    /**
+     * @inheritdoc ICarbonController
+     */
+    function pairs() external view returns (Token[2][] memory) {
+        return _pairs();
+    }
+```
+
+It returns an array of pairs of tokens currently registered in the Carbon Controller contract. The function returns a memory array of Token[2][], which is an array of pairs of Token type elements.
+
+The function internally calls the \_pairs() function.
+
+```solidity
+    /**
+     * @dev return a pair matching the given tokens
+     */
+    function _pair(Token token0, Token token1) internal view returns (Pair memory) {
+        // validate pair existence
+        if (!_pairExists(token0, token1)) {
+            revert PairDoesNotExist();
+        }
+
+        // sort tokens
+        Token[2] memory sortedTokens = _sortTokens(token0, token1);
+
+        // return pair
+        uint128 id = _pairIds[sortedTokens[0]][sortedTokens[1]];
+        return Pair({ id: id, tokens: sortedTokens });
+    }
+```
+
+The function first checks whether the pair of tokens exists in the \_pairIds mapping using the \_pairExists function. If the pair does not exist, the function reverts with an error.If the pair exists, the function sorts the tokens using the \_sortTokens function and stores them in a Token[2] array named sortedTokens.Then, the function retrieves the ID of the pair using \_pairIds mapping and returns the ID and the sorted tokens as a Pair struct.
+
+```solidity
+    /**
+     * @inheritdoc ICarbonController
+     */
+    function pair(Token token0, Token token1) external view returns (Pair memory) {
+        _validateInputTokens(token0, token1);
+        return _pair(token0, token1);
+    }
+```
+
+It first calls the \_validateInputTokens function to validate the input parameters. If the tokens are not valid, it will revert the transaction with an appropriate error message. Otherwise, it will call the \_pair function, passing the input tokens as arguments.
+
+```solidity
+function createStrategy(
+        Token token0,
+        Token token1,
+        Order[2] calldata orders
+    ) external payable nonReentrant whenNotPaused onlyProxyDelegate returns (uint256) {}
+```
+
+It allows users to create a new strategy for a given token pair.It means creating a new trading strategy for a pair of tokens that have not been previously traded on the Carbon platform.
+
+```solidity
+_validateInputTokens(token0, token1);
+```
+
+It is called to validate that the input tokens are valid and unique. If not, it reverts.
+
+```solidity
+        // don't allow unnecessary eth
+        if (msg.value > 0 && !token0.isNative() && !token1.isNative()) {
+            revert UnnecessaryNativeTokenReceived();
+        }
+```
+
+The next line checks if the msg.value is greater than 0, and neither of the tokens are native tokens (ETH or BNB). If this is the case, it reverts with an UnnecessaryNativeTokenReceived error.
+
+This check is performed to ensure that the function is not receiving unnecessary Ether (ETH) that cannot be used in the strategy creation process.
+
+```solidity
+        // revert if any of the orders is invalid
+        _validateOrders(orders);
+```
+
+This is called to validate the orders. If any of the orders is invalid, it reverts.
+
+```solidity
+    /**
+     * revert if any of the orders is invalid
+     */
+    function _validateOrders(Order[2] calldata orders) internal pure {
+        for (uint256 i = 0; i < 2; i = uncheckedInc(i)) {
+            if (orders[i].z < orders[i].y) {
+                revert InsufficientCapacity();
+            }
+            if (!_validRate(orders[i].A)) {
+                revert InvalidRate();
+            }
+            if (!_validRate(orders[i].B)) {
+                revert InvalidRate();
+            }
+        }
+    }
+```
+
+The function takes an array of two Order structs as input, which represent the two orders that are being used in the strategy. The function then iterates over the orders using a for loop.
+
+For each order, the function checks whether the value of z is greater than or equal to y, which is required for the order to have sufficient capacity to execute. If this condition is not met, the function reverts with the InsufficientCapacity error.
+
+The function also checks whether the rate of each order (A and B) is valid by calling the \_validRate function. If the rate is not valid, the function reverts with the InvalidRate error.
+
+```solidity
+        // create the pair if it does not exist
+        Pair memory strategyPair;
+        if (!_pairExists(token0, token1)) {
+            strategyPair = _createPair(token0, token1);
+        } else {
+            strategyPair = _pair(token0, token1);
+        }
+```
+
+The function checks if a pair exists for the given tokens using \_pairExists(token0, token1). If the pair does not exist, it creates the pair using \_createPair(token0, token1) and assigns it to a memory variable called strategyPair. If the pair exists, it retrieves the pair using \_pair(token0, token1) and assigns it to strategyPair.
+
+```solidity
+        Token[2] memory tokens = [token0, token1];
+        return _createStrategy(_voucher, tokens, orders, strategyPair, msg.sender, msg.value);
+```
+
+The function creates an array of the two tokens called tokens and passes it along with orders, strategyPair, msg.sender, and msg.value to \_createStrategy() to create a new strategy.Finally, the function returns the ID of the new strategy created using \_createStrategy().
