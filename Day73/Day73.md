@@ -609,3 +609,183 @@ It checks whether the orders in newOrders are valid. If any order is invalid, th
 ```
 
 It performs the actual update of the strategy with the new orders.
+
+The \_createStrategy function is responsible for creating a new strategy by storing the necessary data in the contract storage, minting a new voucher, and emitting an event to notify external parties.
+
+```solidity
+function _createStrategy(
+        IVoucher voucher,
+        Token[2] memory tokens,
+        Order[2] calldata orders,
+        Pair memory pair,
+        address owner,
+        uint256 value
+    ) internal returns (uint256) {}
+```
+
+The function takes six input parameters: voucher, an instance of the IVoucher interface which is used to mint the voucher for the strategy, tokens which is an array of two Token instances representing the two tokens in the strategy, orders which is an array of two Order instances representing the orders for each token, pair which is a Pair instance representing the token pair for the strategy, owner which is the address of the strategy owner, and value which is the amount of native token sent with the transaction.
+
+```solidity
+        // transfer funds
+        _validateDepositAndRefundExcessNativeToken(tokens[0], owner, orders[0].y, value);
+        _validateDepositAndRefundExcessNativeToken(tokens[1], owner, orders[1].y, value);
+```
+
+This code validates the deposit amount sent with the transaction and refunds any excess native token to the strategy owner. The function \_validateDepositAndRefundExcessNativeToken is called twice, once for each token in the strategy. The first argument is the token instance, the second argument is the owner address, the third argument is the y parameter of the order for the token, and the fourth argument is the amount of native token sent with the transaction.
+
+```solidity
+    // solhint-disable var-name-mixedcase
+    struct Order {
+        uint128 y;
+        uint128 z;
+        uint64 A;
+        uint64 B;
+    }
+```
+
+The Order struct is used to represent an order on a decentralized exchange. The struct has four fields:
+
+    y: The amount of the token being sold.
+    z: The amount of the token being bought.
+    A: The exchange rate numerator.
+    B: The exchange rate denominator.
+
+The exchange rate of an order is defined as A/B. For example, an order to buy 1 Ether for 100 DAI has y set to 100 and z set to 1, and A set to 1 and B set to 100.
+
+The purpose of this struct is to encapsulate the relevant data for an order, making it easier to pass around as a single object, and to ensure that the data is properly structured and typed.
+
+```solidity
+    if (token.isNative()) {}
+```
+
+Checks if the Token object is a native token (i.e., ETH).
+
+```solidity
+    if (txValue < depositAmount) {
+                revert NativeAmountMismatch();
+            }
+```
+
+If the token is a native token, this line checks if the transaction value is less than the deposit amount. If the transaction value is less than the deposit amount, it means that the sender did not send enough ETH to cover the deposit amount, so the function reverts with a NativeAmountMismatch error.
+
+```solidity
+    if (txValue > depositAmount) {
+                payable(address(owner)).sendValue(txValue - depositAmount);
+            }
+```
+
+If the transaction value is greater than the deposit amount, it means that the sender sent more ETH than necessary. In this case, this line transfers the excess ETH back to the owner's address.
+
+```solidity
+    else if (depositAmount > 0) {
+            token.safeTransferFrom(owner, address(this), depositAmount);
+        }
+    }
+```
+
+If the token is not a native token, this line checks if the deposit amount is greater than zero. If the deposit amount is greater than zero, it means that the sender is trying to deposit some tokens into the smart contract. In this case, this line transfers the tokens from the sender to the smart contract using the safeTransferFrom function of the Token object. If the sender does not have enough tokens to cover the deposit amount, the safeTransferFrom function will revert with an error.
+
+Back to the "\_createStrategy" function.
+
+```solidity
+    uint128 counter = _strategyCounter + 1;
+    _strategyCounter = counter;
+    uint256 id = _strategyId(pair.id, counter);
+    _strategyIdsByPairIdStorage[pair.id].add(id);
+```
+
+This code generates a new strategy ID by incrementing the strategy counter, which is stored in the contract storage. It then uses this counter value to create a unique ID for the strategy by calling the \_strategyId function, which takes the pair.id and the counter as input parameters. The new ID is added to the set of strategy IDs for the pair in the \_strategyIdsByPairIdStorage mapping.
+
+```solidity
+    bool ordersInverted = tokens[0] == pair.tokens[1];
+    _packedOrdersByStrategyId[id] = _packOrders(orders, ordersInverted);
+```
+
+This code packs the order data for the strategy into a single 64-byte value using the \_packOrders function, which takes the orders array and a boolean value ordersInverted as input parameters. The ordersInverted value is calculated based on whether tokens[0] is equal to pair.tokens[1]. The resulting packed order value is stored in the \_packedOrdersByStrategyId mapping using the strategy ID as the key.
+
+```solidity
+    function _packOrders(Order[2] memory orders, bool ordersInverted) private pure returns (uint256[3] memory) {
+```
+
+This function takes in an array of two orders and a boolean indicating whether the order tokens are inverted or not. It returns an array of 3 uint256 values, which is the packed representation of the two orders.
+
+```solidity
+    return [
+            uint256((uint256(orders[0].y) << 0) | (uint256(orders[1].y) << 128)),
+            uint256((uint256(orders[0].z) << 0) | (uint256(orders[0].A) << 128) | (uint256(orders[0].B) << 192)),
+            uint256(
+                (uint256(orders[1].z) << 0) |
+                    (uint256(orders[1].A) << 128) |
+                    (uint256(orders[1].B) << 192) |
+                    (_booleanToNumber(ordersInverted) << 255)
+            )
+        ];
+```
+
+It is responsible for packing two orders into a 3-slot uint256 data structure.
+
+```solidity
+    uint256((uint256(orders[0].y) << 0) | (uint256(orders[1].y) << 128))
+```
+
+This line packs the y values of both orders into the first 128 bits of the first uint256 value in the returned array. It uses bitwise left shift (<<) to shift the value of orders[0].y by 0 bits, and orders[1].y by 128 bits, before combining them using the bitwise OR operator (|).
+
+```solidity
+    uint256((uint256(orders[0].z) << 0) | (uint256(orders[0].A) << 128) | (uint256(orders[0].B) << 192))
+```
+
+This line packs the z, A, and B values of the first order into the second uint256 value in the array. It uses bitwise left shift to position the values in their respective bit positions, and then combines them using the bitwise OR operator.
+
+```solidity
+    uint256(
+    (uint256(orders[1].z) << 0) |
+    (uint256(orders[1].A) << 128) |
+    (uint256(orders[1].B) << 192) |
+    (_booleanToNumber(ordersInverted) << 255)
+    )
+```
+
+This line packs the z, A, and B values of the second order into the third uint256 value in the array. It also packs the boolean ordersInverted value into the highest bit of the uint256 value, which indicates whether the orders are inverted or not. It uses the \_booleanToNumber() helper function to convert the boolean value to either 0 or 1 before shifting it by 255 bits and OR-ing it with the other values.
+
+```
+Packing is useful when we want to store multiple data items efficiently within a single variable, especially when working with Solidity, where gas optimization is essential. In this case, the _packOrders function is used to pack two Order structs into a single uint256[3] array.
+
+Each of the 3 elements in the array stores a different set of information related to the two Order structs. By packing the data, we can store more information in fewer variables, reducing gas usage and contract storage costs.
+
+Packing can also make data access more efficient because it reduces the number of storage reads and writes needed to store or retrieve the data. However, it can also make the code more complex, so it should only be used when necessary and when it provides significant gas savings.
+```
+
+`Why do we need to pack two orders into a 3-slot uint256 data structure?`
+
+We need to pack two orders into a 3-slot uint256 data structure to save on storage costs. Ethereum uses a storage model where data is stored in 32-byte (256-bit) slots. Each variable or data structure takes up a certain number of these slots based on its size. In this case, storing two orders as separate data structures would require 2 x 5 slots = 10 slots (assuming each uint128 and uint64 takes 2 and 1 slots, respectively).
+
+By packing the two orders into a single 3-slot uint256 array, we can save on storage costs, as we are only using three 32-byte slots for each strategy. This can result in significant savings in gas costs for the contract, as less storage means less gas required to store and update the data.
+
+```solidity
+    voucher.mint(owner, id);
+```
+
+`why they need to mint the voucher with a token id?`
+
+Minting a voucher with a token ID is a way to create a unique identifier for the voucher. This token ID can then be used to track the voucher, its ownership, and its associated information such as the orders and tokens used to create the strategy. By creating a unique token ID for each voucher, the system can ensure that each voucher is unique and can be distinguished from other vouchers, even if they have the same parameters. Additionally, the token ID can be used to provide access control, track transactions, and enforce other business logic within the system.
+
+This code mints a new voucher for the strategy by calling the mint function on the voucher instance, passing the owner address and the id of the strategy as input parameters.
+
+```solidity
+    emit StrategyCreated({
+            id: id,
+            owner: owner,
+            token0: tokens[0],
+            token1: tokens[1],
+            order0: orders[0],
+            order1: orders[1]
+        });
+```
+
+Finally, this code emits a StrategyCreated event to notify external parties.
+
+```solidity
+    return id;
+```
+
+The function returns the newly created strategy ID.
