@@ -173,4 +173,232 @@ The StrategyUpdated event is emitted after the strategy has been successfully up
     reason: The reason for the strategy update. In this case, it is set to STRATEGY_UPDATE_REASON_EDIT.
     
 
+```solidity
+function deleteStrategy(uint256 strategyId) external nonReentrant whenNotPaused onlyProxyDelegate {}
+```
 
+This function allows the owner of a strategy to delete it. 
+
+```solidity
+Pair memory strategyPair = _pairById(_pairIdByStrategyId(strategyId));
+```
+
+It finds the strategyPair associated with the given strategyId by calling the internal _pairIdByStrategyId function to get the ID of the pair, and then it calls the _pairById function to retrieve the actual pair data. If the strategyId is invalid, the _pairIdByStrategyId function will revert.
+
+```solidity
+if (msg.sender != _voucher.ownerOf(strategyId)) {
+            revert AccessDenied();
+        }
+```
+
+It checks that the caller is the owner of the strategy associated with the given strategyId.
+
+```solidity
+_deleteStrategy(strategyId, _voucher, strategyPair);
+```
+
+This function will remove the strategy from the _strategies mapping and from the _pairIdByStrategyId mapping, and will emit a StrategyDeleted event.
+
+```solidity
+function _deleteStrategy(uint256 strategyId, IVoucher voucher, Pair memory pair) internal {}
+```
+
+This function takes three parameters: strategyId, voucher, and pair. strategyId is the ID of the strategy that will be deleted. voucher is an instance of the IVoucher contract that manages the Carbon Voucher NFTs. pair is a Pair struct that represents the pair of tokens associated with the strategy.
+
+```solidity
+Strategy memory strategy = _strategy(strategyId, voucher, pair);
+```
+
+This line calls the _strategy function (explained earlier) to retrieve the Strategy struct associated with the specified strategyId. The retrieved Strategy struct is stored in memory.
+
+```solidity
+voucher.burn(strategy.id);
+```
+
+It burns the Carbon Voucher NFT associated with the strategy.
+
+```solidity
+delete _packedOrdersByStrategyId[strategy.id];
+```
+
+It clears the storage associated with the strategy's packed orders by deleting the mapping in _packedOrdersByStrategyId that uses the strategy ID as a key.
+
+```solidity
+_strategyIdsByPairIdStorage[pair.id].remove(strategy.id);
+```
+
+It removes the strategyId from the list of strategies associated with the pair in _strategyIdsByPairIdStorage.
+
+```solidity
+_withdrawFunds(strategy.tokens[0], payable(strategy.owner), strategy.orders[0].y);
+_withdrawFunds(strategy.tokens[1], payable(strategy.owner), strategy.orders[1].y);
+```
+
+These lines call the _withdrawFunds function (explained earlier) to withdraw the funds associated with each token in the strategy and transfer them to the strategy's owner.
+
+```solidity
+emit StrategyDeleted({
+    id: strategy.id,
+    owner: strategy.owner,
+    token0: strategy.tokens[0],
+    token1: strategy.tokens[1],
+    order0: strategy.orders[0],
+    order1: strategy.orders[1]
+});
+```
+
+Finally, this line emits a StrategyDeleted event, which includes the id of the deleted strategy, the owner of the strategy, the two tokens involved in the strategy, and the order amounts for each token.
+
+```solidity
+function strategiesByPair(
+        Token token0,
+        Token token1,
+        uint256 startIndex,
+        uint256 endIndex
+    ) external view returns (Strategy[] memory) {}
+```
+
+It takes in two Token objects (token0 and token1), the start and end indices of the strategy array, and returns an array of Strategy structs.
+
+```solidity
+_validateInputTokens(token0, token1);
+```
+
+It verifies that both input tokens are valid ERC20 tokens.
+
+```solidity
+Pair memory strategyPair = _pair(token0, token1);
+```
+
+The _pair internal function is called to retrieve the Pair struct for the input token pair. The Pair struct is used to retrieve all the strategies associated with the pair.
+
+```solidity
+return _strategiesByPair(strategyPair, startIndex, endIndex, _voucher);
+```
+
+ The _strategiesByPair function retrieves all the strategies associated with the given pair and returns the array of Strategy structs within the specified index range.
+ 
+ ```solidity
+ function _strategiesByPair(
+        Pair memory pair,
+        uint256 startIndex,
+        uint256 endIndex,
+        IVoucher voucher
+    ) internal view returns (Strategy[] memory) {}
+```
+
+This is used to return the stored strategies of a pair, given the pair and a range of indices.
+
+The function takes four parameters:
+
+    pair - a Pair struct that represents the pair of tokens for which to return the stored strategies.
+    startIndex - the index of the first strategy to return.
+    endIndex - the index of the last strategy to return.
+    voucher - an instance of the IVoucher interface used to interact with the Bancor Voucher contract.
+    
+It returns an array of Strategy structs.
+
+```solidity
+        EnumerableSetUpgradeable.UintSet storage strategyIds = _strategyIdsByPairIdStorage[pair.id];
+        uint256 allLength = strategyIds.length();
+```
+
+It initializes a variable called strategyIds as a UintSet data structure from the EnumerableSetUpgradeable library. UintSet is a set data structure that contains unique unsigned integers, and the EnumerableSetUpgradeable library provides set functionalities that allow iterating over set elements.
+
+Why is it initialized using EnumerableSetUpgradeable?
+
+```
+It allows efficient storage and management of a set of unsigned integers representing the IDs of the strategies that are associated with a given token pair.
+
+This data structure is used to keep track of all the strategy IDs associated with a given token pair. By using a UintSet, the code can easily add, remove, and check for the existence of a strategy ID within the set. This is a more efficient and optimized way of storing the strategy IDs compared to using an array or a mapping.
+
+Furthermore, the EnumerableSetUpgradeable library provides a set of functions that enable easy iteration over the elements in the set, such as the length() function used in the code to determine the number of strategies stored in the strategyIds set. This makes it easier to perform operations on all the strategies associated with a given token pair.
+
+```
+
+The strategyIds set is created by accessing the _strategyIdsByPairIdStorage mapping with the pair.id as the key. _strategyIdsByPairIdStorage is a storage mapping that maps each pair.id to a set of strategy IDs that are associated with the pair.
+
+The next line of code initializes a variable called allLength as the length of the strategyIds set. This variable is used later in the function to check if the provided endIndex is out of bounds or not.
+
+```solidity
+        if (endIndex == 0 || endIndex > allLength) {
+            endIndex = allLength;
+        }
+```
+
+If the endIndex is zero or greater than the total length of the set, it is set to the total length of the set.
+
+`Why ?`
+
+```
+If the endIndex parameter is greater than the total length of the set, then it means that the function will be trying to access elements beyond the set's range, which could result in an error. Therefore, to prevent this error from occurring, the endIndex parameter is set to the total length of the set. This ensures that the function will only return valid elements that exist in the set and prevent out of bound errors. Setting endIndex to zero would result in an empty return array, which is not desirable if the goal is to get all the elements in the set.
+```
+
+```solidity
+        if (startIndex > endIndex) {
+            revert InvalidIndices();
+        }
+```
+
+If the startIndex is greater than the endIndex, the function reverts with an error message.
+
+The startIndex represents the beginning of the range, and the endIndex represents the end of the range, so it makes no sense to have a range where the end is before the beginning.
+
+```solidity
+        uint256 resultLength = endIndex - startIndex;
+        Strategy[] memory result = new Strategy[](resultLength);
+```
+
+It calculates the length of the resulting array and creates a new array with that length because it needs to return an array of strategies within the given range of indices. 
+
+```solidity
+        for (uint256 i = 0; i < resultLength; i = uncheckedInc(i)) {
+            uint256 strategyId = strategyIds.at(startIndex + i);
+            result[i] = _strategy(strategyId, voucher, pair);
+        }
+```
+
+It then iterates through the range of indices, retrieves the corresponding strategy ID from the set of strategy IDs, and calls the _strategy function to retrieve the corresponding Strategy struct. The retrieved Strategy struct is then added to the resulting array and then returns the resulting array of Strategy structs.
+
+
+```solidity
+    function strategiesByPairCount(Token token0, Token token1) external view returns (uint256) {
+```
+
+ It returns the number of stored strategies associated with a given token pair, represented by Token instances token0 and token1.
+ 
+ ```solidity
+         _validateInputTokens(token0, token1);
+```
+
+It ensures that the input tokens are valid.
+
+```solidity
+        Pair memory strategyPair = _pair(token0, token1);
+```
+
+It creates a new Pair object called strategyPair by calling the internal _pair function with the input tokens token0 and token1.
+
+```solidity
+        return _strategiesByPairCount(strategyPair);
+```
+
+This function calculates the number of strategies stored for the given pair and returns it as a uint256.
+
+```solidity
+function _strategiesByPairCount(Pair memory pair) internal view returns (uint256) {}
+```
+
+It takes Pair object as an input parameter. It returns a uint256 that represents the count of stored strategies for the given pair.
+
+```solidity
+EnumerableSetUpgradeable.UintSet storage strategyIds = _strategyIdsByPairIdStorage[pair.id];
+```
+
+Here, we create a new UintSet data structure from the EnumerableSetUpgradeable library, and store it in the strategyIds variable. This set will hold the strategy IDs of all the strategies associated with the given pair. We obtain this set by looking up the pair.id value in the _strategyIdsByPairIdStorage mapping, which returns an existing set of strategy IDs for the given pair.id.
+
+```solidity
+return strategyIds.length();
+```
+
+Finally, we return the length of the strategyIds set, which represents the count of stored strategies for the given pair.
