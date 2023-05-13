@@ -1,14 +1,9 @@
 # Deep-Dive-into-DEFI
+
 We'll dive deep into defi space exploring various protocol like uniswap, maker, aave, compound and more.
 
 This repo is the continuation of my [Journey to become a Blockchain Engineer](https://github.com/spo0ds/Journey-to-become-a-Blockchain-Engineer/blob/main/README.md) repo.You can follow from there to view all the resources.
 
-| <p align="center"> [Day 60](https://github.com/spo0ds/Journey-to-become-a-Blockchain-Engineer/blob/main/Day60/Day60.md) </p> |
-| **Security and Auditing** |
-| - What is an Audit? |
-| - Process |
-| - Slither |
-| - Fuzzing and eth-security-toolbox |
 | <p align="center"> [Day 61](https://github.com/spo0ds/Deep-Dive-into-DEFI/blob/main/Day61/Day61.md) </p> |
 | **Deep Dive into DEFI** |
 | **Traditional Finance System** |
@@ -54,11 +49,11 @@ This repo is the continuation of my [Journey to become a Blockchain Engineer](ht
 | **MakerDAO** |
 | - DAI and MakerDAO |
 | **Mechanism Design of Maker (DAI and MKR)** |
-| - Dual Token Mechanism | 
+| - Dual Token Mechanism |
 | - Reserve Mechanism |
 | - Creating DAI and How it works |
 | - Maintaining Stability |
-| - Crashes,  Liquidations |
+| - Crashes, Liquidations |
 | - How is this different from lending and borrowing? |
 | - Transparency |
 | - Global Settlement |
