@@ -5,6 +5,7 @@ We'll dive deep into defi space exploring various protocol like uniswap, maker, 
 This repo is the continuation of my [Journey to become a Blockchain Engineer](https://github.com/spo0ds/Journey-to-become-a-Blockchain-Engineer/blob/main/README.md) repo.You can follow from there to view all the resources.
 
 | <p align="center"> [Day 61](https://github.com/spo0ds/Deep-Dive-into-DEFI/blob/main/Day61/Day61.md) </p> |
+| ----------------------------------------- |
 | **Deep Dive into DEFI** |
 | **Traditional Finance System** |
 | - Income Statement |
