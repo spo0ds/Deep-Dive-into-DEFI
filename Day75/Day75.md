@@ -23,3 +23,25 @@ Alternatively, a different secondary market can be created using two types of cu
 This approach adds complexity and depends on the desired incentives. The design of the curves can be structured to discourage people from selling tokens until a specific point in time to prevent them from incurring losses, thus influencing behavior and incentivizing desired actions.
 
 The versatility of token bonding curves allows them to be applied to various systems and designs. They can be utilized in different forms and can incorporate a wide range of governance and mechanism designs into the curve. This flexibility makes token bonding curves an interesting and exciting concept for token economics and ecosystem development.
+
+## Properties of Bonding Curve
+
+It operates based on following properties:
+
+- Minting:
+
+  Tokens can be minted at any time according to the price set by the smart contract. The minting process is automated and determined by the demand and liquidity added to the ecosystem. This means that no individual or entity has control over the minting process. The smart contract ensures that tokens are issued automatically based on predefined rules.
+
+- Price increase:
+
+  The price of the token increases as the token supply grows. This relationship reflects the economic value and network effects of the ecosystem. As more tokens are available in the market, it indicates a stronger network effect and increased economic value. This, in turn, leads to a higher monetary value for the ecosystem. The increase in token prices signifies growing confidence in the project, as more people buy and utilize the tokens.
+
+- Reserve pool:
+
+  The money collected from the purchase of tokens is stored in a smart contract as a reserve pool or pool balance. This reserve pool acts as collateral to support the value and liquidity of the tokens. Various projects use different mechanisms to determine where these collaterals are kept. The transparency of the smart contract ensures that the collateral is accounted for and provides value to the token pricing.
+
+- Burning:
+
+  Tokens can be burned or destroyed at any time. When tokens are burned, the person who initiated the burning process receives back a proportionate amount of the collateral from the reserve pool. The collateral received is determined by the underlying bonding curve mechanism, not by the initial amount of collateral invested. The bonding curve algorithm tracks and calculates the appropriate amount of collateral to be returned when tokens are burned. This approach reduces the potential for bribery, increases transparency, and maintains accountability for the token supply, pricing, and minting/burning schedule.
+
+Overall, the token bonding curve provides a decentralized and automated mechanism for determining the supply, price, and liquidity of tokens within an ecosystem. It ensures that these factors are determined by the market demand and the actions of participants, rather than by centralized decision-making.
