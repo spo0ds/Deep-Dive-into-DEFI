@@ -112,7 +112,15 @@ Before diving into the functions, it's important to note that some incentive mec
 
 - Logarithmic functions:
 
-  Logarithmic functions are used indirectly in bonding curve functions. Although the output function does not directly include a logarithmic function, it is embedded in other parts of the curve and eventually incorporated into the output function. Bancor, for instance, calculates their conversion rate using a logarithmic function. This function ensures a continuous and smooth curve connecting input and output tokens in the liquidity pool. As tokens are bought or sold, the conversion rate gradually adjusts, providing stable and predictable rates for efficient token swaps.
+  Bancor, for instance, calculates their conversion rate using a logarithmic function. This function ensures a continuous and smooth curve connecting input and output tokens in the liquidity pool. As tokens are bought or sold, the conversion rate gradually adjusts, providing stable and predictable rates for efficient token swaps.
+
+      - Increasing price with token supply: The logarithmic function is chosen because it allows the price of the token to increase gradually as the supply grows. This means that as more tokens are purchased and the supply increases, the price per token rises, albeit at a decreasing rate. This ensures that early adopters can acquire tokens at a lower cost while incentivizing later participants to pay a higher price.
+
+      - Continuous liquidity provision: The token bonding curve provides continuous liquidity to token holders. When someone wants to buy tokens, they can do so directly from the smart contract at the prevailing price determined by the curve. Similarly, when someone wants to sell tokens, they can do it back to the contract and receive the corresponding value according to the current price. This allows for seamless buying and selling without relying on external markets or order books.
+
+      - Price discovery and stability: The logarithmic function helps establish price stability in the bonding curve. By making the price increase at a decreasing rate, it discourages large price fluctuations and speculative behavior. This stability can be beneficial in applications that require a predictable and manageable price environment.
+
+      - Economically sustainable: The logarithmic function helps ensure that the token bonding curve is economically sustainable. As the price increases gradually, it encourages a steady inflow of funds into the ecosystem. This capital influx can be used to fund development, incentivize participants, or back the token with some underlying asset.
 
 - Sigmoid functions:
 
@@ -127,3 +135,21 @@ To determine the price of tokens in the bonding curve, we can use a simple calcu
 This involves integrating the curve function and examining the change in token supply. By doing this, we can determine the amount of collateral you will receive when putting in collateral or the number of tokens that will be minted and given to you when providing collateral.
 
 Smart contracts handle these calculations automatically, but it's important to keep them efficient. Complex calculations can slow down the processing time and lead to undesirable "beta slippage." Integration is a straightforward method for calculating the collateral received or the number of tokens minted based on the provided collateral.
+
+These various token functions serve as essential building blocks within the overall design of an economic system. The key is to carefully select and implement the functions that align with the objectives of your ecosystem, incorporating different elements and incentives as needed.
+
+**Token Functions**
+
+Let's explore the different types of applications of token bonding curves based on their functions, with a focus on four main categories:
+
+- Security Tokens:
+  Security tokens represent underlying financial assets, similar to traditional securities. However, in this context, "security" refers to the financial aspect rather than cybersecurity. Token bonding curves can be employed as a mechanism for continuous funding. When companies require additional funds, they can utilize a token bonding curve rather than approaching investors directly. This allows for a streamlined process of fundraising within the ecosystem.
+
+- Utility Tokens:
+  Utility tokens are internal tokens that hold value and are primarily used within the ecosystem itself. By integrating a token bonding curve into a utility token, you can establish an internal price value for the token, which can be utilized for various exchanges and transactions within the ecosystem. This approach facilitates the efficient flow and exchange of value within the system.
+
+- Money Tokens:
+  Money tokens are designed to function as currencies within the ecosystem. The implementation of a token bonding curve in this context depends on the specific use case. Notably, a special category within money tokens is pegged tokens. These tokens are pegged to a specific asset or currency, such as BTC and wBTC, ETH and wETH, or USD and USDT. By pegging the token to an external asset, its value remains stable and provides a reliable medium of exchange.
+
+- Stable Tokens (PEG Tokens):
+  Stable tokens, often referred to as PEG tokens, are designed to maintain a stable value by pegging them to a specific asset or currency. The relationship between the value of the pegged token and the underlying asset is straightforward. For instance, a simple representation of the relationship can be expressed as y = x, indicating a one-to-one peg. When a specific amount of the underlying asset (e.g., BTC) is added to the token bonding curve, the curve automatically mints the corresponding amount of the pegged token (e.g., wBTC). The underlying asset is held as collateral within the area under the curve. While the addition of value is not significant in this case, it improves operational efficiency by removing the need for human intervention.
