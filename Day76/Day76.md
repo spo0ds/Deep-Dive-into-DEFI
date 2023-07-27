@@ -93,3 +93,191 @@ Retrieves the address of the ERC-20 asset used for streaming.
 ```
 
 Retrieves the time when recipient will be eligible to receive the fund.
+
+```solidity
+/// @inheritdoc ISablierV2Lockup
+function getDepositedAmount(uint256 streamId)
+    external
+    view
+    override
+    notNull(streamId)
+    returns (uint128 depositedAmount)
+{
+    depositedAmount = _streams[streamId].amounts.deposited;
+}
+```
+
+This function allows you to retrieve the total amount of ERC20 tokens that were deposited into the specified stream. The deposited amount represents the total quantity of tokens committed to the stream by the sender when creating it.
+
+```solidity
+/// @inheritdoc ISablierV2Lockup
+function getEndTime(uint256 streamId) external view override notNull(streamId) returns (uint40 endTime) {
+    endTime = _streams[streamId].endTime;
+}
+```
+
+This function retrieves the Unix timestamp indicating when the stream will come to an end.
+
+```solidity
+/// @inheritdoc ISablierV2LockupLinear
+function getRange(uint256 streamId)
+    external
+    view
+    override
+    notNull(streamId)
+    returns (LockupLinear.Range memory range)
+{
+    range = LockupLinear.Range({
+        start: _streams[streamId].startTime,
+        cliff: _streams[streamId].cliffTime,
+        end: _streams[streamId].endTime
+    });
+}
+```
+
+The Range struct returned by this function contains three timestamps: start, cliff, and end.
+
+```solidity
+/// @inheritdoc ISablierV2Lockup
+function getRefundedAmount(uint256 streamId)
+    external
+    view
+    override
+    notNull(streamId)
+    returns (uint128 refundedAmount)
+{
+    refundedAmount = _streams[streamId].amounts.refunded;
+}
+```
+
+This function retrieves the amount of ERC20 tokens refunded to the sender after a stream has been canceled. The refunded amount will be zero unless the stream was canceled. When a stream is canceled, any unused funds (tokens that were not withdrawn by the recipient) can be refunded back to the sender.
+
+```solidity
+/// @inheritdoc ISablierV2Lockup
+function getSender(uint256 streamId) external view override notNull(streamId) returns (address sender) {
+    sender = _streams[streamId].sender;
+}
+
+/// @inheritdoc ISablierV2Lockup
+function getStartTime(uint256 streamId) external view override notNull(streamId) returns (uint40 startTime) {
+    startTime = _streams[streamId].startTime;
+}
+```
+
+These functions retrieve the address of the sender who initiated the stream (the one streaming the assets) and the Unix timestamp indicating the start time of the stream, respectively.
+
+```solidity
+/// @inheritdoc ISablierV2LockupLinear
+function getStream(uint256 streamId)
+    external
+    view
+    override
+    notNull(streamId)
+    returns (LockupLinear.Stream memory stream)
+{
+    stream = _streams[streamId];
+
+    // Settled streams cannot be canceled.
+    if (_statusOf(streamId) == Lockup.Status.SETTLED) {
+        stream.isCancelable = false;
+    }
+}
+```
+
+This function retrieves the complete information about the stream with the specified streamId. Additionally, if the stream is in a "settled" state (completed), the isCancelable flag is set to false since settled streams cannot be canceled.
+
+```solidity
+/// @inheritdoc ISablierV2Lockup
+function getWithdrawnAmount(uint256 streamId)
+    external
+    view
+    override
+    notNull(streamId)
+    returns (uint128 withdrawnAmount)
+{
+    withdrawnAmount = _streams[streamId].amounts.withdrawn;
+}
+```
+
+The withdrawn amount represents the quantity of tokens the recipient has received up until the current point in time.
+
+```solidity
+/// @inheritdoc ISablierV2Lockup
+function isCancelable(uint256 streamId) external view override notNull(streamId) returns (bool result) {
+    if (_statusOf(streamId) != Lockup.Status.SETTLED) {
+        result = _streams[streamId].isCancelable;
+    }
+}
+```
+
+This function checks whether the stream with the given streamId can be canceled. If the stream is in a "settled" state, it cannot be canceled, and isCancelable will be false. However, if the stream is not settled (i.e., it's pending or streaming), then isCancelable will be true if the stream was created with the isCancelable flag set to true, indicating that it can be canceled before the recipient's cliff period ends.
+
+```solidity
+/// @inheritdoc ISablierV2Lockup
+function isCold(uint256 streamId) external view override notNull(streamId) returns (bool result) {
+    Lockup.Status status = _statusOf(streamId);
+    result = status == Lockup.Status.SETTLED || status == Lockup.Status.CANCELED || status == Lockup.Status.DEPLETED;
+}
+```
+
+This function checks whether the stream with the given streamId is either settled, canceled, or depleted. A stream is considered "depleted" when all assets have been withdrawn and/or refunded.
+
+```solidity
+/// @inheritdoc ISablierV2Lockup
+function isStream(uint256 streamId) public view override(ISablierV2Lockup, SablierV2Lockup) returns (bool result) {
+    result = _streams[streamId].isStream;
+}
+```
+
+This function checks whether the stream with the given streamId exists and holds meaningful data. When isStream is set to true, it signifies that the corresponding Stream struct is valid and contains relevant information. This indicates that a lockup stream has been created, and its details, such as the sender, asset, start time, etc., are populated with relevant values.
+
+```solidity
+/// @inheritdoc ISablierV2Lockup
+function isWarm(uint256 streamId) external view override notNull(streamId) returns (bool result) {
+    Lockup.Status status = _statusOf(streamId);
+    result = status == Lockup.Status.PENDING || status == Lockup.Status.STREAMING;
+}
+```
+
+This function checks whether the stream with the given streamId is either pending or currently streaming. A stream is considered "pending" when the stream's start time is in the future and hasn't started yet. Once the stream starts, it transitions to the "streaming" state, and the recipient can begin to withdraw funds based on the cliff time.
+
+Let's examine the internal function \_statusOf, which determines the status of a stream:
+
+```solidity
+/// @inheritdoc SablierV2Lockup
+function _statusOf(uint256 streamId) internal view override returns (Lockup.Status) {}
+```
+
+This internal function calculates and returns the status of the stream with the given streamId. The status is represented by the Lockup.Status enum, which has different values indicating the state of the stream.
+
+```solidity
+if (_streams[streamId].isDepleted) {
+    return Lockup.Status.DEPLETED;
+} else if (_streams[streamId].wasCanceled) {
+    return Lockup.Status.CANCELED;
+}
+```
+
+The first check determines if the stream has been depleted. If isDepleted is true, it means all the assets in the stream have been withdrawn and/or refunded, resulting in the Lockup.Status.DEPLETED.
+
+The second check verifies if the stream was canceled. If wasCanceled is true, it means the stream has been canceled before it reached its end time, leading to the Lockup.Status.CANCELED.
+
+```solidity
+if (block.timestamp < _streams[streamId].startTime) {
+    return Lockup.Status.PENDING;
+}
+```
+
+Next, the function checks if the current time is before the stream's start time. If true, it indicates that the stream is still pending and has not yet started. Thus, it returns the Lockup.Status.PENDING.
+
+```solidity
+if (_calculateStreamedAmount(streamId) < _streams[streamId].amounts.deposited) {
+    return Lockup.Status.STREAMING;
+} else {
+    return Lockup.Status.SETTLED;
+}
+```
+
+The final check determines whether the stream is currently streaming or has already settled. It does this by calculating the total amount of tokens streamed so far using the \_calculateStreamedAmount function. If the streamed amount is less than the total amount deposited into the stream (amounts.deposited), it implies that the stream is still ongoing, resulting in the Lockup.Status.STREAMING.
+
+Conversely, if the streamed amount is equal to or greater than the total deposited amount, it means the stream has already concluded, and the recipient hasn't withdrawn all the funds yet. In this case, the function returns Lockup.Status.SETTLED.
