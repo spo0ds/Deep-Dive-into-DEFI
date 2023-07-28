@@ -281,3 +281,81 @@ if (_calculateStreamedAmount(streamId) < _streams[streamId].amounts.deposited) {
 The final check determines whether the stream is currently streaming or has already settled. It does this by calculating the total amount of tokens streamed so far using the \_calculateStreamedAmount function. If the streamed amount is less than the total amount deposited into the stream (amounts.deposited), it implies that the stream is still ongoing, resulting in the Lockup.Status.STREAMING.
 
 Conversely, if the streamed amount is equal to or greater than the total deposited amount, it means the stream has already concluded, and the recipient hasn't withdrawn all the funds yet. In this case, the function returns Lockup.Status.SETTLED.
+
+Let's explore the internal function "\_calculateStreamedAmount" in detail.
+
+```solidity
+/// @dev Calculates the streamed amount without looking up the stream's status.
+function _calculateStreamedAmount(uint256 streamId) internal view returns (uint128) {}
+```
+
+This function is used to determine the amount of ERC-20 tokens that have been streamed from a given lockup stream, identified by its unique streamId, up until the current time.
+
+```solidity
+// If the cliff time is in the future, return zero.
+uint256 cliffTime = uint256(_streams[streamId].cliffTime);
+uint256 currentTime = block.timestamp;
+if (cliffTime > currentTime) {
+return 0;
+}
+```
+
+The first check ensures that the cliff time (the time when the recipient becomes eligible to start receiving funds from the stream) has not yet passed. If the cliff time is in the future, it means that tokens cannot be streamed before the cliff time, and the function returns 0.
+
+```solidity
+// If the end time is not in the future, return the deposited amount.
+uint256 endTime = uint256(_streams[streamId].endTime);
+if (currentTime >= endTime) {
+return _streams[streamId].amounts.deposited;
+}
+```
+
+Next, it checks if the current time has surpassed the end time of the stream. If true, it means that the entire deposited amount has been streamed, and the function returns the original amounts.deposited.
+
+```solidity
+// Calculate how much time has passed since the stream started, and the stream's total duration.
+uint256 startTime = uint256(_streams[streamId].startTime);
+UD60x18 elapsedTime = ud(currentTime - startTime);
+UD60x18 totalTime = ud(endTime - startTime);
+```
+
+The code then calculates how much time has passed since the stream started and the total duration of the stream. The values are converted into the custom data type UD60x18, which represents fixed-point numbers with 18 decimal places. This conversion preserves high precision and avoids rounding errors during subsequent calculations.
+
+```solidity
+// Divide the elapsed time by the stream's total duration.
+UD60x18 elapsedTimePercentage = elapsedTime.div(totalTime);
+```
+
+This percentage represents how much of the stream's total duration has passed, which is crucial for calculating the amount of funds that should be streamed at the current moment.
+
+```solidity
+// Cast the deposited amount to UD60x18.
+UD60x18 depositedAmount = ud(_streams[streamId].amounts.deposited);
+```
+
+The deposited amount from the lockup stream is then cast from uint128 to the custom data type UD60x18.
+
+```solidity
+// Calculate the streamed amount by multiplying the elapsed time percentage by the deposited amount.
+UD60x18 streamedAmount = elapsedTimePercentage.mul(depositedAmount);
+```
+
+The calculation of the streamed amount is a key step in determining the current amount of funds that have been streamed and are eligible for withdrawal by the recipient.
+
+```solidity
+// Although the streamed amount should never exceed the deposited amount, this condition is checked
+// without asserting to avoid locking funds in case of a bug. If this situation occurs, the withdrawn
+// amount is considered to be the streamed amount, and the stream is effectively frozen.
+if (streamedAmount.gt(depositedAmount)) {
+return _streams[streamId].amounts.withdrawn;
+}
+```
+
+After calculating the streamed amount, the function checks if it exceeds the total deposited amount. In normal circumstances, the streamed amount should never exceed the deposited amount. However, this check is included to safeguard against potential bugs or unexpected behavior. If, for some reason, the streamed amount were to exceed the deposited amount, it would indicate an issue, and to prevent locking funds, the function returns the already withdrawn amount from the lockup stream, effectively freezing the stream.
+
+```solidity
+// Cast the streamed amount to uint128. This is safe due to the check above.
+return uint128(streamedAmount.intoUint256());
+```
+
+Finally, before returning the calculated streamed amount from the function, it is converted back to a regular uint128 to remove the decimal representation and make it compatible with other ERC-20 token interactions.
