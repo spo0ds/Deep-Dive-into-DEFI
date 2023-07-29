@@ -448,3 +448,217 @@ streamId = _createWithRange(
 ```
 
 The function then calls the internal function \_createWithRange to create the linear stream with the specified range and other parameters.
+
+Now let's explore what \_createWithRange does.
+
+```solidity
+/// @dev See the documentation for the user-facing functions that call this internal function.
+function _createWithRange(LockupLinear.CreateWithRange memory params) internal returns (uint256 streamId) {}
+```
+
+This internal function is responsible for creating a linear stream with the provided range.
+
+```solidity
+// Safe Interactions: query the protocol fee. This is safe because it's a known Sablier contract that does
+// not call other unknown contracts.
+UD60x18 protocolFee = comptroller.protocolFees(params.asset);
+```
+
+It starts by querying the protocol fee for the specified asset. The protocol fee is retrieved from the comptroller contract and represents the percentage of the total amount that will be deducted as a fee to support and sustain the operation and development of the Sablier protocol.
+
+```solidity
+// Checks: check the fees and calculate the fee amounts.
+Lockup.CreateAmounts memory createAmounts =
+            Helpers.checkAndCalculateFees(params.totalAmount, protocolFee, params.broker.fee, MAX_FEE);
+```
+
+Next, the function calls the helper function Helpers.checkAndCalculateFees to validate the fees and calculate the actual fee amounts.The function ensures that the protocol fee and broker fee do not exceed the maximum allowable fee (MAX_FEE). Then, it calculates the protocol fee amount and the broker fee amount based on the total amount and the fee percentages.
+
+The protocol fee is a fee that is collected by the Sablier protocol itself. It is deducted from the total amount of ERC-20 tokens being streamed in a lockup stream. The protocol fee is intended to support and sustain the operation and development of the Sablier protocol.
+
+The broker fee is an additional fee that can be charged by a third-party broker. Unlike the protocol fee, the broker fee is not collected by the Sablier protocol itself but rather by an external entity acting as a broker. The broker fee is also deducted from the total amount of ERC-20 tokens being streamed, similar to the protocol fee. However, the broker fee is optional and can be customized by the broker, allowing them to charge a fee for their services in facilitating the creation and management of lockup streams.
+
+Now we'll go through checkAndCalculateFees and come back to \_createWithRange.
+
+```solidity
+// When the total amount is zero, the fees are also zero.
+if (totalAmount == 0) {
+    return Lockup.CreateAmounts(0, 0, 0);
+}
+```
+
+If the totalAmount is zero, it means there are no funds to be streamed, so the function returns all fees as zero.
+
+```solidity
+// Checks: the protocol fee is not greater than `maxFee`.
+if (protocolFee.gt(maxFee)) {
+    revert Errors.SablierV2Lockup_ProtocolFeeTooHigh(protocolFee, maxFee);
+}
+// Checks: the broker fee is not greater than `maxFee`.
+if (brokerFee.gt(maxFee)) {
+    revert Errors.SablierV2Lockup_BrokerFeeTooHigh(brokerFee, maxFee);
+}
+```
+
+It checks whether both the protocolFee and brokerFee are greater than the maxFee. If either of the fees exceeds this maximum, the function will revert with an error message indicating that the fee is too high.
+
+```solidity
+// Calculate the protocol fee amount.
+// The cast to uint128 is safe because the maximum fee is hard coded.
+amounts.protocolFee = uint128(ud(totalAmount).mul(protocolFee).intoUint256());
+
+// Calculate the broker fee amount.
+// The cast to uint128 is safe because the maximum fee is hard coded.
+amounts.brokerFee = uint128(ud(totalAmount).mul(brokerFee).intoUint256());
+```
+
+Next, the function calculates the actual amounts for both the protocolFee and brokerFee. It does this by first converting the totalAmount to a fixed-point number using the ud() function, which preserves high precision. Then, it multiplies this fixed-point representation of the total amount with the respective fee percentages protocolFee and brokerFee. The result is then converted back to a regular uint128 data type, effectively removing the decimal representation. This calculated fee amount is then stored in the amounts.protocolFee and amounts.brokerFee variables.
+
+```solidity
+// Assert that the total amount is strictly greater than the sum of the protocol fee amount and the
+// broker fee amount.
+assert(totalAmount > amounts.protocolFee + amounts.brokerFee);
+```
+
+After calculating the fees, the function ensures that the totalAmount is strictly greater than the sum of the protocolFee and brokerFee. This assertion is essential to guarantee that there are sufficient funds left in the total amount after deducting both fees.
+
+```solidity
+// Calculate the deposit amount (the amount to stream, net of fees).
+amounts.deposit = totalAmount - amounts.protocolFee - amounts.brokerFee;
+```
+
+Finally, the function calculates the actual deposit amount that will be streamed, net of fees. It subtracts the protocolFee and brokerFee amounts from the totalAmount, leaving only the actual deposit amount to be stored in the amounts.deposit variable. This deposit amount represents the funds that will be available for streaming in the lockup stream after deducting the protocol and broker fees.
+
+In the Sablier protocol, the protocol fee is optional and can be set to 0 if the user chooses not to specify a protocol fee.
+
+Now back to the \_createWithRange function.
+
+```solidity
+// Checks: validate the user-provided parameters.
+Helpers.checkCreateWithRange(createAmounts.deposit, params.range);
+```
+
+The function then calls the helper function Helpers.checkCreateWithRange to validate the user-provided parameters, such as the deposit amount and the range (start time, cliff time, and end time) of the stream.
+
+Let's explore
+
+``solidity
+// Checks: the deposit amount is not zero.
+if (depositAmount == 0) {
+revert Errors.SablierV2Lockup_DepositAmountZero();
+}
+
+````
+
+Deposit amount can't be zero.
+
+```solidity
+    // Checks: the start time is less than or equal to the cliff time.
+        if (range.start > range.cliff) {
+            revert Errors.SablierV2LockupLinear_StartTimeGreaterThanCliffTime(range.start, range.cliff);
+        }
+````
+
+Start time can't be greater than cliff time.
+
+```solidity
+         // Checks: the cliff time is strictly less than the end time.
+        if (range.cliff >= range.end) {
+            revert Errors.SablierV2LockupLinear_CliffTimeNotLessThanEndTime(range.cliff, range.end);
+        }
+```
+
+Cliff time must not be greater than end time.
+
+```solidity
+        // Checks: the end time is in the future.
+        uint40 currentTime = uint40(block.timestamp);
+        if (currentTime >= range.end) {
+            revert Errors.SablierV2Lockup_EndTimeNotInTheFuture(currentTime, range.end);
+        }
+```
+
+End time must be somewhere in the future.
+
+```solidity
+// Load the stream id.
+streamId = nextStreamId;
+```
+
+We load the next stream id.
+
+```solidity
+// Effects: create the stream.
+_streams[streamId] = LockupLinear.Stream({
+    amounts: Lockup.Amounts({ deposited: createAmounts.deposit, refunded: 0, withdrawn: 0 }),
+    asset: params.asset,
+    cliffTime: params.range.cliff,
+    endTime: params.range.end,
+    isCancelable: params.cancelable,
+    isDepleted: false,
+    isStream: true,
+    sender: params.sender,
+    startTime: params.range.start,
+    wasCanceled: false
+});
+```
+
+Next, the function creates the linear stream by initializing a new LockupLinear.Stream struct with the provided parameters. The struct contains information about the stream, such as the deposited amount, asset, cliff time, end time, sender, and recipient.
+
+```solidity
+// Effects: bump the next stream id and record the protocol fee.
+// Using unchecked arithmetic because these calculations cannot realistically overflow, ever.
+unchecked {
+    nextStreamId = streamId + 1;
+    protocolRevenues[params.asset] = protocolRevenues[params.asset] + createAmounts.protocolFee;
+}
+```
+
+After creating the stream, the function updates the nextStreamId to ensure that the next stream will have a unique identifier. Additionally, it records the protocol fee amount in the protocolRevenues mapping, associating it with the corresponding asset.protocolRevenues is the mapping defined in SablierV2Base abstract contract.
+
+```solidity
+// Effects: mint the NFT to the recipient.
+_mint({ to: params.recipient, tokenId: streamId });
+```
+
+The function then mints an ERC-721 token (NFT) representing the right to receive funds from the stream and assigns it to the recipient.
+
+```solidity
+// Interactions: transfer the deposit and the protocol fee.
+// Using unchecked arithmetic because the deposit and the protocol fee are bounded by the total amount.
+unchecked {
+    params.asset.safeTransferFrom({
+        from: msg.sender,
+        to: address(this),
+        value: createAmounts.deposit + createAmounts.protocolFee
+    });
+}
+```
+
+Finally, the function transfers the total deposit amount and protocol fee from the sender to the contract's address. This ensures that the contract holds the funds and manages the streaming process.
+
+```solidity
+// Interactions: pay the broker fee, if not zero.
+if (createAmounts.brokerFee > 0) {
+    params.asset.safeTransferFrom({ from: msg.sender, to: params.broker.account, value: createAmounts.brokerFee });
+}
+```
+
+Additionally, if a broker fee is specified and greater than zero, the function transfers the broker fee from the sender to the broker's account.
+
+```solidity
+// Log the newly created stream.
+emit ISablierV2LockupLinear.CreateLockupLinearStream({
+    streamId: streamId,
+    funder: msg.sender,
+    sender: params.sender,
+    recipient: params.recipient,
+    amounts: createAmounts,
+    asset: params.asset,
+    cancelable: params.cancelable,
+    range: params.range,
+    broker: params.broker.account
+});
+```
+
+The function emits an event to log the creation of the new linear stream, providing information about the stream, such as the stream ID, sender, recipient, amounts, asset, and other relevant details.
