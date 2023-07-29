@@ -359,3 +359,92 @@ return uint128(streamedAmount.intoUint256());
 ```
 
 Finally, before returning the calculated streamed amount from the function, it is converted back to a regular uint128 to remove the decimal representation and make it compatible with other ERC-20 token interactions.
+
+```solidity
+/// @inheritdoc ISablierV2Lockup
+function refundableAmountOf(uint256 streamId) external view override notNull(streamId) returns (uint128 refundableAmount) {}
+```
+
+This function calculates the amount that the sender would be refunded if the stream were canceled.
+
+```solidity
+// These checks are needed because {_calculateStreamedAmount} does not look up the stream's status. Note that
+// checking for `isCancelable` also checks if the stream `wasCanceled` thanks to the protocol invariant that
+// canceled streams are not cancelable anymore.
+if (_streams[streamId].isCancelable && !_streams[streamId].isDepleted) {
+    refundableAmount = _streams[streamId].amounts.deposited - _calculateStreamedAmount(streamId);
+}
+```
+
+The function first checks if the stream is cancelable and not depleted. If both conditions are met, it calculates the refundable amount by subtracting the already streamed amount from the total deposited amount.
+
+```solidity
+/// @inheritdoc ISablierV2Lockup
+function statusOf(uint256 streamId) external view override notNull(streamId) returns (Lockup.Status status) {
+    status = _statusOf(streamId);
+}
+```
+
+This function retrieves the status of the specified stream using the internal function \_statusOf.
+
+```solidity
+/// @inheritdoc ISablierV2LockupLinear
+function streamedAmountOf(uint256 streamId) public view override(ISablierV2Lockup, ISablierV2LockupLinear) notNull(streamId) returns (uint128 streamedAmount) {
+    streamedAmount = _streamedAmountOf(streamId);
+}
+```
+
+This function retrieves the streamed amount for the recipient from the specified stream using the internal function \_streamedAmountOf.
+
+```solidity
+/// @inheritdoc ISablierV2Lockup
+function wasCanceled(uint256 streamId) public view override(ISablierV2Lockup, SablierV2Lockup) notNull(streamId) returns (bool result) {
+    result = _streams[streamId].wasCanceled;
+}
+```
+
+This function checks whether the specified stream was canceled.
+
+```solidity
+/// @inheritdoc ISablierV2LockupLinear
+function createWithDurations(LockupLinear.CreateWithDurations calldata params) external override noDelegateCall returns (uint256 streamId) {}
+```
+
+This function creates a new linear stream with the specified parameters.
+
+```solidity
+// Set the current block timestamp as the stream's start time.
+LockupLinear.Range memory range;
+range.start = uint40(block.timestamp);
+```
+
+The function starts by setting the current block timestamp as the start time of the stream.
+
+```solidity
+// Calculate the cliff time and the end time. It is safe to use unchecked arithmetic because
+// {_createWithRange} will nonetheless check that the end time is greater than the cliff time,
+// and also that the cliff time is greater than or equal to the start time.
+unchecked {
+    range.cliff = range.start + params.durations.cliff;
+    range.end = range.start + params.durations.total;
+}
+```
+
+It calculates the cliff time and the end time of the stream. It does this by adding the specified cliff duration and the total duration to the start time, respectively. The use of unchecked arithmetic is safe because the \_createWithRange function will perform additional checks to ensure the correctness of the calculated times.
+
+```solidity
+// Checks, Effects and Interactions: create the stream.
+streamId = _createWithRange(
+    LockupLinear.CreateWithRange({
+        asset: params.asset,
+        broker: params.broker,
+        cancelable: params.cancelable,
+        range: range,
+        recipient: params.recipient,
+        sender: params.sender,
+        totalAmount: params.totalAmount
+    })
+);
+```
+
+The function then calls the internal function \_createWithRange to create the linear stream with the specified range and other parameters.
