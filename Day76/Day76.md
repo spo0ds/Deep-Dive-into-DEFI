@@ -846,3 +846,128 @@ Finally, it emits an event to log the cancellation of the stream.
 > Hooks in Solidity are a way to allow contracts to interact with each other in a flexible and decentralized manner. They provide a mechanism for contract A to notify contract B about certain events or conditions and allow contract B to take specific actions in response to those events.
 
 > In the Sablier Linear contract, when a stream is canceled, it checks if the sender or recipient of the stream is a smart contract (i.e., has non-zero code.length).If the sender or recipient is a smart contract, the contract tries to invoke the onStreamCanceled hook on the respective smart contract.Invoking the hook is done using a low-level try-catch approach. This means that the contract tries to call the hook, and if the hook is not implemented or reverts, it does not cause the whole transaction to revert. Instead, any potential revert from the hook is caught, and the rest of the contract execution continues without interruption.The invoked hook, such as onStreamCanceled, contains custom logic defined by the smart contract implementer. For example, it could be used to trigger additional actions, such as updating balances, recording events, or even interacting with other smart contracts.
+
+```solidity
+function _renounce(uint256 streamId) internal override {}
+```
+
+This function removes the right of the stream's sender to cancel the stream. It is used to prevent the sender from canceling the stream once it has been created.
+
+```solidity
+// Checks: the stream is cancelable.
+if (!_streams[streamId].isCancelable) {
+    revert Errors.SablierV2Lockup_StreamNotCancelable(streamId);
+}
+```
+
+Before renouncing the stream, the function first checks if the stream is cancelable. If the stream is not cancelable, it means that it cannot be canceled, and the function reverts with an error using the StreamNotCancelable error message.
+
+```solidity
+// Effects: renounce the stream by making it not cancelable.
+_streams[streamId].isCancelable = false;
+```
+
+If the stream is cancelable, the function proceeds to mark the stream as not cancelable.
+
+```solidity
+// Interactions: if the recipient is a contract, try to invoke the renounce hook on the recipient without
+// reverting if the hook is not implemented, and also without bubbling up any potential revert.
+address recipient = _ownerOf(streamId);
+if (recipient.code.length > 0) {
+    try ISablierV2LockupRecipient(recipient).onStreamRenounced(streamId) { } catch { }
+}
+```
+
+Next, the function interacts with the recipient of the lockup stream. It checks if the recipient is a smart contract by verifying if the recipient's code.length is greater than zero. If the recipient is a smart contract, it tries to invoke the onStreamRenounced hook on the recipient without reverting if the hook is not implemented or if it reverts.
+
+```solidity
+// Log the renouncement.
+emit ISablierV2Lockup.RenounceLockupStream(streamId);
+```
+
+This event contains information about the streamId that was renounced.
+
+```solidity
+function _withdraw(uint256 streamId, address to, uint128 amount) internal override {}
+```
+
+This function is used to withdraw funds from a lockup stream identified by its streamId. The sender can withdraw funds from the stream and transfer them to the specified to address.
+
+```solidity
+// Checks: the withdraw amount is not greater than the withdrawable amount.
+uint128 withdrawableAmount = _withdrawableAmountOf(streamId);
+if (amount > withdrawableAmount) {
+    revert Errors.SablierV2Lockup_Overdraw(streamId, amount, withdrawableAmount);
+}
+```
+
+Before performing the withdrawal, the function checks whether the withdrawal amount is not greater than the withdrawable amount from the lockup stream. The withdrawable amount is the maximum amount of ERC-20 tokens that can be withdrawn by the recipient from the lockup stream. It is calculated using the \_withdrawableAmountOf function.
+
+If the specified withdrawal amount exceeds the withdrawable amount, it means the user is trying to withdraw more than what is available in the stream. In such a case, the function reverts with an error.
+
+```solidity
+// Effects: update the withdrawn amount.
+_streams[streamId].amounts.withdrawn = _streams[streamId].amounts.withdrawn + amount;
+```
+
+After the withdrawal amount is validated, the function updates the withdrawn amount for the lockup stream.
+
+```solidity
+// Retrieve the amounts from storage.
+Lockup.Amounts memory amounts = _streams[streamId].amounts;
+```
+
+This struct contains information about the total deposited amount, total withdrawn amount, and total refunded amount for the stream.
+
+```solidity
+// Using ">=" instead of "==" for additional safety reasons. In the event of an unforeseen increase in the
+// withdrawn amount, the stream will still be marked as depleted.
+if (amounts.withdrawn >= amounts.deposited - amounts.refunded) {
+    // Effects: mark the stream as depleted.
+    _streams[streamId].isDepleted = true;
+
+    // Effects: make the stream not cancelable anymore, because a depleted stream cannot be canceled.
+    _streams[streamId].isCancelable = false;
+}
+```
+
+It means the entire deposited amount has been withdrawn or that the withdrawn amount has exceeded the total deposited amount for some unforeseen reason.
+
+In such cases, the function marks the stream as depleted. It also makes the stream not cancelable anymore, as a depleted stream cannot be canceled.
+
+```solidity
+// Interactions: perform the ERC-20 transfer.
+_streams[streamId].asset.safeTransfer({ to: to, value: amount });
+```
+
+It transfers the specified amount of ERC-20 tokens from the lockup contract to the recipient's address.
+
+```solidity
+// Retrieve the recipient from storage.
+address recipient = _ownerOf(streamId);
+```
+
+It retrieves the recipient's address associated with the given streamId from storage.
+
+```solidity
+// Interactions: if `msg.sender` is not the recipient and the recipient is a contract, try to invoke the
+// withdraw hook on it without reverting if the hook is not implemented, and also without bubbling up
+// any potential revert.
+if (msg.sender != recipient && recipient.code.length > 0) {
+    try ISablierV2LockupRecipient(recipient).onStreamWithdrawn({
+        streamId: streamId,
+        caller: msg.sender,
+        to: to,
+        amount: amount
+    }) { } catch { }
+}
+```
+
+If both conditions are met, it tries to invoke the onStreamWithdrawn hook.
+
+```solidity
+// Log the withdrawal.
+emit ISablierV2Lockup.WithdrawFromLockupStream(streamId, to, amount);
+```
+
+Finally, the function emits an event called WithdrawFromLockupStream to log the withdrawal from the lockup stream.
