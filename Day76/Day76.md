@@ -662,3 +662,187 @@ emit ISablierV2LockupLinear.CreateLockupLinearStream({
 ```
 
 The function emits an event to log the creation of the new linear stream, providing information about the stream, such as the stream ID, sender, recipient, amounts, asset, and other relevant details.
+
+```solidity
+   /// @inheritdoc SablierV2Lockup
+    function _isCallerStreamSender(uint256 streamId) internal view override returns (bool) {
+        return msg.sender == _streams[streamId].sender;
+    }
+```
+
+Returns whether the caller is the stream sender or not.
+
+```solidity
+/// @dev See the documentation for the user-facing functions that call this internal function.
+    function _streamedAmountOf(uint256 streamId) internal view returns (uint128) {}
+```
+
+This function determine the total amount of ERC-20 tokens that have been streamed from a specific lockup stream (identified by its streamId) up until the current moment.
+
+```solidity
+Lockup.Amounts memory amounts = _streams[streamId].amounts;
+```
+
+This struct contains information about the total deposited amount, total withdrawn amount, and total refunded amount for the stream.
+
+```solidity
+ if (_streams[streamId].isDepleted) {
+            return amounts.withdrawn;
+        } else if (_streams[streamId].wasCanceled) {
+            return amounts.deposited - amounts.refunded;
+        }
+```
+
+If the stream is marked as isDepleted, it means that all funds have been withdrawn from the stream. In this case, the function returns the amounts.withdrawn, which represents the total amount of funds that have been withdrawn from the stream.
+
+If the stream is marked as wasCanceled, it means that the stream was canceled before being fully depleted. In this case, the function returns the difference between the amounts.deposited (total amount deposited) and the amounts.refunded (total amount refunded). This difference represents the total amount of funds that were not refunded before the stream was canceled.
+
+```solidity
+return _calculateStreamedAmount(streamId);
+```
+
+Returns the ERC-20 tokens that have been streamed from a given lockup stream (identified by its streamId) up until the current moment.
+
+```solidity
+/// @dev See the documentation for the user-facing functions that call this internal function.
+    function _withdrawableAmountOf(uint256 streamId) internal view override returns (uint128) {
+        return _streamedAmountOf(streamId) - _streams[streamId].amounts.withdrawn;
+    }
+```
+
+Returns the amount of ERC-20 tokens that can be withdrawn by the recipient from a given lockup stream (identified by its streamId).It calls the \_streamedAmountOf function, which returns the total amount of funds that have been streamed from the lockup stream up until the current moment.It then subtracts the amounts.withdrawn value from the stream. This amounts.withdrawn represents the total amount of funds that have already been withdrawn by the recipient from the stream.
+
+The result represents the amount of funds that are currently available for withdrawal by the recipient.
+
+```solidity
+function _cancel(uint256 streamId) internal override {}
+```
+
+This is an internal function used to cancel a lockup stream identified by streamId.
+
+```solidity
+// Calculate the streamed amount.
+uint128 streamedAmount = _calculateStreamedAmount(streamId);
+```
+
+It first calculates the amount of tokens that have been streamed from the lockup stream using the \_calculateStreamedAmount function.\_calculateStreamedAmount returns the total amount of tokens streamed so far.
+
+```solidity
+// Retrieve the amounts from storage.
+Lockup.Amounts memory amounts = _streams[streamId].amounts;
+```
+
+it retrieves the relevant Amounts struct associated with the given streamId from storage.
+
+```solidity
+// Checks: the stream is not settled.
+if (streamedAmount >= amounts.deposited) {
+    revert Errors.SablierV2Lockup_StreamSettled(streamId);
+}
+```
+
+it means the stream has already been settled, and the function reverts with an error.
+
+```solidity
+// Checks: the stream is cancelable.
+if (!_streams[streamId].isCancelable) {
+    revert Errors.SablierV2Lockup_StreamNotCancelable(streamId);
+}
+```
+
+If the stream is not marked as cancelable, the function reverts with an error using the StreamNotCancelable error message.
+
+```solidity
+// Calculate the sender's and the recipient's amount.
+uint128 senderAmount = amounts.deposited - streamedAmount;
+uint128 recipientAmount = streamedAmount - amounts.withdrawn;
+```
+
+Next, it calculates the remaining amounts for the sender and the recipient. The sender's amount is the total amount deposited minus the streamed amount, and the recipient's amount is the streamed amount minus the already withdrawn amount.
+
+```solidity
+// Effects: mark the stream as canceled.
+_streams[streamId].wasCanceled = true;
+```
+
+The function marks the stream as canceled.
+
+```solidity
+// Effects: make the stream not cancelable anymore, because a stream can only be canceled once.
+_streams[streamId].isCancelable = false;
+```
+
+It also makes the stream not cancelable anymore.A stream can only be canceled once.
+
+```solidity
+// Effects: If there are no assets left for the recipient to withdraw, mark the stream as depleted.
+if (recipientAmount == 0) {
+    _streams[streamId].isDepleted = true;
+}
+```
+
+If the recipient has already withdrawn all their funds (i.e., recipientAmount is zero), the function marks the stream as depleted.
+
+```solidity
+// Effects: set the refunded amount.
+_streams[streamId].amounts.refunded = senderAmount;
+```
+
+It sets the refunded field of the Amounts struct to the remaining amount to be refunded to the sender.
+
+```solidity
+// Retrieve the sender and the recipient from storage.
+address sender = _streams[streamId].sender;
+address recipient = _ownerOf(streamId);
+```
+
+The function retrieves the sender and recipient addresses associated with the given streamId from storage.
+
+```solidity
+// Interactions: refund the sender.
+_streams[streamId].asset.safeTransfer({ to: sender, value: senderAmount });
+```
+
+This transfers the remaining amount back to the sender's address.
+
+```solidity
+    // Interactions: if `msg.sender` is the sender and the recipient is a contract, try to invoke the cancel
+    // hook on the recipient without reverting if the hook is not implemented, and without bubbling up any
+    // potential revert.
+    if (msg.sender == sender) {
+        if (recipient.code.length > 0) {
+            try ISablierV2LockupRecipient(recipient).onStreamCanceled({
+                streamId: streamId,
+                sender: sender,
+                senderAmount: senderAmount,
+                recipientAmount: recipientAmount
+            }) { } catch { }
+        }
+    }
+    // Interactions: if `msg.sender` is the recipient and the sender is a contract, try to invoke the cancel
+    // hook on the sender without reverting if the hook is not implemented, and also without bubbling up any
+    // potential revert.
+    else {
+        if (sender.code.length > 0) {
+            try ISablierV2LockupSender(sender).onStreamCanceled({
+                streamId: streamId,
+                recipient: recipient,
+                senderAmount: senderAmount,
+                recipientAmount: recipientAmount
+            }) { } catch { }
+        }
+    }
+```
+
+Depending on who called the cancel function (either the sender or the recipient), it checks if the other party is a smart contract (i.e., has non-zero code.length). If so, it tries to invoke the onStreamCanceled hook on the respective smart contract without reverting if the hook is not implemented and without bubbling up any potential revert from the hook.
+
+```solidity
+// Log the cancellation.
+emit ISablierV2Lockup.CancelLockupStream(streamId, sender, recipient, senderAmount, recipientAmount);
+```
+
+Finally, it emits an event to log the cancellation of the stream.
+
+> Hooks in Solidity are a way to allow contracts to interact with each other in a flexible and decentralized manner. They provide a mechanism for contract A to notify contract B about certain events or conditions and allow contract B to take specific actions in response to those events.
+
+> In the Sablier Linear contract, when a stream is canceled, it checks if the sender or recipient of the stream is a smart contract (i.e., has non-zero code.length).If the sender or recipient is a smart contract, the contract tries to invoke the onStreamCanceled hook on the respective smart contract.Invoking the hook is done using a low-level try-catch approach. This means that the contract tries to call the hook, and if the hook is not implemented or reverts, it does not cause the whole transaction to revert. Instead, any potential revert from the hook is caught, and the rest of the contract execution continues without interruption.The invoked hook, such as onStreamCanceled, contains custom logic defined by the smart contract implementer. For example, it could be used to trigger additional actions, such as updating balances, recording events, or even interacting with other smart contracts.
