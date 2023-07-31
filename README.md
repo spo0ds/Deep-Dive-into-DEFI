@@ -124,27 +124,8 @@ This repo is the continuation of my [Journey to become a Blockchain Engineer](ht
 | - ExternalRewardsVault.sol                                                                               |
 | <p align="center"> [Day 72](https://github.com/spo0ds/Deep-Dive-into-DEFI/blob/main/Day72/Day72.md) </p> |
 | - BancorArbitrage.sol                                                                                    |
-| <p align="center"> [Day 73](https://github.com/spo0ds/Deep-Dive-into-DEFI/blob/main/Day73/Day73.md) </p> |
-| **Carbon**                                                                                               |
-| - Asymmetric Liquidity                                                                                   |
-| - Overview                                                                                               |
-| - features of Carbon                                                                                     |
-| **Smart Contract Walkthrough**                                                                           |
-| - CarbonController.sol                                                                                   |
-| <p align="center"> [Day 74](https://github.com/spo0ds/Deep-Dive-into-DEFI/blob/main/Day74/Day74.md) </p> |
-| - continue of CarbonController.sol                                                                       |
-| <p align="center"> [Day 75](https://github.com/spo0ds/Deep-Dive-into-DEFI/blob/main/Day75/Day75.md) </p> |
-| **Token Bonding Curves**                                                                                 |
-| - What are token bonding curves?                                                                         |
-| **Properties of Bonding Curve**                                                                          |
-| **Use Cases**                                                                                            |
-| **Value of Bonding Curve**                                                                               |
-| **Mitigating Risks**                                                                                     |
-| **Bonding Curve Functions**                                                                              |
-| **How do you calculate the price?**                                                                      |
-| - Token Functions                                                                                        |
-| **dYdX**                                                                                                 |
+| <p align="center"> [Day 73](https://github.com/spo0ds/Deep-Dive-into-DEFI/blob/main/Day73/Day73.md) </p> |                                                                              |
 | <p align="center"> [Day 76](https://github.com/spo0ds/Deep-Dive-into-DEFI/blob/main/Day76/Day76.md) </p> |
-| **Sablier Protocol**                                                                                     |
-| - Core Contracts                                                                                         |
-| - LockupLinear                                                                                           |
+| **Sablier** |
+| - Architecture |
+| - Lockup Linear |                                                                                      |
